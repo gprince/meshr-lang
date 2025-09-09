@@ -177,6 +177,78 @@ module metadata.annotations
 - **Décision :** Support des annotations avec arguments (valeur unique ou paires clé/valeur), et valeurs typées (`string`, `identifier`, `qualifiedName`).
 - **Pourquoi :** Permet une expressivité maximale tout en restant compatible avec une grammaire ANTLR claire et extensible.
 
+### ✍️ Déclaration des types d’annotations
+
+Meshr permet de déclarer des **types d’annotations** personnalisés à l’aide du mot-clé `annotation`.
+
+#### 📐 Syntaxe
+
+```meshr
+@Target(annotation)
+@Retention(model)
+annotation Documented is
+  required summary : String
+  optional description : String = ""
+  optional deprecated : Boolean = false
+end
+```
+
+#### 🔎 Sémantique
+
+- Les types d’annotations sont eux-mêmes annotables (`@Target`, `@Retention`, `@Repeatable`…).
+- Le bloc interne suit la forme :
+  - `required` : la valeur doit obligatoirement être fournie à l’usage, **aucune valeur par défaut autorisée**.
+  - `optional` : la valeur est optionnelle, et peut être associée à une valeur par défaut.
+- Si une annotation typée est utilisée sans renseigner un champ `optional`, alors la valeur par défaut s’applique.
+- Les types autorisés sont `String`, `Boolean`, `Integer`, et les types énumérés (ex : `RetentionPolicy`).
+- Le mot-clé `end` est requis pour clore la déclaration.
+
+#### 🧠 Règle sémantique `required` vs `optional`
+
+- `required` : champ **obligatoire**, **sans valeur par défaut**, doit être explicitement renseigné à l’usage.
+- `optional` : champ **optionnel**, **avec ou sans valeur par défaut**.
+  - Si valeur par défaut spécifiée → utilisée si champ non renseigné.
+  - Sinon → champ absent à l’usage.
+
+#### 📦 Exemples
+
+```meshr
+// Type d’annotation avec plusieurs champs
+@Target(annotation)
+@Retention(model)
+annotation Example is
+  required name : String
+  optional version : String = "1.0"
+  optional experimental : Boolean = false
+end
+```
+
+```meshr
+// Annotation simple booléenne
+@Target(annotation)
+@Retention(model)
+annotation Repeatable is
+  optional value : Boolean = true
+end
+```
+
+#### ✅ Tests valides
+
+```meshr
+@Example(name="MeshrLang")
+annotation Test1 is end
+
+@Example(name="MeshrLang", experimental=true)
+annotation Test2 is end
+```
+
+#### ❌ Tests invalides
+
+(à venir, via fichier `invalid-annotation-decl-test.meshr`)
+- Champ `required` non renseigné
+- Redondance entre champs
+- Mauvais type
+
 ---
 
 ## 🔢 Enums
