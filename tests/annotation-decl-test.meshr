@@ -1,0 +1,33 @@
+// Module de test de déclaration des annotations
+module aspects.core.annotations
+
+export { RetentionPolicy, AnnotationTarget, Target, Retention, Repeatable }
+
+enum RetentionPolicy is (compile, model, "export")
+enum AnnotationTarget is (all, "annotation", "enum", "module")
+
+@Target("annotation")
+@Retention(model)
+annotation Target is
+  required value : AnnotationTarget // pas normatif ici --> type AnnotationTarget pour le test
+end
+
+@Target("annotation")
+@Retention(model)
+annotation Retention is
+  required value : RetentionPolicy
+end
+
+@Target("annotation")
+@Retention(model)
+annotation Repeatable is
+  optional value : Boolean = true
+end
+
+@Target("annotation")
+@Retention(model)
+annotation Documented is
+  required summary : String
+  optional description : String = ""
+  optional deprecated : Boolean = false
+end

@@ -1,34 +1,22 @@
 grammar MeshrModule;
 
+// ==============================
+// Entrée principale
+// ==============================
 compilationUnit
-    : moduleDecl importDecl* exportDecl* enumDecl* EOF
+    : annotatedModuleDecl importDecl* exportDecl* topLevelDecl* EOF
     ;
 
-moduleDecl: annotation* 'module' qualifiedName ;
-
-annotation
-    : '@' IDENTIFIER ('(' annotationArgs? ')')?
+// ==============================
+// Déclarations de module
+// ==============================
+annotatedModuleDecl
+    : annotation* 'module' qualifiedName
     ;
 
-annotationArgs
-    : annotationArg (',' annotationArg)*
-    ;
-
-annotationArg
-    : annotationArgPair
-    | annotationValue
-    ;
-
-annotationArgPair
-    : IDENTIFIER '=' annotationValue
-    ;
-
-annotationValue
-    : STRING_LITERAL
-    | NUMBER_LITERAL
-    | qualifiedName
-    ;
-
+// ==============================
+// Import / Export
+// ==============================
 importDecl
     : 'import' importItemsWithOptionalBraces 'from' qualifiedName
     ;
@@ -52,20 +40,25 @@ exportItems
     : IDENTIFIER (',' IDENTIFIER)*
     ;
 
+// ==============================
+// Déclarations de haut niveau
+// ==============================
 topLevelDecl
-    : enumDecl
+    : annotatedEnumDecl
+    | annotatedAnnotationDecl
     ;
 
+// ========== ENUM =============
 exportableDecl
     : enumDecl
     ;
 
-enumDecl
-    : 'enum' IDENTIFIER enumSignature? 'is' '(' enumValueList ')'
+annotatedEnumDecl
+    : annotation* enumDecl
     ;
 
-enumValueList
-    : enumValue (',' enumValue)*
+enumDecl
+    : 'enum' IDENTIFIER enumSignature? 'is' '(' enumValueList ')'
     ;
 
 enumSignature
@@ -80,8 +73,12 @@ enumAttribute
     : IDENTIFIER ':' qualifiedName ('=' annotationValue)?
     ;
 
+enumValueList
+    : enumValue (',' enumValue)*
+    ;
+
 enumValue
-    : IDENTIFIER ('(' enumValueArgList? ')')?
+    : (IDENTIFIER | STRING_LITERAL) ('(' enumValueArgList? ')')?
     ;
 
 enumValueArgList
@@ -92,17 +89,67 @@ enumValueArg
     : IDENTIFIER '=' annotationValue
     ;
 
+// ========== ANNOTATION DECLARATION ============
+annotatedAnnotationDecl
+    : annotation* annotationDecl
+    ;
 
-qualifiedName: IDENTIFIER ('.' IDENTIFIER)* ;
+annotationDecl
+    : 'annotation' IDENTIFIER 'is' annotationFieldList 'end'
+    ;
 
+annotationFieldList
+    : annotationField*
+    ;
 
-fragment ESC: '\\' ["\\/bfnrt] ;
+annotationField
+    : ('required' | 'optional') IDENTIFIER ':' qualifiedName ('=' annotationValue)? NEWLINE?
+    ;
+
+// ========== ANNOTATION USAGE ============
+annotation
+    : '@' IDENTIFIER ('(' annotationArgs? ')')?
+    ;
+
+annotationArgs
+    : annotationArg (',' annotationArg)*
+    ;
+
+annotationArg
+    : annotationArgPair
+    | annotationValue
+    ;
+
+annotationArgPair
+    : IDENTIFIER '=' annotationValue
+    ;
+
+annotationValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | qualifiedName
+    ;
+
+// ========== SHARED ============
+qualifiedName
+    : IDENTIFIER ('.' IDENTIFIER)*
+    ;
+
+// ========== TERMINALS ============
+fragment ESC
+    : '\\' ["\\/bfnrt]
+    ;
 
 AT: '@';
 STRING_LITERAL: '"' (ESC | ~["\\\r\n])* '"';
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 
 WS: [ \t\r\n]+ -> skip ;
+NEWLINE: ('\r'? '\n')+ -> skip ;
 COMMENT: '//' ~[\r\n]* -> skip ;
 MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
-NUMBER_LITERAL: [0-9]+ ('.' [0-9]+)? | '0' [xX] [0-9a-fA-F]+;
+
+NUMBER_LITERAL
+    : [0-9]+ ('.' [0-9]+)?
+    | '0' [xX] [0-9a-fA-F]+
+    ;

@@ -1,7 +1,7 @@
 module metadata.colors
 
 // enum simple
-enum PIICategory is (contact, identity, financial, health, biometric, location)
+enum PIICategory is (contact, identity, financial, health, biometric, location, "valeur mixte")
 
 // avec un attribut
 enum Color(value: Integer) is (

@@ -1,0 +1,7 @@
+module invalid.annotations
+
+@Target(annotation)
+@Retention(model)
+annotation InvalidAnnotation is
+  optional : String = "missingName"
+end
