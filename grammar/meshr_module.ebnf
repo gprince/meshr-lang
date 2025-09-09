@@ -15,3 +15,7 @@ product-decl    = "product", identifier, "{", … , "}" ;
 qualified-name  = identifier, { ".", identifier } ;
 identifier      = letter, { letter | digit | "_" } ;
 string-literal  = '"', { character - '"' }, '"' ;
+
+comment             = line-comment | block-comment ;
+line-comment        = "//", { character - end-of-line } ;
+block-comment       = "/*", { character - "*/" }, "*/" ;

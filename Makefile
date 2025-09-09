@@ -6,15 +6,23 @@ GEN_DIR = grammar/generated
 
 .PHONY: all clean grammar test
 
-all: grammar test
+all: 
+	$(MAKE) grammar
+	$(MAKE) test
 
 grammar:
 	mkdir -p $(GEN_DIR)
 	touch $(GEN_DIR)/__init__.py
-	java -jar $(ANTLR_JAR) -Dlanguage=Python3 -visitor -o $(GEN_DIR) $(GRAMMAR_FILE)
+	cd grammar && java -jar antlr-4.13.2-complete.jar -Dlanguage=Python3 -visitor -o ../grammar/generated MeshrModule.g4
 
 test:
-	PYTHONPATH=. python tests/parse_module.py
+	@echo "Running parser on test files:"
+	@status=0; \
+	for file in $(shell find tests -name '*.meshr'); do \
+		echo "→ $$file"; \
+		PYTHONPATH=. python tests/parse_module.py $$file || status=1; \
+	done; \
+	exit $$status
 
 clean:
 	rm -rf $(GEN_DIR)/*.py $(GEN_DIR)/*.tokens $(GEN_DIR)/*.interp

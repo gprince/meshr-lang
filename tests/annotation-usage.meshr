@@ -1,0 +1,10 @@
+
+@experimental
+@Number(42)
+@albert("OK")
+@version("0.2.0")
+@scope(level=Internal)
+@author(name="Greg", email="greg@example.com")
+@deprecated(reason="Use new module instead")
+@confidentiality(privacy.Level.HIGH)
+module metadata.annotations

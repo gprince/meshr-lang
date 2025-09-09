@@ -16,6 +16,7 @@ __pycache__/
 grammar/generated/
 grammar/*.tokens
 grammar/*.interp
+*.antlr
 
 # JARs and build tools
 antlr-4.*.jar

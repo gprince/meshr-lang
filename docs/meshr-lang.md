@@ -27,6 +27,22 @@ Il vise à offrir une syntaxe lisible, formelle et exécutable pour :
   - Chaînes : `"texte"`
   - Références : `contract:domain:name:1.0.0`
 
+### 💬 Commentaires
+
+- Les commentaires sur une seule ligne commencent par `//`
+- Les commentaires multi-lignes sont délimités par `/*` et `*/`
+- Ils sont ignorés par l’analyse syntaxique (non représentés dans l’AST)
+
+#### Exemples :
+
+```meshr
+// Ceci est un commentaire simple
+
+/*
+  Ceci est un commentaire
+  sur plusieurs lignes
+*/
+
 ---
 
 ## 📦 Déclaration des modules et imports
@@ -50,6 +66,50 @@ import Customer, Producer from marketing.shared // ❌ interdit : nécessite des
 ```
 
 ### 📚 Sémantique
+
+- **Un fichier `.meshr` = un module unique**.
+- Le `module` définit le **namespace** des artefacts qu’il contient.
+- Les `import` permettent d'accéder à des symboles publics d'autres modules.
+- Les annotations `@module_*` sont optionnelles mais encouragées pour documenter les modules.
+- Les `import` permettent d'accéder à des symboles **explicitement exportés** d'autres modules.
+- Les éléments d’un module **ne sont pas visibles depuis l’extérieur** s’ils ne sont pas précédés du mot-clé `export`.
+- L’import de `{ * }` signifie **importer tous les symboles exportés** du module cible.
+- L’import de `{ A, B }` permet une **importation sélective**.
+- Les accolades `{}` sont **optionnelles uniquement si un seul identifiant** est importé.
+- Si plusieurs identifiants sont importés d’un même module, l’usage des accolades est **obligatoire**.
+
+### 📤 Export des déclarations
+
+Deux formes d'export sont possibles dans un module :
+
+#### ✅ Export inline (immédiat)
+
+```meshr
+export enum SensitivityLevel is (public, internal, restricted)
+```
+
+- La déclaration est rendue publique immédiatement.
+- Facile à lire mais répétitif si plusieurs artefacts sont à exporter.
+
+#### ✅ Export groupé (centralisé)
+
+```meshr
+export { PIICategory, SensitivityLevel }
+
+enum PIICategory is (contact, identity, financial, health, biometric, location)
+enum SensitivityLevel is (public, internal, restricted, confidential)
+```
+
+- Doit apparaître juste **après les imports**, jamais en fin de module.
+- Permet de déclarer tous les artefacts exportés en un seul point.
+- Aucune déclaration listée dans ce bloc n’a besoin du mot-clé `export` en ligne.
+
+#### 🧠 Règles de priorité d’export
+
+1. Une déclaration précédée de `export` est **immédiatement publique**.
+2. Une déclaration listée dans `export { ... }` devient **publique à posteriori**.
+3. Un même nom peut apparaître dans les deux formes (toléré).
+4. Toute déclaration **non exportée explicitement** est **privée** au module.
 
 - **Un fichier `.meshr` = un module unique**.
 - Le `module` définit le **namespace** des artefacts qu’il contient.
@@ -137,6 +197,12 @@ product leads_b2c_import {
 - **Contexte :** Le langage devait gérer la visibilité entre modules pour encourager l'encapsulation.
 - **Décision :** Un artefact déclaré dans un module n’est accessible depuis l’extérieur que s’il est précédé du mot-clé `export`.
 - **Pourquoi :** Cette règle encourage une séparation claire entre API publique et éléments internes, facilite la documentation automatique et le linting.
+
+### 🧩 [2025-09-10] — Deux formes d’export : inline ou groupé
+
+- **Contexte :** Besoin de contrôler la visibilité des artefacts à l’extérieur du module.
+- **Décision :** Deux formes sont supportées : inline (`export decl`) et groupée (`export { A, B }`).
+- **Justification :** Favorise à la fois la lisibilité locale (inline) et la gestion explicite de l’API publique (groupé après les imports).
 
 ---
 

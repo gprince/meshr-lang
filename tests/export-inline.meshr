@@ -1,0 +1,5 @@
+// Test l'export inline
+module metadata.privacy
+
+export enum PIICategory is (contact, identity, financial, health, biometric, location)
+export enum SensitivityLevel is (public, internal, restricted, confidential)
