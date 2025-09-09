@@ -1,0 +1,17 @@
+module-decl     = "module", qualified-name ;
+
+import-decl     = "import", ( "*"
+                            | identifier
+                            | "{", import-items, "}" ),
+                  "from", qualified-name ;
+import-items    = "*"
+                | identifier, { ",", identifier } ;
+
+export-decl     = "export", top-level-decl ;
+top-level-decl  = product-decl ; (* extensible à domain, contract, etc. *)
+
+product-decl    = "product", identifier, "{", … , "}" ;
+
+qualified-name  = identifier, { ".", identifier } ;
+identifier      = letter, { letter | digit | "_" } ;
+string-literal  = '"', { character - '"' }, '"' ;
