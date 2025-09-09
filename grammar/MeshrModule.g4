@@ -1,7 +1,7 @@
 grammar MeshrModule;
 
 compilationUnit
-    : moduleDecl importDecl* exportDecl* EOF
+    : moduleDecl importDecl* exportDecl* enumDecl* EOF
     ;
 
 moduleDecl: annotation* 'module' qualifiedName ;
@@ -44,17 +44,54 @@ importItems
     ;
 
 exportDecl
-    : 'export' topLevelDecl            # InlineExport
-    | 'export' '{' exportItems '}'     # GroupedExport
+    : 'export' exportableDecl            # InlineExport
+    | 'export' '{' exportItems '}'       # GroupedExport
     ;
 
 exportItems
     : IDENTIFIER (',' IDENTIFIER)*
     ;
 
-topLevelDecl: productDecl ; // À étendre avec d'autres artefacts (domain, contract, etc.)
+topLevelDecl
+    : enumDecl
+    ;
 
-productDecl: 'product' IDENTIFIER '{' .*? '}' ;
+exportableDecl
+    : enumDecl
+    ;
+
+enumDecl
+    : 'enum' IDENTIFIER enumSignature? 'is' '(' enumValueList ')'
+    ;
+
+enumValueList
+    : enumValue (',' enumValue)*
+    ;
+
+enumSignature
+    : '(' enumAttributeList ')'
+    ;
+
+enumAttributeList
+    : enumAttribute (',' enumAttribute)*
+    ;
+
+enumAttribute
+    : IDENTIFIER ':' qualifiedName ('=' annotationValue)?
+    ;
+
+enumValue
+    : IDENTIFIER ('(' enumValueArgList? ')')?
+    ;
+
+enumValueArgList
+    : enumValueArg (',' enumValueArg)*
+    ;
+
+enumValueArg
+    : IDENTIFIER '=' annotationValue
+    ;
+
 
 qualifiedName: IDENTIFIER ('.' IDENTIFIER)* ;
 
@@ -68,4 +105,4 @@ IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 WS: [ \t\r\n]+ -> skip ;
 COMMENT: '//' ~[\r\n]* -> skip ;
 MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
-NUMBER_LITERAL: [0-9]+ ('.' [0-9]+)?;
+NUMBER_LITERAL: [0-9]+ ('.' [0-9]+)? | '0' [xX] [0-9a-fA-F]+;

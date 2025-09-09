@@ -1,20 +1,54 @@
-module-decl     = "module", qualified-name ;
+module-decl         = "module", qualified-name ;
 
-import-decl     = "import", ( "*"
-                            | identifier
-                            | "{", import-items, "}" ),
-                  "from", qualified-name ;
-import-items    = "*"
-                | identifier, { ",", identifier } ;
+import-decl         = "import", import-items, "from", qualified-name ;
+import-items        = "*"
+                    | identifier
+                    | "{", import-item, { ",", import-item }, "}" ;
+import-item         = identifier ;
 
-export-decl     = "export", top-level-decl ;
-top-level-decl  = product-decl ; (* extensible à domain, contract, etc. *)
+export-decl         = "export", ( export-items | exportable-decl ) ;
+export-items        = "{", identifier, { ",", identifier }, "}" ;
 
-product-decl    = "product", identifier, "{", … , "}" ;
+annotation          = "@", identifier, [ "(", annotation-args, ")" ] ;
+annotation-args     = annotation-arg, { ",", annotation-arg } ;
+annotation-arg      = annotation-arg-pair | annotation-value ;
+annotation-arg-pair = identifier, "=", annotation-value ;
+annotation-value    = string-literal
+                    | number-literal
+                    | qualified-name ;
 
-qualified-name  = identifier, { ".", identifier } ;
-identifier      = letter, { letter | digit | "_" } ;
-string-literal  = '"', { character - '"' }, '"' ;
+qualified-name      = identifier, { ".", identifier } ;
+
+product-decl        = "product", identifier, "is", field-block ;
+trait-decl          = "trait", identifier, "is", field-block ;
+entity-decl         = "entity", identifier, "is", field-block, [ aspects-block ], "end" ;
+relation-decl       = "relation", identifier, "is", field-block, "end" ;
+
+enum-decl           = "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
+enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
+enum-attribute      = identifier, ":", qualified-name, [ "=", annotation-value ] ;
+enum-values         = enum-value, { ",", enum-value } ;
+enum-value          = identifier, [ "(", enum-value-args, ")" ] ;
+enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
+enum-value-arg      = identifier, "=", annotation-value ;
+
+exportable-decl     = product-decl
+                    | trait-decl
+                    | entity-decl
+                    | relation-decl
+                    | enum-decl ;
+
+field-block         = "{", field, { field }, "}" ;
+field               = identifier, ":", qualified-name, [ "=", expression ] ;
+expression          = annotation-value ; (* simplified for now *)
+
+aspects-block       = "aspects", "{", aspect-instance, { aspect-instance }, "}" ;
+aspect-instance     = qualified-name, "(", "…", ")" ; (* placeholder *)
+
+identifier          = letter, { letter | digit | "_" } ;
+string-literal      = '"', { character - '"' }, '"' ;
+number-literal      = digit, { digit }
+                    | "0x", hex-digit, { hex-digit } ;
 
 comment             = line-comment | block-comment ;
 line-comment        = "//", { character - end-of-line } ;

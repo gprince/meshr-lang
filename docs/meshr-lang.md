@@ -133,6 +133,116 @@ Par convention (non obligatoire), l’arborescence des fichiers reflète les nom
 
 ---
 
+## 🏷️ Annotations
+
+Les **annotations** permettent d’ajouter des métadonnées structurées sur n’importe quelle déclaration du langage Meshr (`module`, `product`, `domain`, `enum`, etc.). Elles sont inspirées de langages comme Java, Kotlin ou GraphQL.
+
+### 📐 Syntaxe
+
+- Une annotation commence par `@` suivie de son nom.
+- Elle peut recevoir :
+  - Aucun argument : `@experimental`
+  - Une seule valeur : `@since("1.2.0")`
+  - Une ou plusieurs paires clé-valeur : `@author(name="Greg")`
+  - Des arguments mixtes : `@scope(level=Internal)`
+- Plusieurs annotations peuvent être empilées au-dessus d’une déclaration.
+
+#### Exemples
+
+```meshr
+@experimental
+@version("0.2.0")
+@scope(level=Internal)
+@author(
+  name="Greg",
+  email="greg@example.com"
+)
+@deprecated(reason="Use new module instead")
+@confidentiality(privacy.Level.HIGH)
+module metadata.annotations
+```
+
+### 🧠 Règles
+
+- Les valeurs peuvent être :
+  - des chaînes : `"texte"`
+  - des identifiants : `Internal`
+  - des chemins qualifiés : `privacy.Level.HIGH`
+- Les paires `clé=valeur` peuvent être combinées dans une annotation.
+- Les annotations sont **optionnelles** et **non normatives** mais peuvent être exploitées par les outils CLI ou LSP.
+
+### 🧩 [2025-09-10] — Annotations avec arguments typés
+
+- **Contexte :** Besoin d’enrichir les artefacts avec des métadonnées structurées.
+- **Décision :** Support des annotations avec arguments (valeur unique ou paires clé/valeur), et valeurs typées (`string`, `identifier`, `qualifiedName`).
+- **Pourquoi :** Permet une expressivité maximale tout en restant compatible avec une grammaire ANTLR claire et extensible.
+
+---
+
+## 🔢 Enums
+
+Les **énumérations** permettent de représenter un ensemble fini de valeurs symboliques, typiquement utilisées pour encoder des catégories, des statuts ou des niveaux de sensibilité.
+
+### 📐 Syntaxe simple (inline)
+
+```meshr
+export enum PIICategory is (contact, identity, financial, health, biometric, location)
+```
+
+- Le mot-clé `enum` introduit une énumération nommée.
+- L'utilisation de `export` rend l'énumération visible à l’extérieur du module.
+- Les valeurs sont listées entre parenthèses, séparées par des virgules.
+- Cette forme convient aux déclarations rapides et lisibles.
+
+### 📤 Export groupé
+
+```meshr
+export { PIICategory }
+
+enum PIICategory is (contact, identity, financial, health, biometric, location)
+```
+
+- L’énumération est déclarée sans `export`, puis rendue publique via un bloc `export { ... }`.
+- Cette forme permet de centraliser tous les artefacts publics après les imports.
+
+### 🧠 Règles
+
+- Les identifiants de valeurs doivent être uniques et respectent la casse.
+- Une énumération peut être annotée, comme tout autre artefact.
+- Le nom de l'énumération doit être un identifiant valide.
+
+### 🧩 [2025-09-10] — Enums avec attributs typés
+
+- **Contexte :** Il est utile de donner aux énumérations des attributs associés à chaque valeur (ex. code couleur, libellé, gravité).
+- **Décision :** On introduit une forme enrichie de déclaration d’`enum`, où chaque valeur peut porter une ou plusieurs **propriétés typées**, similaires aux `enum class` de Kotlin.
+- **Pourquoi :** Cela augmente l'expressivité du langage, permet des relations croisées entre enums, et reste compatible avec les aspects et politiques du langage.
+
+### 🧬 Syntaxe enrichie
+
+```meshr
+enum Color(value: Integer) is (
+  red(value = 0xFF0000),
+  green(value = 0x00FF00),
+  blue(value = 0x0000FF)
+)
+
+enum Severity(color: Color, severity: String = "none") is (
+  none(color = Color.blue),
+  medium(color = Color.green, severity = "medium"),
+  high(color = Color.red, severity = "high")
+)
+```
+
+### 🔎 Règles
+
+- Une énumération peut définir une **signature d’attributs** dans `( ...)` immédiatement après le nom.
+- Chaque valeur de l’énumération doit fournir des arguments nommés (ex : `color = Color.red`).
+- Les attributs peuvent avoir une **valeur par défaut**, comme `severity: String = "none"`.
+- Les types supportés incluent les types de base (`String`, `Integer`, `Boolean`) et les références à d’autres enums.
+- L’ordre des arguments dans les valeurs n’a pas besoin de suivre celui de la signature.
+
+---
+
 ### 🧩 [2025-09-09] — Module = unité, namespace et fichier unique
 
 - **Contexte :** Il fallait décider si l’on autorisait plusieurs modules par fichier, et s’il y avait un lien fort avec l’arborescence.

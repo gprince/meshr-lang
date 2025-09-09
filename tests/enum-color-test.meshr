@@ -1,0 +1,18 @@
+module metadata.colors
+
+// enum simple
+enum PIICategory is (contact, identity, financial, health, biometric, location)
+
+// avec un attribut
+enum Color(value: Integer) is (
+    red(value = 0xFF0000),
+    green(value = 0x00FF00),
+    blue(value = 0x0000FF)
+)
+
+// avec deux attributs, dont un avec une valeur par défaut
+enum Severity(color: Color, severity: String = "none") is (
+    none(color = Color.blue),
+    medium(color = Color.green, severity = "medium"),
+    high(color = Color.red, severity = "high")
+)
