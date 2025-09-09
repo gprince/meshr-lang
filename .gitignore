@@ -1,0 +1,27 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# VSCode
+.vscode/
+*.code-workspace
+
+# ANTLR generated
+*.interp
+*.tokens
+*.log
+*.jar
+*.class
+
+# JARs and build tools
+antlr-4.*.jar
+
+# Python environments
+.env
+.venv
+ENV/
+venv/
+
+# macOS
+.DS_Store
