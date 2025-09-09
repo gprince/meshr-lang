@@ -210,6 +210,36 @@ end
   - Si valeur par défaut spécifiée → utilisée si champ non renseigné.
   - Sinon → champ absent à l’usage.
 
+### 🔤 Types de base autorisés pour les annotations
+
+Les types suivants peuvent être utilisés dans les déclarations d’annotations :
+
+- `Boolean` : valeurs `true` ou `false`
+- `String` : chaînes de caractères délimitées par des guillemets
+- `Integer` : nombre entier (ex: `42`, `-7`)
+- `Float` : nombre décimal (ex: `3.14`, `-0.001`)
+- `Double` : précision étendue (équivalent sémantique à `Float` pour l’instant)
+- `Date`, `Datetime`, `Time`, `Timestamp` : types temporels
+- `Geography` : localisation géographique (future extension)
+- `Bytes` : données binaires (future extension)
+- `Json` : valeurs encodées en JSON (future extension)
+- `Interval<T>` : intervalle sur un type temporel (ex: `Interval<Date>`)
+- `Range<T>` : intervalle contigu entre deux valeurs ordonnées (ex: `Range<Timestamp>`)
+
+Les énumérations peuvent également être utilisées comme type d’attribut.
+
+```meshr
+annotation Repeatable is
+  optional value : Boolean = true
+end
+
+enum Color(value: Integer) is (
+    red(value = 0xFF0000),
+    green(value = 0x00FF00),
+    blue(value = 0x0000FF)
+)
+```
+
 #### 📦 Exemples
 
 ```meshr
@@ -304,6 +334,8 @@ enum Severity(color: Color, severity: String = "none") is (
   high(color = Color.red, severity = "high")
 )
 ```
+
+> 🔎 Remarque : les valeurs entières peuvent être exprimées en hexadécimal (ex: `0xFF0000`) pour représenter des couleurs ou des flags binaires.
 
 ### 🔎 Règles
 
