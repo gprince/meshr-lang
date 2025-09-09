@@ -70,7 +70,7 @@ enumAttributeList
     ;
 
 enumAttribute
-    : IDENTIFIER ':' qualifiedName ('=' annotationValue)?
+    : IDENTIFIER ':' (qualifiedName | baseType) ('=' annotationValue)?
     ;
 
 enumValueList
@@ -103,7 +103,7 @@ annotationFieldList
     ;
 
 annotationField
-    : ('required' | 'optional') IDENTIFIER ':' qualifiedName ('=' annotationValue)? NEWLINE?
+    : ('required' | 'optional') IDENTIFIER ':' (qualifiedName | baseType) ('=' annotationValue)? NEWLINE?
     ;
 
 // ========== ANNOTATION USAGE ============
@@ -124,15 +124,37 @@ annotationArgPair
     : IDENTIFIER '=' annotationValue
     ;
 
-annotationValue
-    : STRING_LITERAL
-    | NUMBER_LITERAL
-    | qualifiedName
+// ========== TYPES DE BASE ============
+  
+// Types de base reconnus
+baseType
+    : 'Boolean'
+    | 'String'
+    | 'Integer'
+    | 'Float'
+    | 'Double'
+    | 'Date'
+    | 'Datetime'
+    | 'Time'
+    | 'Geography'
+    | 'Timestamp'
+    | 'Bytes'
+    | 'Json'
+    | 'Interval'
+    | 'Range'
     ;
 
 // ========== SHARED ============
 qualifiedName
     : IDENTIFIER ('.' IDENTIFIER)*
+    ;
+
+// ========== ANNOTATION USAGE ============
+annotationValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | qualifiedName
     ;
 
 // ========== TERMINALS ============
@@ -152,4 +174,8 @@ MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?
     | '0' [xX] [0-9a-fA-F]+
+    ;
+
+BOOLEAN_LITERAL
+    : 'true' | 'false'
     ;

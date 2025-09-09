@@ -17,9 +17,15 @@ annotation-value    = string-literal
                     | number-literal
                     | boolean-literal
                     | qualified-name ;
+
 boolean-literal     = "true" | "false" ;
 
 qualified-name      = identifier, { ".", identifier } ;
+
+base-type           = "Boolean" | "String" | "Integer" | "Float" | "Double"
+                    | "Date" | "Datetime" | "Time" | "Timestamp"
+                    | "Geography" | "Bytes" | "Json"
+                    | "Interval" | "Range" ;
 
 product-decl        = "product", identifier, "is", field-block ;
 trait-decl          = "trait", identifier, "is", field-block ;
@@ -30,14 +36,14 @@ enum-decl           = { annotation }, "enum", identifier, [ enum-signature ], "i
 enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
 enum-attribute      = identifier, ":", qualified-name, [ "=", annotation-value ] ;
 enum-values         = enum-value, { ",", enum-value } ;
-enum-value          = identifier, [ "(", enum-value-args, ")" ] ;
+enum-value          = (identifier | string-literal), [ "(", enum-value-args, ")" ] ;
 enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
 enum-value-arg      = identifier, "=", annotation-value ;
 
 annotation-decl     = { annotation }, "annotation", identifier, "is", annotation-attribute-block ;
 annotation-attribute-block = "{", annotation-attribute, { annotation-attribute }, "}" ;
 annotation-attribute = modifier, identifier, ":", qualified-name, [ "=", annotation-value ] ;
-modifier           = "required" | "optional" ;
+modifier            = "required" | "optional" ;
 
 exportable-decl     = product-decl
                     | trait-decl
@@ -53,11 +59,14 @@ expression          = annotation-value ; (* simplified for now *)
 aspects-block       = "aspects", "{", aspect-instance, { aspect-instance }, "}" ;
 aspect-instance     = qualified-name, "(", "…", ")" ; (* placeholder *)
 
-identifier          = letter, { letter | digit | "_" } ;
 string-literal      = '"', { character - '"' | '\"' }, '"' ;
 number-literal      = digit, { digit }
                     | "0x", hex-digit, { hex-digit } ;
 
+identifier          = letter, { letter | digit | "_" } ;
+
 comment             = line-comment | block-comment ;
 line-comment        = "//", { character - end-of-line } ;
 block-comment       = "/*", { character - "*/" }, "*/" ;
+
+/* (* Test files prefixed by `invalid-` are expected to fail parsing. *) */
