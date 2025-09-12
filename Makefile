@@ -4,12 +4,13 @@ ANTLR_JAR = grammar/antlr-4.13.2-complete.jar
 GRAMMAR_FILE = grammar/MeshrModule.g4
 GEN_DIR = grammar/generated
 
-.PHONY: all clean grammar test test-stdlib test-failures docs docs-pdf docs-html docs-clean
+.PHONY: all clean grammar test test-stdlib test-examples test-failures docs docs-pdf docs-html docs-clean
 
 all: 
 	$(MAKE) grammar
 	$(MAKE) test
 	$(MAKE) test-stdlib
+	$(MAKE) test-examples
 
 grammar:
 	mkdir -p $(GEN_DIR)
@@ -37,6 +38,10 @@ test:
 test-stdlib:
 	@echo "Testing standard library modules:"
 	@PYTHONPATH=. python3 stdlib/test_stdlib.py
+
+test-examples:
+	@echo "Testing example modules:"
+	@PYTHONPATH=. python3 test_examples.py
 
 test-failures:
 	@echo "Identifying failed tests:"

@@ -1,0 +1,112 @@
+// ==============================
+// Exemple pratique : Secteur financier - Gestion des comptes
+// ==============================
+// Démonstration d'un module de gestion des comptes bancaires
+// avec conformité réglementaire et sécurité renforcée
+
+@Version("1.8.0")
+@Author(name="Banking Data Team", email="banking.data@bank.com")
+@Documented(summary="Banking account management with compliance")
+module banking.accounts
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Account, Transaction, Customer, AccountType }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum AccountType is ("checking", "savings", "credit", "investment", "business")
+enum TransactionType is ("deposit", "withdrawal", "transfer", "payment", "fee")
+enum AccountStatus is ("active", "suspended", "closed", "frozen")
+
+// ========== TRAITS ==========
+
+trait WithFinancialInfo is
+  balance : Float
+  currency : String
+  interest_rate : Float
+end
+
+trait WithCompliance is
+  kyc_status : String
+  aml_risk_level : String
+  last_kyc_review : Date
+end
+
+// ========== ENTITÉS ==========
+
+entity Customer with WithSecurity, WithStewardship, WithCompliance is
+  customer_id : String
+  ssn : String pattern "^[0-9]{3}-[0-9]{2}-[0-9]{4}$"
+  first_name : String length 1..50
+  last_name : String length 1..50
+  email : String pattern "^[^@]+@[^@]+$"
+  phone : String length 10..15
+  address : String
+  date_of_birth : Date
+  
+  aspects {
+    DataClassification {
+      level: "restricted",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "compliance@bank.com"
+    }
+  }
+end
+
+entity Account with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithFinancialInfo, WithCompliance is
+  account_id : String
+  customer_id : String
+  account_number : String pattern "^[0-9]{10}$"
+  account_type : AccountType
+  status : AccountStatus
+  opened_date : Date
+  closed_date : Date
+  
+  aspects {
+    DataClassification {
+      level: "restricted",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "banking@bank.com"
+    }
+  }
+end
+
+entity Transaction with WithSecurity, WithStewardship is
+  transaction_id : String
+  account_id : String
+  transaction_type : TransactionType
+  amount : Float
+  currency : String
+  transaction_date : Timestamp
+  description : String length 0..200
+  reference_number : String
+  
+  aspects {
+    DataClassification {
+      level: "restricted",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "banking@bank.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation CustomerOwnsAccount is
+  from Customer(customer_id)
+  to Account(customer_id)
+end
+
+relation AccountHasTransaction is
+  from Account(account_id)
+  to Transaction(account_id)
+end

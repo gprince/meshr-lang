@@ -132,6 +132,8 @@ conception</a></li>
 <li><a href="#-bibliothèque-standard-stdlib">📚 Bibliothèque Standard
 (StdLib)</a></li>
 <li><a href="#-à-venir">🚧 À venir</a></li>
+<li><a href="#-exemples-pratiques-et-cas-dusage">🚀 Exemples pratiques
+et cas d’usage</a></li>
 <li><a href="#-bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
 conventions</a></li>
 </ul>
@@ -2416,6 +2418,533 @@ validation et génération avancés</label></li>
 Catalog)…)</li>
 </ul>
 <hr />
+<h2 id="exemples-pratiques-et-cas-dusage">🚀 Exemples pratiques et cas
+d’usage</h2>
+<p>Cette section présente des exemples concrets d’utilisation de
+Meshr-Lang dans différents contextes métier et techniques.</p>
+<h3 id="cas-dusage-1-e-commerce-et-gestion-des-commandes">🛒 Cas d’usage
+1 : E-commerce et gestion des commandes</h3>
+<h4 id="module-de-gestion-des-produits">Module de gestion des
+produits</h4>
+<pre class="meshr"><code>@Version(&quot;2.1.0&quot;)
+@Author(name=&quot;Product Team&quot;, email=&quot;product@ecommerce.com&quot;)
+@Documented(summary=&quot;Product catalog management&quot;)
+module ecommerce.products
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Product, ProductCategory, ProductVariant }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum ProductStatus is (&quot;draft&quot;, &quot;active&quot;, &quot;discontinued&quot;, &quot;archived&quot;)
+enum CategoryType is (&quot;physical&quot;, &quot;digital&quot;, &quot;service&quot;, &quot;subscription&quot;)
+
+// ========== TRAITS RÉUTILISABLES ==========
+
+trait WithPricing is
+  base_price : Float
+  currency : String
+  tax_rate : Float
+end
+
+trait WithInventory is
+  stock_quantity : Integer
+  min_stock_level : Integer
+  max_stock_level : Integer
+end
+
+// ========== ENTITÉS ==========
+
+entity Product with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithPricing is
+  product_id : String
+  name : String length 1..200
+  description : String length 0..2000
+  sku : String pattern &quot;^[A-Z0-9-]+$&quot;
+  status : ProductStatus
+  category_id : String
+  weight : Float
+  dimensions : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;internal&quot;,
+      encryption_required: false,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 10 year,
+      steward: &quot;product@ecommerce.com&quot;
+    },
+    DataStewardship {
+      steward: &quot;product.team@ecommerce.com&quot;,
+      owner: &quot;business.team@ecommerce.com&quot;,
+      business_domain: &quot;product_catalog&quot;,
+      last_review: &quot;2024-01-15&quot;,
+      next_review: &quot;2024-07-15&quot;,
+      contact_email: &quot;product.team@ecommerce.com&quot;
+    }
+  }
+end
+
+entity ProductCategory with WithSecurity, WithStewardship is
+  category_id : String
+  name : String length 1..100
+  description : String length 0..500
+  parent_category_id : String
+  category_type : CategoryType
+  display_order : Integer
+  
+  aspects {
+    DataClassification {
+      level: &quot;public&quot;,
+      encryption_required: false,
+      access_control: &quot;public&quot;,
+      data_retention: Interval 15 year,
+      steward: &quot;product@ecommerce.com&quot;
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation ProductBelongsToCategory is
+  from Product(category_id)
+  to ProductCategory(category_id)
+end
+
+relation CategoryHierarchy is
+  from ProductCategory(category_id)
+  to ProductCategory(parent_category_id)
+end</code></pre>
+<h4 id="module-de-gestion-des-commandes">Module de gestion des
+commandes</h4>
+<pre class="meshr"><code>@Version(&quot;1.5.0&quot;)
+@Author(name=&quot;Order Team&quot;, email=&quot;orders@ecommerce.com&quot;)
+@Documented(summary=&quot;Order management system&quot;)
+module ecommerce.orders
+
+import { Product, ProductCategory } from ecommerce.products
+import { DataClassification, GDPRCompliance, WithSecurity, WithGDPR } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+
+export { Order, OrderItem, Customer, OrderStatus }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum OrderStatus is (&quot;pending&quot;, &quot;confirmed&quot;, &quot;processing&quot;, &quot;shipped&quot;, &quot;delivered&quot;, &quot;cancelled&quot;, &quot;refunded&quot;)
+enum PaymentStatus is (&quot;pending&quot;, &quot;paid&quot;, &quot;failed&quot;, &quot;refunded&quot;)
+enum ShippingMethod is (&quot;standard&quot;, &quot;express&quot;, &quot;overnight&quot;, &quot;pickup&quot;)
+
+// ========== TRAITS ==========
+
+trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+  created_by : String
+end
+
+trait WithAddress is
+  street : String
+  city : String
+  postal_code : String
+  country : String
+end
+
+// ========== ENTITÉS ==========
+
+entity Customer with WithSecurity, WithGDPR, WithStewardship, WithAudit is
+  customer_id : String
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  first_name : String length 1..50
+  last_name : String length 1..50
+  phone : String length 10..15
+  birth_date : Date
+  registration_date : Date
+  
+  aspects {
+    DataClassification {
+      level: &quot;confidential&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 7 year,
+      steward: &quot;privacy@ecommerce.com&quot;
+    },
+    GDPRCompliance {
+      data_subject_rights: List[&quot;access&quot;, &quot;rectification&quot;, &quot;erasure&quot;, &quot;portability&quot;],
+      retention_period: Interval 7 year,
+      lawful_basis: &quot;consent&quot;,
+      dpo_contact: &quot;dpo@ecommerce.com&quot;,
+      consent_required: true,
+      anonymization_required: true
+    }
+  }
+end
+
+entity Order with WithSecurity, WithStewardship, WithAudit is
+  order_id : String
+  customer_id : String
+  order_date : Date
+  status : OrderStatus
+  payment_status : PaymentStatus
+  total_amount : Float
+  currency : String
+  shipping_method : ShippingMethod
+  shipping_address : String
+  billing_address : String
+  notes : String length 0..1000
+  
+  aspects {
+    DataClassification {
+      level: &quot;confidential&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 7 year,
+      steward: &quot;orders@ecommerce.com&quot;
+    }
+  }
+end
+
+entity OrderItem with WithAudit is
+  order_item_id : String
+  order_id : String
+  product_id : String
+  quantity : Integer
+  unit_price : Float
+  total_price : Float
+end
+
+// ========== RELATIONS ==========
+
+relation CustomerPlacesOrder is
+  from Customer(customer_id)
+  to Order(customer_id)
+end
+
+relation OrderContainsItem is
+  from Order(order_id)
+  to OrderItem(order_id)
+end
+
+relation OrderItemReferencesProduct is
+  from OrderItem(product_id)
+  to Product(product_id)
+end</code></pre>
+<h3 id="cas-dusage-2-architecture-data-mesh---domaine-rh">🏢 Cas d’usage
+2 : Architecture Data Mesh - Domaine RH</h3>
+<h4 id="module-de-gestion-des-employés">Module de gestion des
+employés</h4>
+<pre class="meshr"><code>@Version(&quot;3.0.0&quot;)
+@Author(name=&quot;HR Data Team&quot;, email=&quot;hr.data@company.com&quot;)
+@Documented(summary=&quot;Human Resources data domain&quot;)
+module hr.employees
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship, WithQuality } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Employee, Department, Position, EmployeeSkill }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum EmploymentStatus is (&quot;active&quot;, &quot;inactive&quot;, &quot;terminated&quot;, &quot;on_leave&quot;)
+enum EmploymentType is (&quot;full_time&quot;, &quot;part_time&quot;, &quot;contractor&quot;, &quot;intern&quot;)
+enum SkillLevel is (&quot;beginner&quot;, &quot;intermediate&quot;, &quot;advanced&quot;, &quot;expert&quot;)
+
+// ========== TRAITS ==========
+
+trait WithPersonalInfo is
+  first_name : String length 1..50
+  last_name : String length 1..50
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  phone : String length 10..15
+end
+
+trait WithEmploymentInfo is
+  employee_id : String
+  hire_date : Date
+  employment_type : EmploymentType
+  employment_status : EmploymentStatus
+  salary : Float
+  currency : String
+end
+
+// ========== ENTITÉS ==========
+
+entity Employee with WithSecurity, WithStewardship, WithQuality, WithLifecycle, WithVersioning, WithPersonalInfo, WithEmploymentInfo is
+  department_id : String
+  position_id : String
+  manager_id : String
+  office_location : String
+  work_schedule : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;confidential&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 10 year,
+      steward: &quot;hr@company.com&quot;
+    },
+    DataStewardship {
+      steward: &quot;hr.data@company.com&quot;,
+      owner: &quot;hr.team@company.com&quot;,
+      business_domain: &quot;human_resources&quot;,
+      last_review: &quot;2024-01-01&quot;,
+      next_review: &quot;2024-12-31&quot;,
+      contact_email: &quot;hr.data@company.com&quot;
+    }
+  }
+end
+
+entity Department with WithSecurity, WithStewardship is
+  department_id : String
+  name : String length 1..100
+  description : String length 0..500
+  budget : Float
+  head_of_department : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;internal&quot;,
+      encryption_required: false,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 15 year,
+      steward: &quot;hr@company.com&quot;
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation EmployeeBelongsToDepartment is
+  from Employee(department_id)
+  to Department(department_id)
+end
+
+relation EmployeeReportsTo is
+  from Employee(employee_id)
+  to Employee(manager_id)
+end</code></pre>
+<h3 id="cas-dusage-3-secteur-financier---gestion-des-comptes">🏦 Cas
+d’usage 3 : Secteur financier - Gestion des comptes</h3>
+<h4 id="module-de-gestion-des-comptes-bancaires">Module de gestion des
+comptes bancaires</h4>
+<pre class="meshr"><code>@Version(&quot;1.8.0&quot;)
+@Author(name=&quot;Banking Data Team&quot;, email=&quot;banking.data@bank.com&quot;)
+@Documented(summary=&quot;Banking account management with compliance&quot;)
+module banking.accounts
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Account, Transaction, Customer, AccountType }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum AccountType is (&quot;checking&quot;, &quot;savings&quot;, &quot;credit&quot;, &quot;investment&quot;, &quot;business&quot;)
+enum TransactionType is (&quot;deposit&quot;, &quot;withdrawal&quot;, &quot;transfer&quot;, &quot;payment&quot;, &quot;fee&quot;)
+enum AccountStatus is (&quot;active&quot;, &quot;suspended&quot;, &quot;closed&quot;, &quot;frozen&quot;)
+
+// ========== TRAITS ==========
+
+trait WithFinancialInfo is
+  balance : Float
+  currency : String
+  interest_rate : Float
+end
+
+trait WithCompliance is
+  kyc_status : String
+  aml_risk_level : String
+  last_kyc_review : Date
+end
+
+// ========== ENTITÉS ==========
+
+entity Customer with WithSecurity, WithStewardship, WithCompliance is
+  customer_id : String
+  ssn : String pattern &quot;^[0-9]{3}-[0-9]{2}-[0-9]{4}$&quot;
+  first_name : String length 1..50
+  last_name : String length 1..50
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  phone : String length 10..15
+  address : String
+  date_of_birth : Date
+  
+  aspects {
+    DataClassification {
+      level: &quot;restricted&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 10 year,
+      steward: &quot;compliance@bank.com&quot;
+    }
+  }
+end
+
+entity Account with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithFinancialInfo, WithCompliance is
+  account_id : String
+  customer_id : String
+  account_number : String pattern &quot;^[0-9]{10}$&quot;
+  account_type : AccountType
+  status : AccountStatus
+  opened_date : Date
+  closed_date : Date
+  
+  aspects {
+    DataClassification {
+      level: &quot;restricted&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 10 year,
+      steward: &quot;banking@bank.com&quot;
+    }
+  }
+end
+
+entity Transaction with WithSecurity, WithStewardship is
+  transaction_id : String
+  account_id : String
+  transaction_type : TransactionType
+  amount : Float
+  currency : String
+  transaction_date : Timestamp
+  description : String length 0..200
+  reference_number : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;restricted&quot;,
+      encryption_required: true,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 7 year,
+      steward: &quot;banking@bank.com&quot;
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation CustomerOwnsAccount is
+  from Customer(customer_id)
+  to Account(customer_id)
+end
+
+relation AccountHasTransaction is
+  from Account(account_id)
+  to Transaction(account_id)
+end</code></pre>
+<h3 id="cas-dusage-4-intégration-technique---apis-et-microservices">🔧
+Cas d’usage 4 : Intégration technique - APIs et microservices</h3>
+<h4 id="module-de-gestion-des-apis">Module de gestion des APIs</h4>
+<pre class="meshr"><code>@Version(&quot;1.2.0&quot;)
+@Author(name=&quot;API Team&quot;, email=&quot;api@company.com&quot;)
+@Documented(summary=&quot;API management and integration&quot;)
+module apis.management
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { API, Endpoint, Service, Integration }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum APIType is (&quot;rest&quot;, &quot;graphql&quot;, &quot;grpc&quot;, &quot;soap&quot;, &quot;webhook&quot;)
+enum ServiceStatus is (&quot;active&quot;, &quot;maintenance&quot;, &quot;deprecated&quot;, &quot;retired&quot;)
+enum AuthenticationType is (&quot;api_key&quot;, &quot;oauth2&quot;, &quot;jwt&quot;, &quot;basic&quot;, &quot;none&quot;)
+
+// ========== TRAITS ==========
+
+trait WithTechnicalInfo is
+  version : String
+  base_url : String
+  documentation_url : String
+  repository_url : String
+end
+
+trait WithMonitoring is
+  health_check_url : String
+  metrics_endpoint : String
+  alerting_enabled : Boolean
+end
+
+// ========== ENTITÉS ==========
+
+entity API with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithTechnicalInfo, WithMonitoring is
+  api_id : String
+  name : String length 1..100
+  description : String length 0..500
+  api_type : APIType
+  status : ServiceStatus
+  authentication_type : AuthenticationType
+  rate_limit : Integer
+  timeout_ms : Integer
+  
+  aspects {
+    DataClassification {
+      level: &quot;internal&quot;,
+      encryption_required: false,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 5 year,
+      steward: &quot;api@company.com&quot;
+    }
+  }
+end
+
+entity Endpoint with WithSecurity, WithStewardship is
+  endpoint_id : String
+  api_id : String
+  path : String
+  method : String
+  description : String length 0..300
+  response_schema : String
+  request_schema : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;internal&quot;,
+      encryption_required: false,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 5 year,
+      steward: &quot;api@company.com&quot;
+    }
+  }
+end
+
+entity Service with WithSecurity, WithStewardship, WithLifecycle, WithVersioning is
+  service_id : String
+  name : String length 1..100
+  description : String length 0..500
+  status : ServiceStatus
+  deployment_environment : String
+  container_image : String
+  resource_requirements : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;internal&quot;,
+      encryption_required: false,
+      access_control: &quot;role-based&quot;,
+      data_retention: Interval 3 year,
+      steward: &quot;devops@company.com&quot;
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation APIHasEndpoint is
+  from API(api_id)
+  to Endpoint(api_id)
+end
+
+relation ServiceExposesAPI is
+  from Service(service_id)
+  to API(api_id)
+end</code></pre>
 <h2 id="bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
 conventions</h2>
 <p>Cette section présente les bonnes pratiques recommandées pour écrire

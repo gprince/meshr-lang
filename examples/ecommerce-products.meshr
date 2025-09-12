@@ -1,0 +1,97 @@
+// ==============================
+// Exemple pratique : E-commerce - Gestion des produits
+// ==============================
+// Démonstration d'un module de gestion de catalogue produits
+// avec gouvernance et lifecycle management
+
+@Version("2.1.0")
+@Author(name="Product Team", email="product@ecommerce.com")
+@Documented(summary="Product catalog management")
+module ecommerce.products
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Product, ProductCategory, ProductVariant }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum ProductStatus is ("draft", "active", "discontinued", "archived")
+enum CategoryType is ("physical", "digital", "service", "subscription")
+
+// ========== TRAITS RÉUTILISABLES ==========
+
+trait WithPricing is
+  base_price : Float
+  currency : String
+  tax_rate : Float
+end
+
+trait WithInventory is
+  stock_quantity : Integer
+  min_stock_level : Integer
+  max_stock_level : Integer
+end
+
+// ========== ENTITÉS ==========
+
+entity Product with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithPricing is
+  product_id : String
+  name : String length 1..200
+  description : String length 0..2000
+  sku : String pattern "^[A-Z0-9-]+$"
+  status : ProductStatus
+  category_id : String
+  weight : Float
+  dimensions : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "product@ecommerce.com"
+    },
+    DataStewardship {
+      steward: "product.team@ecommerce.com",
+      owner: "business.team@ecommerce.com",
+      business_domain: "product_catalog",
+      last_review: "2024-01-15",
+      next_review: "2024-07-15",
+      contact_email: "product.team@ecommerce.com"
+    }
+  }
+end
+
+entity ProductCategory with WithSecurity, WithStewardship is
+  category_id : String
+  name : String length 1..100
+  description : String length 0..500
+  parent_category_id : String
+  category_type : CategoryType
+  display_order : Integer
+  
+  aspects {
+    DataClassification {
+      level: "public",
+      encryption_required: false,
+      access_control: "public",
+      data_retention: Interval 15 year,
+      steward: "product@ecommerce.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation ProductBelongsToCategory is
+  from Product(category_id)
+  to ProductCategory(category_id)
+end
+
+relation CategoryHierarchy is
+  from ProductCategory(category_id)
+  to ProductCategory(parent_category_id)
+end

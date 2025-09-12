@@ -1,0 +1,117 @@
+// ==============================
+// Exemple pratique : E-commerce - Gestion des commandes
+// ==============================
+// Démonstration d'un module de gestion des commandes
+// avec conformité GDPR et relations complexes
+
+@Version("1.5.0")
+@Author(name="Order Team", email="orders@ecommerce.com")
+@Documented(summary="Order management system")
+module ecommerce.orders
+
+import { Product, ProductCategory } from ecommerce.products
+import { DataClassification, GDPRCompliance, WithSecurity, WithGDPR } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+
+export { Order, OrderItem, Customer, OrderStatus }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum OrderStatus is ("pending", "confirmed", "processing", "shipped", "delivered", "cancelled", "refunded")
+enum PaymentStatus is ("pending", "paid", "failed", "refunded")
+enum ShippingMethod is ("standard", "express", "overnight", "pickup")
+
+// ========== TRAITS ==========
+
+trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+  created_by : String
+end
+
+trait WithAddress is
+  street : String
+  city : String
+  postal_code : String
+  country : String
+end
+
+// ========== ENTITÉS ==========
+
+entity Customer with WithSecurity, WithGDPR, WithStewardship, WithAudit is
+  customer_id : String
+  email : String pattern "^[^@]+@[^@]+$"
+  first_name : String length 1..50
+  last_name : String length 1..50
+  phone : String length 10..15
+  birth_date : Date
+  registration_date : Date
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "privacy@ecommerce.com"
+    },
+    GDPRCompliance {
+      data_subject_rights: List["access", "rectification", "erasure", "portability"],
+      retention_period: Interval 7 year,
+      lawful_basis: "consent",
+      dpo_contact: "dpo@ecommerce.com",
+      consent_required: true,
+      anonymization_required: true
+    }
+  }
+end
+
+entity Order with WithSecurity, WithStewardship, WithAudit is
+  order_id : String
+  customer_id : String
+  order_date : Date
+  status : OrderStatus
+  payment_status : PaymentStatus
+  total_amount : Float
+  currency : String
+  shipping_method : ShippingMethod
+  shipping_address : String
+  billing_address : String
+  notes : String length 0..1000
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "orders@ecommerce.com"
+    }
+  }
+end
+
+entity OrderItem with WithAudit is
+  order_item_id : String
+  order_id : String
+  product_id : String
+  quantity : Integer
+  unit_price : Float
+  total_price : Float
+end
+
+// ========== RELATIONS ==========
+
+relation CustomerPlacesOrder is
+  from Customer(customer_id)
+  to Order(customer_id)
+end
+
+relation OrderContainsItem is
+  from Order(order_id)
+  to OrderItem(order_id)
+end
+
+relation OrderItemReferencesProduct is
+  from OrderItem(product_id)
+  to Product(product_id)
+end

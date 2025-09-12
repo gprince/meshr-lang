@@ -1,0 +1,112 @@
+// ==============================
+// Exemple pratique : Intégration technique - APIs et microservices
+// ==============================
+// Démonstration d'un module de gestion des APIs
+// pour l'architecture microservices et l'intégration
+
+@Version("1.2.0")
+@Author(name="API Team", email="api@company.com")
+@Documented(summary="API management and integration")
+module apis.management
+
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { API, Endpoint, Service, Integration }
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum APIType is ("rest", "graphql", "grpc", "soap", "webhook")
+enum ServiceStatus is ("active", "maintenance", "deprecated", "retired")
+enum AuthenticationType is ("api_key", "oauth2", "jwt", "basic", "none")
+
+// ========== TRAITS ==========
+
+trait WithTechnicalInfo is
+  version : String
+  base_url : String
+  documentation_url : String
+  repository_url : String
+end
+
+trait WithMonitoring is
+  health_check_url : String
+  metrics_endpoint : String
+  alerting_enabled : Boolean
+end
+
+// ========== ENTITÉS ==========
+
+entity API with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, WithTechnicalInfo, WithMonitoring is
+  api_id : String
+  name : String length 1..100
+  description : String length 0..500
+  api_type : APIType
+  status : ServiceStatus
+  authentication_type : AuthenticationType
+  rate_limit : Integer
+  timeout_ms : Integer
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "api@company.com"
+    }
+  }
+end
+
+entity Endpoint with WithSecurity, WithStewardship is
+  endpoint_id : String
+  api_id : String
+  path : String
+  method : String
+  description : String length 0..300
+  response_schema : String
+  request_schema : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "api@company.com"
+    }
+  }
+end
+
+entity Service with WithSecurity, WithStewardship, WithLifecycle, WithVersioning is
+  service_id : String
+  name : String length 1..100
+  description : String length 0..500
+  status : ServiceStatus
+  deployment_environment : String
+  container_image : String
+  resource_requirements : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "devops@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation APIHasEndpoint is
+  from API(api_id)
+  to Endpoint(api_id)
+end
+
+relation ServiceExposesAPI is
+  from Service(service_id)
+  to API(api_id)
+end

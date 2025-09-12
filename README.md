@@ -54,8 +54,9 @@ make test-failures
 - `make test` : Exécute tous les tests
 - `make test-failures` : Affiche uniquement les tests qui échouent
 - `make test-stdlib` : Teste les modules de la bibliothèque standard
+- `make test-examples` : Teste les exemples pratiques
 - `make clean` : Nettoie les fichiers générés
-- `make all` : Exécute grammar + test + test-stdlib
+- `make all` : Exécute grammar + test + test-stdlib + test-examples
 
 ### 📚 Documentation
 - `make docs` : Génère la documentation PDF et HTML
