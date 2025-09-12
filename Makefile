@@ -20,11 +20,11 @@ test:
 	@status=0; \
 	for file in $(shell find tests -name '*.meshr' ! -name 'invalid-*'); do \
 		echo "Expect valid → $$file"; \
-		PYTHONPATH=. python tests/parse_module.py $$file || status=1; \
+		PYTHONPATH=. .venv/bin/python tests/parse_module.py $$file || status=1; \
 	done; \
 	for file in $(shell find tests -name 'invalid-*.meshr'); do \
 		echo "Expect invalid → $$file (should fail)"; \
-		if PYTHONPATH=. python tests/parse_module.py $$file > /dev/null 2>&1; then \
+		if PYTHONPATH=. .venv/bin/python tests/parse_module.py $$file > /dev/null 2>&1; then \
 			echo "🚨 Unexpected success: $$file"; \
 			status=1; \
 		else \

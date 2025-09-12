@@ -45,19 +45,28 @@ exportItems
 // ==============================
 topLevelDecl
     : annotatedEnumDecl
+    | sealedEnumDecl
     | annotatedAnnotationDecl
-    | traitDecl
+    | sealedRecordDecl
     | recordDecl
+    | sealedTraitDecl
+    | traitDecl
     | annotatedAspectDecl
+    | sealedAspectDecl
     ;
 
 // ========== ENUM =============
 exportableDecl
     : enumDecl
+    | sealedEnumDecl
     ;
 
 annotatedEnumDecl
     : annotation* enumDecl
+    ;
+
+sealedEnumDecl
+    : SEALED enumDecl
     ;
 
 enumDecl
@@ -234,6 +243,10 @@ recordDecl
     : 'record' IDENTIFIER withClause? 'is' recordFieldList 'end'
     ;
 
+sealedRecordDecl
+    : SEALED recordDecl
+    ;
+
 recordFieldList
     : recordField+
     ;
@@ -245,6 +258,10 @@ recordField
 // ========== TRAIT DECLARATION ==========
 traitDecl
     : 'trait' IDENTIFIER withClause? 'is' traitFieldList 'end'
+    ;
+
+sealedTraitDecl
+    : SEALED traitDecl
     ;
 
 traitFieldList
@@ -266,6 +283,10 @@ annotatedAspectDecl
 
 aspectDecl
     : 'abstract'? 'aspect' IDENTIFIER aspectInheritance? 'is' aspectFieldList 'end'
+    ;
+
+sealedAspectDecl
+    : SEALED aspectDecl
     ;
 
 aspectInheritance
@@ -322,6 +343,10 @@ fragment ESC
 
 AT: '@';
 STRING_LITERAL: '"' (ESC | ~["\\\r\n])* '"';
+
+// Keywords
+SEALED: 'sealed';
+
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 
 WS: [ \t\r\n]+ -> skip ;

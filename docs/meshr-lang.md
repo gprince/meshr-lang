@@ -3,7 +3,7 @@
 > **Version :** 0.1.0  
 > **Statut :** En conception active  
 > **Mainteneur :** G. Prince - Architecte Principal
-> **Dernière mise à jour :** 2025-09-10
+> **Dernière mise à jour :** 2025-09-12
 
 ---
 
@@ -538,6 +538,153 @@ end
 module demo.advanced
 ```
 
+## 📋 Records et Collections
+
+Les **Records** sont des structures de données composées qui permettent de regrouper des champs typés. Ils supportent la composition via les traits et peuvent contenir des **collections** (List, Map, Range).
+
+### 📐 Syntaxe des Records
+
+```meshr
+record Contact is
+  name : String
+  email : String
+  age : Integer = 0
+end
+
+// Record avec composition de traits
+record User with Audit, Contactable is
+  id : String
+  role : String
+end
+```
+
+### 🧩 Types de Collections
+
+Meshr supporte quatre types de collections :
+
+#### **List** - Listes typées
+```meshr
+record UserProfile is
+  tags : List of String = List["default", "user"]
+  scores : List of Integer = List[85, 92, 78]
+end
+```
+
+#### **Map** - Dictionnaires typés
+```meshr
+record Configuration is
+  settings : Map of String to String = Map{"theme": "dark", "lang": "fr"}
+  limits : Map of String to Integer = Map{"cpu": 80, "memory": 512}
+end
+```
+
+#### **Range** - Intervalles typés
+```meshr
+record Metrics is
+  score_range : Range of Integer = Range 0..100
+  temperature : Range of Float = Range -40.0..60.0
+end
+```
+
+#### **Record anonyme** - Structures temporaires
+```meshr
+@UserConfig(
+  profile = Record{name: "Alice", age: 30},
+  preferences = Record{theme: "dark", notifications: true}
+)
+annotation UserConfig is
+  required profile : UserProfile
+  required preferences : Preferences
+end
+```
+
+### 🔗 Collections imbriquées
+
+Les collections peuvent être imbriquées pour créer des structures complexes :
+
+```meshr
+record ComplexData is
+  // List de Maps
+  configs : List of Map of String to String = List[
+    Map{"env": "dev", "debug": "true"},
+    Map{"env": "prod", "debug": "false"}
+  ]
+  
+  // Map de Lists
+  categories : Map of String to List of String = Map{
+    "colors": List["red", "green", "blue"],
+    "sizes": List["small", "medium", "large"]
+  }
+  
+  // Map de Ranges
+  limits : Map of String to Range of Integer = Map{
+    "cpu": Range 0..100,
+    "memory": Range 0..80
+  }
+end
+```
+
+### 🎯 Usage dans tous les contextes
+
+Les collections peuvent être utilisées partout où un type est attendu :
+
+#### **Dans les annotations**
+```meshr
+@Project(
+  tags = List["alpha", "beta"],
+  config = Map{"timeout": 30, "retries": 3},
+  range = Range 1..100
+)
+annotation Project is
+  required tags : List of String
+  required config : Map of String to Integer
+  required range : Range of Integer
+end
+```
+
+#### **Dans les enums**
+```meshr
+enum Status(
+  code: Integer, 
+  tags: List of String, 
+  metadata: Map of String to String
+) is (
+  active(
+    code = 200, 
+    tags = List["ok", "healthy"], 
+    metadata = Map{"type": "success", "level": "info"}
+  )
+)
+```
+
+#### **Dans les traits**
+```meshr
+trait WithMetadata is
+  tags : List of String
+  config : Map of String to String
+  limits : Range of Integer
+end
+```
+
+#### **Dans les aspects**
+```meshr
+aspect DataQuality is
+  metrics : List of String = List["accuracy", "completeness"]
+  thresholds : Map of String to Float = Map{"accuracy": 0.95}
+  score_range : Range of Integer = Range 0..100
+end
+```
+
+### 🧠 Règles sémantiques
+
+- Les collections sont **typées** : `List of String`, `Map of String to Integer`
+- Les valeurs par défaut utilisent les **littéraux** : `List["a", "b"]`, `Map{"k": "v"}`
+- Les collections peuvent être **imbriquées** : `List of Map of String to String`
+- Les **références circulaires** sont interdites
+- Les types dans les collections doivent être **définis** ou **importés**
+
+---
+
 ## 🧩 Traits
 
 Un trait est un bloc réutilisable de déclarations (champs, métadonnées, contraintes, aspects, politiques, …) injectables dans d’autres artefacts via la clause `with`. Les traits favorisent la factorisation et la composition déclarative, sans comportement impératif.
@@ -738,6 +885,128 @@ end
 
 ---
 
+## 🔒 Modificateur `sealed`
+
+Le modificateur `sealed` permet de **verrouiller l'extension** d'un artefact. Par défaut, tous les artefacts sont **ouverts** (extensibles). Un artefact marqué `sealed` ne peut plus être hérité, étendu ou redéfini partiellement. L'usage par référence ou instanciation **reste autorisé**.
+
+### 📐 Syntaxe
+
+Le modificateur `sealed` peut précéder :
+- `sealed enum`
+- `sealed record`
+- `sealed trait`
+- `sealed aspect`
+
+⚠️ Les **annotations** ne peuvent pas être `sealed`. Toute tentative doit produire une erreur.
+
+### 🔒 Règles d'héritage et d'extension
+
+#### Enum
+```meshr
+sealed enum Color is ("red", "green", "blue")
+```
+- ❌ **INTERDIT** : étendre ou redéfinir `Color`
+- ✅ **AUTORISÉ** : utiliser `Color` comme type de champ
+
+#### Record
+```meshr
+sealed record Address is
+  street : String
+  city   : String
+end
+```
+- ❌ **INTERDIT** : hériter de `Address`
+- ✅ **AUTORISÉ** : l'utiliser comme type
+
+#### Trait
+```meshr
+sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+```
+- ❌ **INTERDIT** : créer `trait ExtendedAudit extends WithAudit`
+- ✅ **AUTORISÉ** : utiliser `WithAudit` via `with`
+
+#### Aspect
+```meshr
+sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end
+```
+- ❌ **INTERDIT** : `aspect AdvancedGovernance extends Governance`
+- ✅ **AUTORISÉ** : instancier `Governance` dans un bloc `aspects { ... }`
+
+### 📝 Exemples valides
+
+```meshr
+sealed enum Color is ("red", "green", "blue")
+
+sealed record Address is
+  street : String
+  city   : String
+end
+
+sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end
+
+record User is
+  name    : String
+  address : Address  // ✅ Usage autorisé d'un record sealed
+  color   : Color    // ✅ Usage autorisé d'un enum sealed
+end
+
+record AuditLog with WithAudit is  // ✅ Usage autorisé d'un trait sealed
+  action : String
+end
+```
+
+### ❌ Exemples invalides
+
+```meshr
+// ❌ enum scellée ne peut pas être étendue
+enum ExtendedColor extends Color is ("yellow")
+
+// ❌ record scellé ne peut pas être hérité
+record FullAddress extends Address is
+  country : String
+end
+
+// ❌ trait scellé ne peut pas être hérité
+trait ExtendedAudit extends WithAudit is
+  deleted_at : Timestamp
+end
+
+// ❌ aspect scellé ne peut pas être hérité
+aspect AdvancedGovernance extends Governance is
+  extra : String
+end
+
+// ❌ annotation ne peut pas être sealed
+sealed annotation InvalidAnnotation is
+  required name : String
+end
+```
+
+### 🧠 Règles sémantiques
+
+- Un artefact `sealed` **ne peut pas être étendu** via `extends`
+- Un artefact `sealed` **peut être utilisé** comme type de référence
+- Un trait `sealed` **peut être composé** via `with`
+- Un aspect `sealed` **peut être instancié** dans des blocs `aspects`
+- Les **annotations ne peuvent jamais être sealed**
+- L'ordre des modificateurs est : `sealed abstract aspect` (pas `abstract sealed`)
+
+---
+
 ## 🧱 Artefacts définissables
 
 ### 1. `domain`
@@ -795,11 +1064,23 @@ product leads_b2c_import {
 - **Décision :** Un artefact déclaré dans un module n’est accessible depuis l’extérieur que s’il est précédé du mot-clé `export`.
 - **Pourquoi :** Cette règle encourage une séparation claire entre API publique et éléments internes, facilite la documentation automatique et le linting.
 
-### 🧩 [2025-09-10] — Deux formes d’export : inline ou groupé
+### 🧩 [2025-09-10] — Deux formes d'export : inline ou groupé
 
-- **Contexte :** Besoin de contrôler la visibilité des artefacts à l’extérieur du module.
+- **Contexte :** Besoin de contrôler la visibilité des artefacts à l'extérieur du module.
 - **Décision :** Deux formes sont supportées : inline (`export decl`) et groupée (`export { A, B }`).
-- **Justification :** Favorise à la fois la lisibilité locale (inline) et la gestion explicite de l’API publique (groupé après les imports).
+- **Justification :** Favorise à la fois la lisibilité locale (inline) et la gestion explicite de l'API publique (groupé après les imports).
+
+### 🧩 [2025-09-12] — Modificateur `sealed` pour contrôler l'extensibilité
+
+- **Contexte :** Besoin de verrouiller l'extension de certains artefacts pour garantir la stabilité de l'API et éviter les dérivations non contrôlées.
+- **Décision :** Introduction du modificateur `sealed` applicable aux `enum`, `record`, `trait` et `aspect`. Les annotations ne peuvent pas être sealed.
+- **Pourquoi :** Permet de définir des contrats stables (ex: enums de statut, records d'adresse) tout en conservant la flexibilité de composition via `with` pour les traits.
+
+### 🧩 [2025-09-12] — Types de collections typés et littéraux
+
+- **Contexte :** Besoin de structures de données complexes pour représenter des métadonnées, configurations et données structurées dans les artefacts Data Mesh.
+- **Décision :** Introduction de quatre types de collections : `List of T`, `Map of K to V`, `Range of T`, et `Record` anonyme, avec des littéraux syntaxiques (`List[...]`, `Map{...}`, `Range a..b`, `Record{...}`).
+- **Pourquoi :** Permet une expressivité maximale pour les métadonnées complexes tout en maintenant la sécurité des types et la lisibilité du code. Les collections peuvent être imbriquées et utilisées dans tous les contextes (annotations, enums, records, traits, aspects).
 
 ---
 

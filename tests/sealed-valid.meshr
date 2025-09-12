@@ -1,0 +1,67 @@
+module demo.sealed_demo
+
+// ========== SEALED ENUM ==========
+sealed enum Color is ("red", "green", "blue")
+
+// ========== SEALED ENUM AVEC ATTRIBUTS ==========
+sealed enum Status(code: Integer, message: String) is (
+  ok(code = 200, message = "OK"),
+  not_found(code = 404, message = "Not Found"),
+  error(code = 500, message = "Internal Error")
+)
+
+// ========== SEALED RECORD ==========
+sealed record Address is
+  street : String
+  city   : String
+  zipcode: Integer
+end
+
+// ========== SEALED TRAIT ==========
+sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+// ========== SEALED ASPECT ==========
+sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end
+
+// ========== SEALED ABSTRACT ASPECT ==========
+sealed abstract aspect BaseMetadata is
+  version : String
+  author  : String
+end
+
+// ========== USAGE AUTORISÉ DES ARTEFACTS SEALED ==========
+
+// Utilisation d'un enum sealed comme type
+record User is
+  name    : String
+  address : Address  // ✅ Usage autorisé d'un record sealed
+  color   : Color    // ✅ Usage autorisé d'un enum sealed
+end
+
+// Utilisation d'un trait sealed via with
+record AuditLog with WithAudit is  // ✅ Usage autorisé d'un trait sealed
+  action : String
+end
+
+// Utilisation d'un aspect sealed (instanciation future)
+record DataProduct is
+  name : String
+  // aspects { Governance { steward = "dpo@example.com", policy_id = "GDPR-001" } }
+end
+
+// ========== RECORD AVEC COMPOSITION DE TRAITS SEALED ==========
+trait ContactInfo is
+  email : String
+  phone : String
+end
+
+record Customer with WithAudit, ContactInfo is  // ✅ Composition avec trait sealed
+  id   : String
+  name : String
+end

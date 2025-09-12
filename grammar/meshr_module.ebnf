@@ -29,7 +29,7 @@ top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | a
 exportable-decl     = enum-decl ;
 
 (* ========== ENUM ============= *)
-enum-decl           = { annotation }, "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
+enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
 enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
 enum-attribute      = identifier, ":", type-ref, [ "=", annotation-value ] ;
 enum-values         = enum-value, { ",", enum-value } ;
@@ -101,16 +101,16 @@ qualified-name      = identifier, { ".", identifier } ;
 boolean-literal     = "true" | "false" ;
 
 (* ========== RECORD DECLARATION ============ *)
-record-decl         = "record", identifier, [ with-clause ], "is", record-field, { record-field }, "end" ;
+record-decl         = [ "sealed" ], "record", identifier, [ with-clause ], "is", record-field, { record-field }, "end" ;
 record-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 
 (* ========== TRAIT DECLARATION ============ *)
-trait-decl          = "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, "end" ;
+trait-decl          = [ "sealed" ], "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, "end" ;
 trait-field         = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 with-clause         = "with", qualified-name, { ",", qualified-name } ;
 
 (* ========== ASPECT DECLARATION ============ *)
-aspect-decl         = { annotation }, [ "abstract" ], "aspect", identifier, [ aspect-inheritance ], "is", aspect-field, { aspect-field }, "end" ;
+aspect-decl         = { annotation }, [ "sealed" ], [ "abstract" ], "aspect", identifier, [ aspect-inheritance ], "is", aspect-field, { aspect-field }, "end" ;
 aspect-inheritance  = extends-clause, [ with-clause ]
                     | with-clause, [ extends-clause ] ;
 extends-clause      = "extends", qualified-name ;

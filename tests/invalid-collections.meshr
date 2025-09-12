@@ -1,0 +1,130 @@
+module test.invalid_collections
+
+// ========== ERREURS DE SYNTAXE DANS LES LITTÉRAUX ==========
+
+// ❌ ERREUR: List avec syntaxe invalide
+@BadListTest(tags = List("alpha", "beta"))  // Parenthèses au lieu de crochets
+annotation BadListTest is
+  required tags : List of String
+end
+
+// ❌ ERREUR: Map avec syntaxe invalide
+@BadMapTest(config = Map("timeout": 30))  // Parenthèses au lieu d'accolades
+annotation BadMapTest is
+  required config : Map of String to Integer
+end
+
+// ❌ ERREUR: Record avec syntaxe invalide
+@BadRecordTest(contact = Record(name: "Alice"))  // Parenthèses au lieu d'accolades
+annotation BadRecordTest is
+  required contact : Contact
+end
+
+// ❌ ERREUR: Range avec syntaxe invalide
+@BadRangeTest(range = Range(1, 100))  // Virgule au lieu de ..
+annotation BadRangeTest is
+  required range : Range of Integer
+end
+
+// ========== ERREURS DE TYPES DANS LES COLLECTIONS ==========
+
+// ❌ ERREUR: Type de collection invalide
+record BadCollectionTypes is
+  invalid_list : List of InvalidType  // Type inexistant
+  invalid_map : Map of String to InvalidType  // Type inexistant
+  invalid_range : Range of InvalidType  // Type inexistant
+end
+
+// ❌ ERREUR: Syntaxe de type de collection invalide
+record BadCollectionSyntax is
+  bad_list : List String  // Manque "of"
+  bad_map : Map String Integer  // Manque "of" et "to"
+  bad_range : Range Integer  // Manque "of"
+end
+
+// ========== ERREURS DANS LES VALEURS PAR DÉFAUT ==========
+
+// ❌ ERREUR: Type mismatch dans List
+record BadListDefaults is
+  numbers : List of Integer = List["not", "numbers"]  // String au lieu d'Integer
+  strings : List of String = List[1, 2, 3]  // Integer au lieu de String
+end
+
+// ❌ ERREUR: Type mismatch dans Map
+record BadMapDefaults is
+  string_to_int : Map of String to Integer = Map{"key": "value"}  // String au lieu d'Integer
+  int_to_string : Map of Integer to String = Map{1: 42}  // Integer au lieu de String
+end
+
+// ❌ ERREUR: Type mismatch dans Range
+record BadRangeDefaults is
+  int_range : Range of Integer = Range "a".."z"  // String au lieu d'Integer
+  float_range : Range of Float = Range 1.."end"  // String au lieu de Float
+end
+
+// ========== ERREURS DANS LES ENUMS AVEC COLLECTIONS ==========
+
+// ❌ ERREUR: Enum avec collections mal typées
+enum BadEnum(
+  tags: List of String,
+  config: Map of String to Integer
+) is (
+  bad_value(
+    tags = List[1, 2, 3],  // Integer au lieu de String
+    config = Map{"key": "value"}  // String au lieu d'Integer
+  )
+)
+
+// ========== ERREURS DE SYNTAXE DANS LES COLLECTIONS IMBRIQUÉES ==========
+
+// ❌ ERREUR: Collections imbriquées mal formées
+record BadNestedCollections is
+  // List de Maps mal formée
+  bad_configs : List of Map of String to String = List[
+    Map{"env": "dev", "debug": "true"},  // OK
+    Map{"env": "prod"}  // Manque la virgule fermante
+  ]
+  
+  // Map de Lists mal formée
+  bad_categories : Map of String to List of String = Map{
+    "colors": List["red", "green", "blue"],  // OK
+    "sizes": List["small", "medium"]  // Manque la virgule fermante
+  }
+end
+
+// ========== ERREURS DE RÉFÉRENCES CROISÉES ==========
+
+// ❌ ERREUR: Référence circulaire
+record BadCircular is
+  name : String
+  children : List of BadCircular  // Référence circulaire
+end
+
+// ❌ ERREUR: Type non défini
+record BadReference is
+  name : String
+  parent : NonExistentType  // Type non défini
+  siblings : List of NonExistentType  // Type non défini dans collection
+end
+
+// ========== ERREURS DE CONTRAINTES ==========
+
+// ❌ ERREUR: Range avec bornes inversées
+record BadRangeBounds is
+  invalid_range : Range of Integer = Range 100..1  // Min > Max
+  empty_range : Range of Integer = Range 5..5  // Range vide (peut être valide selon la sémantique)
+end
+
+// ========== ERREURS DE SYNTAXE GÉNÉRALE ==========
+
+// ❌ ERREUR: Virgules manquantes
+record BadCommas is
+  list_field : List of String = List["a" "b" "c"]  // Virgules manquantes
+  map_field : Map of String to String = Map{"a": "1" "b": "2"}  // Virgules manquantes
+end
+
+// ❌ ERREUR: Accolades/crochets non fermés
+record BadBrackets is
+  unclosed_list : List of String = List["a", "b"  // Crochet non fermé
+  unclosed_map : Map of String to String = Map{"a": "1", "b": "2"  // Accolade non fermée
+end

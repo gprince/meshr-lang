@@ -1,0 +1,72 @@
+module demo.invalid_sealed
+
+// ========== ENUM SEALED ==========
+sealed enum Color is ("red", "green", "blue")
+
+// ========== RECORD SEALED ==========
+sealed record Address is
+  street : String
+  city   : String
+end
+
+// ========== TRAIT SEALED ==========
+sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+// ========== ASPECT SEALED ==========
+sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end
+
+// ========== ERREURS D'HÉRITAGE ==========
+
+// ❌ ERREUR: enum sealed ne peut pas être étendue
+enum ExtendedColor extends Color is ("yellow")
+
+// ❌ ERREUR: record sealed ne peut pas être hérité
+record FullAddress extends Address is
+  country : String
+end
+
+// ❌ ERREUR: trait sealed ne peut pas être hérité
+trait ExtendedAudit extends WithAudit is
+  deleted_at : Timestamp
+end
+
+// ❌ ERREUR: aspect sealed ne peut pas être hérité
+aspect AdvancedGovernance extends Governance is
+  extra : String
+end
+
+// ========== ERREURS DE SYNTAXE ==========
+
+// ❌ ERREUR: annotation ne peut pas être sealed
+sealed annotation InvalidAnnotation is
+  required name : String
+end
+
+// ❌ ERREUR: sealed avec abstract dans le mauvais ordre
+abstract sealed aspect BadOrder is
+  field : String
+end
+
+// ❌ ERREUR: double sealed
+sealed sealed enum DoubleSealed is ("a", "b")
+
+// ❌ ERREUR: sealed avec extends sur enum (même si pas sealed)
+enum BadEnum extends SomeEnum is ("a", "b")
+
+// ========== ERREURS DE COMPOSITION ==========
+
+// ❌ ERREUR: trait sealed ne peut pas être composé avec extends
+trait BadTrait extends WithAudit is
+  field : String
+end
+
+// ❌ ERREUR: aspect sealed ne peut pas être composé avec extends
+aspect BadAspect extends Governance is
+  field : String
+end

@@ -1,2 +1,104 @@
-module test.collection
+module test.collections
 
+// ========== COLLECTIONS DANS LES ANNOTATIONS ==========
+@CollectionTest(
+  tags = List["alpha", "beta", "gamma"],
+  config = Map{"timeout": 30, "retries": 3},
+  range = Range 1..100,
+  contact = Record{name: "Alice", age: 30}
+)
+annotation CollectionTest is
+  required tags : List of String
+  required config : Map of String to Integer
+  required range : Range of Integer
+  required contact : Contact
+end
+
+// ========== RECORD POUR LES TESTS ==========
+record Contact is
+  name : String
+  age : Integer
+end
+
+// ========== COLLECTIONS DANS LES ENUMS ==========
+enum Status(
+  code: Integer, 
+  tags: List of String, 
+  metadata: Map of String to String,
+  range: Range of Integer
+) is (
+  active(
+    code = 200, 
+    tags = List["ok", "healthy"], 
+    metadata = Map{"type": "success", "level": "info"},
+    range = Range 0..100
+  ),
+  error(
+    code = 500, 
+    tags = List["error", "critical"], 
+    metadata = Map{"type": "error", "level": "critical"},
+    range = Range 500..599
+  )
+)
+
+// ========== COLLECTIONS DANS LES RECORDS ==========
+record UserProfile is
+  name : String
+  emails : List of String = List["user@example.com"]
+  preferences : Map of String to String = Map{"theme": "dark", "lang": "fr"}
+  score_range : Range of Integer = Range 0..100
+  address : Address
+end
+
+record Address is
+  street : String
+  coordinates : Map of String to Float = Map{"lat": 48.8566, "lng": 2.3522}
+  tags : List of String = List["home", "primary"]
+end
+
+// ========== COLLECTIONS DANS LES TRAITS ==========
+trait WithMetadata is
+  tags : List of String
+  config : Map of String to String
+  limits : Range of Integer
+end
+
+// ========== COLLECTIONS DANS LES ASPECTS ==========
+aspect DataQuality is
+  metrics : List of String = List["accuracy", "completeness", "consistency"]
+  thresholds : Map of String to Float = Map{"accuracy": 0.95, "completeness": 0.90}
+  score_range : Range of Integer = Range 0..100
+end
+
+// ========== COLLECTIONS IMBRIQUÉES ==========
+record ComplexData is
+  // List de Maps
+  configs : List of Map of String to String = List[
+    Map{"env": "dev", "debug": "true"},
+    Map{"env": "prod", "debug": "false"}
+  ]
+  // Map de Lists
+  categories : Map of String to List of String = Map{
+    "colors": List["red", "green", "blue"],
+    "sizes": List["small", "medium", "large"]
+  }
+  // Map de Ranges
+  limits : Map of String to Range of Integer = Map{
+    "cpu": Range 0..100,
+    "memory": Range 0..80
+  }
+end
+
+// ========== COLLECTIONS AVEC TYPES COMPOSITES ==========
+record Team is
+  name : String
+  members : List of Contact
+  roles : Map of String to List of String
+  budget_range : Range of Integer
+end
+
+// ========== USAGE DES COLLECTIONS ==========
+record Project with WithMetadata is
+  id : String
+  description : String
+end
