@@ -1,5 +1,9 @@
 # Meshr-Lang — Documentation du langage
 
+<div align="center">
+  <img src="assets/meshr-lang-color.svg" alt="Logo Meshr-Lang" width="400" />
+</div>
+
 > **Version :** 0.1.0  
 > **Statut :** En conception active  
 > **Mainteneur :** G. Prince - Architecte Principal
@@ -7,36 +11,199 @@
 
 ---
 
+## 📑 Table des matières
+
+### 🎯 Introduction
+- [🧭 Objectif du langage](#-objectif-du-langage)
+  - [🎯 Vision et philosophie](#-vision-et-philosophie)
+  - [🚀 Objectifs principaux](#-objectifs-principaux)
+  - [🌟 Avantages clés](#-avantages-clés)
+
+### 🔤 Syntaxe et concepts de base
+- [🔤 Syntaxe de base](#-syntaxe-de-base)
+  - [📄 Structure des fichiers](#-structure-des-fichiers)
+  - [🎨 Style déclaratif](#-style-déclaratif)
+  - [💬 Commentaires](#-commentaires)
+  - [🔢 Types de valeurs primitives](#-types-de-valeurs-primitives)
+  - [🏗️ Structure d'un module](#️-structure-dun-module)
+
+### 📦 Organisation du code
+- [📦 Déclaration des modules et imports](#-déclaration-des-modules-et-imports)
+  - [🎯 Concept et objectifs](#-concept-et-objectifs)
+  - [🏗️ Architecture modulaire](#️-architecture-modulaire)
+  - [📐 Syntaxe](#-syntaxe)
+  - [📚 Sémantique](#-sémantique)
+  - [🔧 Types d'imports supportés](#-types-dimports-supportés)
+  - [📋 Ordre des déclarations](#-ordre-des-déclarations)
+  - [📤 Export des déclarations](#-export-des-déclarations)
+  - [📁 Convention d'arborescence](#-convention-darborescence)
+
+### 🏷️ Métadonnées et annotations
+- [🏷️ Annotations](#️-annotations)
+  - [📐 Syntaxe](#-syntaxe-1)
+  - [🧠 Règles](#-règles)
+  - [🧩 Annotations avec arguments typés](#-annotations-avec-arguments-typés)
+  - [✍️ Déclaration des types d'annotations](#️-déclaration-des-types-dannotations)
+  - [🔤 Types de base autorisés](#-types-de-base-autorisés-pour-les-annotations)
+  - [🎯 Contraintes sur les types String](#-contraintes-sur-les-types-string)
+  - [🏷️ Annotations Standard (StdLib)](#️-annotations-standard-stdlib)
+
+### 🔢 Types de données
+- [🔢 Énumérations](#-énumérations)
+  - [🎯 Concept et objectifs](#-concept-et-objectifs-1)
+  - [🏗️ Types d'énumérations](#️-types-dénumérations)
+  - [📐 Syntaxe simple (inline)](#-syntaxe-simple-inline)
+  - [📤 Export groupé](#-export-groupé)
+  - [🧠 Règles](#-règles-1)
+  - [🧩 Enums avec attributs typés](#-enums-avec-attributs-typés)
+
+- [📋 Records et Collections](#-records-et-collections)
+- [🏗️ Entités et Relations](#️-entités-et-relations)
+- [🧩 Traits](#-traits)
+- [🎭 Aspects](#-aspects)
+
+### 🔒 Contrôles avancés
+- [🔒 Modificateur `sealed`](#-modificateur-sealed)
+- [🧱 Artefacts définissables](#-artefacts-définissables)
+
+### 📚 Ressources et bonnes pratiques
+- [📘 Décisions de conception](#-décisions-de-conception)
+- [📚 Bibliothèque Standard (StdLib)](#-bibliothèque-standard-stdlib)
+- [🚧 À venir](#-à-venir)
+- [🎯 Bonnes pratiques et conventions](#-bonnes-pratiques-et-conventions)
+
+### 📖 Annexes
+- [Annexes](#annexes)
+  - [Annexe A — Grammaire EBNF (référence)](#annexe-a--grammaire-ebnf-référence)
+  - [Annexe B — Grammaire ANTLR (référence, Python target)](#annexe-b--grammaire-antlr-référence-python-target)
+
+---
+
 ## 🧭 Objectif du langage
 
-Meshr-Lang est un langage déclaratif dédié à la description des artefacts d’une architecture **Data-as-a-Product**, tels que les domaines, produits de données, contrats, aspects (métadonnées), équipes et politiques.
+Meshr-Lang est un langage déclaratif spécialisé conçu pour décrire et modéliser les artefacts d'une architecture **Data-as-a-Product** et d'entreprise. Il permet de définir de manière structurée et exécutable les domaines métier, produits de données, contrats, aspects (métadonnées), équipes, politiques, et leurs interrelations.
 
-Il vise à offrir une syntaxe lisible, formelle et exécutable pour :
-- Structurer la documentation vivante du data mesh
-- Générer automatiquement les représentations techniques (YAML, Rego, Terraform, etc.)
-- Alimenter les registres, catalogues et plateformes self-service
+### 🎯 Vision et philosophie
+
+Meshr-Lang s'inscrit dans la philosophie du **Data Mesh** et des architectures d'entreprise modernes où :
+
+- **La donnée est un produit** : Chaque dataset est traité comme un produit avec ses propres propriétaires, contrats, et SLA
+- **La documentation est vivante** : Le code source devient la source de vérité pour l'architecture
+- **L'automatisation est centrale** : Les modèles déclaratifs génèrent automatiquement les artefacts techniques
+- **La gouvernance est intégrée** : Les politiques et contraintes sont exprimées directement dans le modèle
+
+### 🚀 Objectifs principaux
+
+Meshr-Lang vise à offrir une syntaxe lisible, formelle et exécutable pour :
+
+#### 📚 Documentation vivante
+- **Structurer la documentation** : Transformer la documentation statique en modèles exécutables
+- **Maintenir la cohérence** : Assurer que la documentation reste synchronisée avec l'implémentation
+- **Faciliter la compréhension** : Rendre l'architecture d'entreprise accessible à tous les acteurs
+
+#### 🔧 Génération automatique
+- **Représentations techniques** : Générer automatiquement YAML, Rego, Terraform, OpenAPI, etc.
+- **Code boilerplate** : Réduire la duplication et les erreurs de codage manuel
+- **Validation continue** : Détecter les incohérences et violations de politiques
+
+#### 🏢 Gouvernance intégrée
+- **Registres et catalogues** : Alimenter automatiquement les plateformes de gouvernance
+- **Self-service** : Permettre aux équipes de découvrir et consommer les données facilement
+- **Conformité** : Intégrer les exigences réglementaires (RGPD, SOX, etc.) dans le modèle
+
+### 🌟 Avantages clés
+
+- **Lisibilité** : Syntaxe claire et expressive inspirée des meilleures pratiques
+- **Extensibilité** : Architecture modulaire permettant l'ajout de nouveaux concepts
+- **Intégration** : Compatible avec l'écosystème moderne (CI/CD, IaC, observabilité)
+- **Validation** : Vérification statique des modèles et détection d'erreurs précoces
 
 ---
 
 ## 🔤 Syntaxe de base
 
-- Fichiers : `.meshr`
-- Style : déclaratif à blocs (inspiré de HCL, Kotlin DSL, GraphQL SDL)
-- Commentaires : `// commentaire ligne` ou `/* commentaire bloc */`
-- Valeurs prises en charge :
-  - Chaînes : `"texte"`
-  - Booléens : `true`, `false`
-  - Nombres : décimaux (`42`, `3.14`) et hexadécimaux (`0xFF`, `0x00FF00`)
-  - Noms qualifiés : `privacy.Level.HIGH`
-  - Intervalles : `Interval 12 month`, `Interval -1 day`, `Interval "2024-01" year to month`
+Meshr-lang est un langage de modélisation déclaratif conçu pour décrire des architectures d'entreprise, des produits, des domaines métier et leurs relations. Sa syntaxe s'inspire de langages modernes comme HCL (HashiCorp Configuration Language), Kotlin DSL, et GraphQL Schema Definition Language (SDL).
+
+### 📄 Structure des fichiers
+
+**Extension de fichier** : `.meshr`
+
+Tous les fichiers Meshr-lang utilisent l'extension `.meshr` et suivent une structure modulaire où chaque fichier représente un module autonome contenant des déclarations de types, d'entités, d'énumérations, et d'autres artefacts métier.
+
+### 🎨 Style déclaratif
+
+Meshr-lang adopte un style **déclaratif à blocs** qui privilégie la lisibilité et la structure hiérarchique :
+
+- **Blocs imbriqués** : Les déclarations sont organisées en blocs logiques avec indentation
+- **Syntaxe claire** : Utilisation de mots-clés explicites et de ponctuation minimale
+- **Lisibilité** : Structure qui reflète naturellement la hiérarchie des concepts métier
 
 ### 💬 Commentaires
 
-- Les commentaires sur une seule ligne commencent par `//`
-- Les commentaires multi-lignes sont délimités par `/*` et `*/`
-- Ils sont ignorés par l’analyse syntaxique (non représentés dans l’AST)
+Les commentaires permettent d'ajouter des explications et de la documentation directement dans le code source :
 
-#### Exemples :
+- **Commentaires de ligne** : Commencent par `//` et s'étendent jusqu'à la fin de la ligne
+- **Commentaires de bloc** : Délimités par `/*` et `*/`, peuvent s'étendre sur plusieurs lignes
+- **Ignorés par le parser** : Les commentaires ne font pas partie de l'AST (Abstract Syntax Tree)
+
+#### Exemples de commentaires :
+
+```meshr
+// Ceci est un commentaire de ligne
+entity Customer {
+  // Commentaire sur un champ
+  name: String
+}
+
+/*
+ * Ceci est un commentaire de bloc
+ * qui peut s'étendre sur plusieurs lignes
+ * pour documenter des concepts complexes
+ */
+```
+
+### 🔢 Types de valeurs primitives
+
+Meshr-lang supporte plusieurs types de valeurs primitives pour exprimer des données de base :
+
+#### Chaînes de caractères
+- **Syntaxe** : `"texte entre guillemets doubles"`
+- **Usage** : Noms, descriptions, identifiants, valeurs textuelles
+- **Exemples** : `"Customer"`, `"John Doe"`, `"production"`
+
+#### Valeurs booléennes
+- **Syntaxe** : `true` ou `false`
+- **Usage** : Flags, conditions, propriétés binaires
+- **Exemples** : `isActive: true`, `isPublic: false`
+
+#### Nombres
+- **Nombres décimaux** : `42`, `3.14`, `-15.5`
+- **Nombres hexadécimaux** : `0xFF`, `0x00FF00`, `0x1A2B3C`
+- **Usage** : Compteurs, identifiants numériques, valeurs de configuration
+
+#### Noms qualifiés
+- **Syntaxe** : `module.Type.EnumValue`
+- **Usage** : Références à des types, énumérations, ou constantes d'autres modules
+- **Exemples** : `privacy.Level.HIGH`, `core.Status.ACTIVE`
+
+#### Intervalles temporels
+- **Syntaxe** : `Interval <valeur> <unité>`
+- **Usage** : Durées, périodes, délais d'expiration
+- **Exemples** :
+  - `Interval 12 month` : 12 mois
+  - `Interval -1 day` : -1 jour (hier)
+  - `Interval "2024-01" year to month` : de janvier 2024 à maintenant
+
+### 🏗️ Structure d'un module
+
+Un module Meshr-lang suit une structure hiérarchique bien définie :
+
+1. **Déclarations d'import** (optionnelles)
+2. **Déclaration du module** (obligatoire)
+3. **Déclarations d'export** (optionnelles)
+4. **Déclarations d'artefacts** (entités, énumérations, types, etc.)
+
+#### Exemple de structure de module :
 
 ```meshr
 // Ceci est un commentaire simple
@@ -51,7 +218,26 @@ Il vise à offrir une syntaxe lisible, formelle et exécutable pour :
 
 ## 📦 Déclaration des modules et imports
 
-La première unité structurante de Meshr est le **module**. Il représente un espace de noms versionné, à partir duquel les autres artefacts sont déclarés ou importés.
+Le **module** est l'unité fondamentale d'organisation dans Meshr-lang. Il représente un espace de noms versionné et autonome qui contient des déclarations d'artefacts métier (entités, énumérations, types, etc.). Chaque fichier `.meshr` correspond à un module unique.
+
+### 🎯 Concept et objectifs
+
+Un module Meshr-lang sert à :
+
+- **Encapsuler** : Regrouper des concepts métier liés dans un espace de noms cohérent
+- **Versionner** : Permettre l'évolution des API et la gestion des dépendances
+- **Réutiliser** : Faciliter l'import et la réutilisation de composants entre modules
+- **Organiser** : Structurer l'architecture d'entreprise en composants modulaires
+- **Isoler** : Définir des frontières claires entre différents domaines métier
+
+### 🏗️ Architecture modulaire
+
+Meshr-lang encourage une architecture modulaire où :
+
+- **Un module = un domaine métier** : Chaque module représente un domaine d'expertise spécifique
+- **Dépendances explicites** : Les relations entre modules sont déclarées via des imports
+- **Namespace hiérarchique** : Les noms de modules suivent une convention hiérarchique (ex: `core.types`, `marketing.analytics`)
+- **Versioning sémantique** : Chaque module peut être versionné indépendamment
 
 ### 📐 Syntaxe
 
@@ -619,9 +805,33 @@ end
 
 ---
 
-## 🔢 Enums
+## 🔢 Énumérations
 
-Les **énumérations** permettent de représenter un ensemble fini de valeurs symboliques, typiquement utilisées pour encoder des catégories, des statuts ou des niveaux de sensibilité.
+Les **énumérations** (ou enums) sont des types de données qui permettent de définir un ensemble fini et ordonné de valeurs symboliques. Elles sont particulièrement utiles pour représenter des catégories, des statuts, des niveaux de priorité, ou tout autre concept métier qui peut être exprimé par un nombre limité d'options prédéfinies.
+
+### 🎯 Concept et objectifs
+
+Les énumérations servent à :
+
+- **Limiter les choix** : Restreindre les valeurs possibles à un ensemble prédéfini et valide
+- **Améliorer la lisibilité** : Remplacer des valeurs numériques ou textuelles par des noms explicites
+- **Assurer la cohérence** : Garantir que seules des valeurs valides sont utilisées dans le système
+- **Faciliter la maintenance** : Centraliser la définition des valeurs possibles
+- **Documenter le domaine** : Exprimer explicitement les options disponibles dans un contexte métier
+
+### 🏗️ Types d'énumérations
+
+Meshr-lang supporte deux formes d'énumérations :
+
+#### Énumérations simples
+- **Valeurs symboliques** : Liste de noms représentant les options possibles
+- **Usage** : Statuts, catégories, niveaux de priorité
+- **Exemple** : `(active, inactive, pending)`
+
+#### Énumérations avec paramètres
+- **Valeurs enrichies** : Chaque valeur peut avoir des propriétés associées
+- **Usage** : Codes d'erreur avec messages, statuts avec métadonnées
+- **Exemple** : `active(code = 200, message = "OK")`
 
 ### 📐 Syntaxe simple (inline)
 
@@ -1036,7 +1246,27 @@ Les **Entités** et **Relations** sont des artefacts déclaratifs pour la modél
 
 ### 🏢 Entités
 
-Une **entité** représente une structure de données persistante avec des champs typés, optionnellement des aspects et des traits.
+Une **entité** est un artefact fondamental de Meshr-lang qui représente une structure de données persistante dans l'architecture d'entreprise. Elle modélise les concepts métier centraux et leurs propriétés.
+
+#### 🎯 Concept et rôle
+
+Les entités servent à :
+
+- **Modéliser les concepts métier** : Représenter les objets centraux du domaine (Customer, Product, Order, etc.)
+- **Définir la structure des données** : Spécifier les champs, types, et contraintes
+- **Assurer la cohérence** : Fournir un modèle de données unifié à travers l'organisation
+- **Faciliter l'intégration** : Servir de contrat pour les APIs et les échanges de données
+- **Documenter le domaine** : Exprimer explicitement les concepts et leurs relations
+
+#### 🏗️ Caractéristiques des entités
+
+Une entité Meshr-lang possède :
+
+- **Champs typés** : Chaque champ a un type explicite (String, Integer, Date, etc.)
+- **Contraintes** : Validation des données via des patterns, ranges, ou contraintes personnalisées
+- **Traits** : Comportements réutilisables appliqués à l'entité (audit, versioning, etc.)
+- **Aspects** : Métadonnées et annotations spécifiques au contexte métier
+- **Relations** : Connexions avec d'autres entités via des relations typées
 
 #### 📐 Syntaxe des Entités
 
@@ -1158,7 +1388,36 @@ end
 
 ## 🧩 Traits
 
-Un trait est un bloc réutilisable de déclarations (champs, métadonnées, contraintes, aspects, politiques, …) injectables dans d’autres artefacts via la clause `with`. Les traits favorisent la factorisation et la composition déclarative, sans comportement impératif.
+Un **trait** est un mécanisme de composition et de réutilisation dans Meshr-lang qui permet de définir des blocs de déclarations (champs, métadonnées, contraintes, aspects) qui peuvent être injectés dans d'autres artefacts via la clause `with`. Les traits favorisent la factorisation, la composition déclarative, et l'élimination de la duplication de code.
+
+### 🎯 Concept et rôle
+
+Les traits servent à :
+
+- **Factoriser le code** : Éviter la duplication de déclarations communes entre artefacts
+- **Composer des comportements** : Combiner plusieurs traits pour créer des artefacts complexes
+- **Standardiser les patterns** : Définir des conventions et patterns réutilisables
+- **Maintenir la cohérence** : Assurer que les mêmes propriétés sont définies de manière identique
+- **Faciliter l'évolution** : Modifier un trait pour impacter tous les artefacts qui l'utilisent
+
+### 🏗️ Caractéristiques des traits
+
+Un trait Meshr-lang possède :
+
+- **Champs typés** : Définition de propriétés avec types et contraintes
+- **Composition** : Possibilité d'utiliser d'autres traits via `with`
+- **Aspects intégrés** : Instanciation d'aspects qui seront hérités
+- **Injection** : Application aux artefacts via la clause `with`
+- **Réutilisabilité** : Un même trait peut être utilisé par plusieurs artefacts
+
+### 🔄 Différence avec les aspects
+
+| **Traits** | **Aspects** |
+|------------|-------------|
+| Définissent des **champs** et **comportements** | Définissent des **métadonnées** et **propriétés** |
+| Sont **injectés** via `with` | Sont **instanciés** via `aspects { ... }` |
+| Ajoutent de la **structure** | Ajoutent du **contexte** |
+| Héritage de **champs** | Héritage de **métadonnées** |
 
 ### 📐 Syntaxe
 
@@ -1269,7 +1528,27 @@ Notes:
 
 ## 🎭 Aspects
 
-Un **Aspect** est un bloc déclaratif qui décrit des métadonnées structurées pouvant être appliquées à différents artefacts (entité, champ, relation, produit, contrat, etc.). Il ne contient pas de logique procédurale et sert à annoter ou enrichir les artefacts avec des informations supplémentaires : gouvernance, sémantique, confidentialité, qualité, politique, SLA, etc.
+Un **Aspect** est un mécanisme de métadonnées structurées dans Meshr-lang qui permet d'enrichir et d'annoter les artefacts avec des informations contextuelles spécifiques au domaine métier. Contrairement aux traits qui définissent des comportements, les aspects se concentrent sur la description de propriétés, contraintes, et métadonnées.
+
+### 🎯 Concept et rôle
+
+Les aspects servent à :
+
+- **Enrichir les métadonnées** : Ajouter des informations contextuelles aux artefacts (gouvernance, qualité, sécurité)
+- **Définir des politiques** : Exprimer des règles métier et des contraintes de conformité
+- **Documenter le contexte** : Capturer des informations sur l'origine, l'usage, et la signification des données
+- **Faciliter la gouvernance** : Intégrer les exigences réglementaires et les bonnes pratiques
+- **Améliorer la traçabilité** : Associer des informations de provenance et de lineage
+
+### 🏗️ Caractéristiques des aspects
+
+Un aspect Meshr-lang possède :
+
+- **Champs typés** : Propriétés avec types explicites et contraintes optionnelles
+- **Valeurs par défaut** : Définition de valeurs par défaut pour les champs optionnels
+- **Héritage** : Possibilité d'étendre d'autres aspects pour la réutilisation
+- **Instanciation** : Application aux artefacts via des blocs `aspects { ... }`
+- **Composition** : Combinaison de plusieurs aspects sur un même artefact
 
 ### 🔧 Syntaxe de base
 
@@ -1955,6 +2234,131 @@ end
 
 ---
 
+## 🎯 Bonnes pratiques et conventions
+
+Cette section présente les bonnes pratiques recommandées pour écrire du code Meshr-lang efficace, maintenable et conforme aux standards de l'organisation.
+
+### 📝 Conventions de nommage
+
+#### Modules
+- **Format** : `domain.subdomain` (ex: `marketing.analytics`, `core.types`)
+- **Convention** : Utiliser des noms en minuscules avec des points comme séparateurs
+- **Éviter** : Les noms trop génériques comme `common`, `utils`, `shared`
+
+#### Entités et types
+- **Format** : `PascalCase` (ex: `Customer`, `ProductCatalog`, `OrderStatus`)
+- **Convention** : Noms explicites qui reflètent le concept métier
+- **Éviter** : Abréviations et acronymes non standardisés
+
+#### Champs et propriétés
+- **Format** : `camelCase` (ex: `customerId`, `emailAddress`, `createdAt`)
+- **Convention** : Noms descriptifs et cohérents
+- **Éviter** : Noms génériques comme `data`, `info`, `value`
+
+#### Énumérations
+- **Valeurs** : `UPPER_SNAKE_CASE` (ex: `ACTIVE`, `PENDING_APPROVAL`, `HIGH_PRIORITY`)
+- **Convention** : Valeurs explicites et auto-documentées
+- **Éviter** : Valeurs numériques ou abréviations
+
+### 🏗️ Organisation des modules
+
+#### Structure recommandée
+```
+modules/
+├── core/
+│   ├── types.meshr          # Types fondamentaux
+│   ├── governance.meshr     # Aspects de gouvernance
+│   └── security.meshr       # Aspects de sécurité
+├── business/
+│   ├── customer.meshr       # Domaine client
+│   ├── product.meshr        # Domaine produit
+│   └── order.meshr          # Domaine commande
+└── shared/
+    ├── common.meshr         # Types partagés
+    └── policies.meshr       # Politiques transversales
+```
+
+#### Principes d'organisation
+- **Un module = un domaine métier** : Éviter les modules trop larges
+- **Dépendances claires** : Minimiser les dépendances circulaires
+- **Séparation des responsabilités** : Séparer les types, aspects, et politiques
+
+### 🔧 Utilisation des traits et aspects
+
+#### Traits
+- **Factorisation** : Créer des traits pour les patterns récurrents
+- **Composition** : Préférer la composition à l'héritage complexe
+- **Naming** : Préfixer par `With` (ex: `WithAudit`, `WithTimestamps`)
+
+#### Aspects
+- **Spécificité** : Créer des aspects spécialisés plutôt que génériques
+- **Réutilisabilité** : Concevoir pour la réutilisation entre domaines
+- **Documentation** : Toujours documenter le rôle et l'usage des aspects
+
+### 📋 Documentation et commentaires
+
+#### Commentaires obligatoires
+- **Modules** : Description du domaine et des responsabilités
+- **Entités complexes** : Explication du rôle métier
+- **Aspects personnalisés** : Usage et contraintes
+- **Relations** : Cardinalité et règles métier
+
+#### Exemple de documentation
+```meshr
+/**
+ * Module de gestion des clients et de leurs données personnelles.
+ * 
+ * Ce module définit les entités centrales du domaine client,
+ * incluant la conformité RGPD et les aspects de sécurité.
+ */
+module business.customer
+
+// Entité représentant un client dans le système
+entity Customer with WithAudit, WithSecurity is
+  customerId: String pattern "^CUST-[0-9]{8}$"
+  email: String pattern "^[^@]+@[^@]+$"
+  // ... autres champs
+end
+```
+
+### 🚨 Gestion des erreurs et validation
+
+#### Contraintes de validation
+- **Patterns** : Utiliser des expressions régulières pour valider les formats
+- **Ranges** : Définir des plages de valeurs pour les nombres
+- **Required fields** : Marquer explicitement les champs obligatoires
+
+#### Gestion des versions
+- **Versioning sémantique** : Suivre le format `MAJOR.MINOR.PATCH`
+- **Rétrocompatibilité** : Éviter les breaking changes dans les versions mineures
+- **Dépréciation** : Utiliser les annotations `@deprecated` pour les évolutions
+
+### 🔒 Sécurité et conformité
+
+#### Données sensibles
+- **Classification** : Toujours classifier les données avec des aspects appropriés
+- **Chiffrement** : Spécifier les exigences de chiffrement
+- **Accès** : Définir les niveaux d'accès et permissions
+
+#### Conformité réglementaire
+- **RGPD** : Inclure les aspects de rétention et de consentement
+- **Audit** : Traçabilité des modifications et accès
+- **Gouvernance** : Définir les rôles et responsabilités
+
+### 🧪 Tests et validation
+
+#### Tests de modèles
+- **Validation syntaxique** : Vérifier la syntaxe des fichiers
+- **Validation sémantique** : Tester les contraintes et relations
+- **Tests d'intégration** : Valider les imports et dépendances
+
+#### Outils recommandés
+- **Linting** : Utiliser les outils de validation automatique
+- **CI/CD** : Intégrer la validation dans les pipelines
+- **Documentation** : Générer automatiquement la documentation
+
+---
+
 ## Annexes
 
 ### Annexe A — Grammaire EBNF (référence)
@@ -2164,19 +2568,49 @@ exportItems
 // ==============================
 topLevelDecl
     : annotatedEnumDecl
+    | sealedEnumDecl
     | annotatedAnnotationDecl
-    | traitDecl
+    | sealedRecordDecl
     | recordDecl
+    | sealedTraitDecl
+    | traitDecl
     | annotatedAspectDecl
+    | sealedAspectDecl
+    | annotatedEntityDecl
+    | sealedEntityDecl
+    | annotatedTypeRelationDecl
+    | sealedTypeRelationDecl
+    | annotatedRelationDecl
+    | sealedRelationDecl
     ;
 
 // ========== ENUM =============
 exportableDecl
     : enumDecl
+    | sealedEnumDecl
+    | entityDecl
+    | sealedEntityDecl
+    | typeRelationDecl
+    | sealedTypeRelationDecl
+    | relationDecl
+    | sealedRelationDecl
     ;
 
 annotatedEnumDecl
     : annotation* enumDecl
+    ;
+
+sealedEnumDecl
+    : SEALED enumDecl
+    ;
+
+// ========== ENTITY =============
+annotatedEntityDecl
+    : annotation* entityDecl
+    ;
+
+sealedEntityDecl
+    : SEALED entityDecl
     ;
 
 enumDecl
@@ -2209,6 +2643,101 @@ enumValueArgList
 
 enumValueArg
     : IDENTIFIER '=' annotationValue
+    ;
+
+// ========== ENTITY DECLARATION ============
+entityDecl
+    : ENTITY IDENTIFIER withClause? 'is' entityFieldList entityAspects? 'end'
+    ;
+
+entityFieldList
+    : entityField+
+    ;
+
+entityField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+entityAspects
+    : ASPECTS '{' aspectInstanceList '}'
+    ;
+
+aspectInstanceList
+    : aspectInstance (',' aspectInstance)*
+    ;
+
+aspectInstance
+    : IDENTIFIER '{' aspectInstanceFieldList? '}'
+    ;
+
+aspectInstanceFieldList
+    : aspectInstanceField (',' aspectInstanceField)*
+    ;
+
+aspectInstanceField
+    : IDENTIFIER ':' annotationValue
+    ;
+
+// ========== TYPE RELATION DECLARATION ============
+annotatedTypeRelationDecl
+    : annotation* typeRelationDecl
+    ;
+
+sealedTypeRelationDecl
+    : SEALED typeRelationDecl
+    ;
+
+typeRelationDecl
+    : TYPE RELATION IDENTIFIER withClause? 'is' typeRelationFieldList typeRelationAspects? 'end'
+    ;
+
+typeRelationFieldList
+    : typeRelationField+
+    ;
+
+typeRelationField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+typeRelationAspects
+    : ASPECTS '{' aspectInstanceList '}'
+    ;
+
+// ========== RELATION DECLARATION ============
+annotatedRelationDecl
+    : annotation* relationDecl
+    ;
+
+sealedRelationDecl
+    : SEALED relationDecl
+    ;
+
+relationDecl
+    : BIDIRECTIONAL? RELATION IDENTIFIER relationType? withClause? 'is' relationEndpoints relationFieldList? relationAspects? 'end'
+    ;
+
+relationType
+    : 'of' TYPE IDENTIFIER
+    ;
+
+relationEndpoints
+    : FROM relationEndpoint TO relationEndpoint
+    ;
+
+relationEndpoint
+    : IDENTIFIER '(' IDENTIFIER (',' IDENTIFIER)* ')'
+    ;
+
+relationFieldList
+    : relationField+
+    ;
+
+relationField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+relationAspects
+    : ASPECTS '{' aspectInstanceList '}'
     ;
 
 // ========== ANNOTATION DECLARATION ============
@@ -2319,6 +2848,7 @@ annotationValue
     | rangeLiteral
     | jsonLiteral
     | geographyLiteral
+    | bytesLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -2355,6 +2885,10 @@ recordDecl
     : 'record' IDENTIFIER withClause? 'is' recordFieldList 'end'
     ;
 
+sealedRecordDecl
+    : SEALED recordDecl
+    ;
+
 recordFieldList
     : recordField+
     ;
@@ -2365,7 +2899,11 @@ recordField
 
 // ========== TRAIT DECLARATION ==========
 traitDecl
-    : 'trait' IDENTIFIER withClause? 'is' traitFieldList 'end'
+    : 'trait' IDENTIFIER withClause? 'is' traitFieldList traitAspects? 'end'
+    ;
+
+sealedTraitDecl
+    : SEALED traitDecl
     ;
 
 traitFieldList
@@ -2374,6 +2912,10 @@ traitFieldList
 
 traitField
     : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    ;
+
+traitAspects
+    : ASPECTS '{' aspectInstanceList '}'
     ;
 
 withClause
@@ -2387,6 +2929,10 @@ annotatedAspectDecl
 
 aspectDecl
     : 'abstract'? 'aspect' IDENTIFIER aspectInheritance? 'is' aspectFieldList 'end'
+    ;
+
+sealedAspectDecl
+    : SEALED aspectDecl
     ;
 
 aspectInheritance
@@ -2461,28 +3007,49 @@ jsonValue
     | '[' jsonArrayContent ']'
     ;
 
+signedNumber
+    : '-'? NUMBER_LITERAL
+    ;
+
 // ========== GEOGRAPHY LITERALS ==========
 geographyLiteral
     : 'Geography' STRING_LITERAL
     | 'Geography' '{' jsonObjectContent '}'
     ;
 
-signedNumber
-    : '-'? NUMBER_LITERAL
+// ========== BYTES LITERALS ==========
+bytesLiteral
+    : 'Bytes' STRING_LITERAL
+    | 'Bytes' '[' bytesArrayContent ']'
+    | 'Bytes' '{' jsonObjectContent '}'
     ;
 
+bytesArrayContent
+    : bytesValue (',' bytesValue)*
+    | // empty
+    ;
+
+bytesValue
+    : signedNumber
+    ;
+
+// ========== TERMINALS ============
 fragment ESC
     : '\\' ["\\/bfnrt]
     ;
 
 AT: '@';
 STRING_LITERAL: '"' (ESC | ~["\\\r\n])* '"';
-IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 
-WS: [ \t\r\n]+ -> skip ;
-NEWLINE: ('\r'? '\n')+ -> skip ;
-COMMENT: '//' ~[\r\n]* -> skip ;
-MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
+// Keywords
+SEALED: 'sealed';
+ENTITY: 'entity';
+TYPE: 'type';
+RELATION: 'relation';
+BIDIRECTIONAL: 'bidirectional';
+FROM: 'from';
+TO: 'to';
+ASPECTS: 'aspects';
 
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?
@@ -2492,6 +3059,11 @@ NUMBER_LITERAL
 BOOLEAN_LITERAL
     : 'true' | 'false'
     ;
-```
 
-> **📝 Note de mise à jour :** L'Annexe B (grammaire ANTLR) nécessite une mise à jour pour inclure les nouvelles déclarations `entity`, `type relation`, `relation`, les aspects dans les traits, et le modificateur `sealed`. La grammaire complète est disponible dans le fichier `grammar/MeshrModule.g4`.
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
+
+WS: [ \t\r\n]+ -> skip ;
+NEWLINE: ('\r'? '\n')+ -> skip ;
+COMMENT: '//' ~[\r\n]* -> skip ;
+MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
+```

@@ -4,7 +4,7 @@ ANTLR_JAR = grammar/antlr-4.13.2-complete.jar
 GRAMMAR_FILE = grammar/MeshrModule.g4
 GEN_DIR = grammar/generated
 
-.PHONY: all clean grammar test test-stdlib test-failures
+.PHONY: all clean grammar test test-stdlib test-failures docs docs-pdf docs-html docs-clean
 
 all: 
 	$(MAKE) grammar
@@ -42,5 +42,24 @@ test-failures:
 	@echo "Identifying failed tests:"
 	@$(MAKE) test 2>&1 | grep -E "(❌ KO|🚨 Unexpected success)" || echo "No test failures found"
 
-clean:
+# Documentation generation
+docs: docs-pdf docs-html
+	@echo "✅ Documentation generated successfully!"
+
+docs-pdf:
+	@echo "Generating PDF documentation..."
+	@pandoc docs/meshr-lang.md -o docs/meshr-lang.pdf --pdf-engine=tectonic
+	@echo "✅ PDF generated: docs/meshr-lang.pdf"
+
+docs-html:
+	@echo "Generating HTML documentation..."
+	@pandoc docs/meshr-lang.md -o docs/meshr-lang.html --standalone --css=https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css
+	@echo "✅ HTML generated: docs/meshr-lang.html"
+
+docs-clean:
+	@echo "Cleaning generated documentation..."
+	@rm -f docs/meshr-lang.pdf docs/meshr-lang.html
+	@echo "✅ Documentation cleaned"
+
+clean: docs-clean
 	rm -rf $(GEN_DIR)/*.py $(GEN_DIR)/*.tokens $(GEN_DIR)/*.interp

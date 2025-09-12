@@ -1,0 +1,3291 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>meshr-lang</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css" />
+</head>
+<body>
+<h1 id="meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
+du langage</h1>
+<div data-align="center">
+<p><img src="assets/meshr-lang-color.svg" alt="Logo Meshr-Lang" width="400" /></p>
+</div>
+<blockquote>
+<p><strong>Version :</strong> 0.1.0<br />
+<strong>Statut :</strong> En conception active<br />
+<strong>Mainteneur :</strong> G. Prince - Architecte Principal
+<strong>Dernière mise à jour :</strong> 2025-01-12</p>
+</blockquote>
+<hr />
+<h2 id="table-des-matières">📑 Table des matières</h2>
+<h3 id="introduction">🎯 Introduction</h3>
+<ul>
+<li><a href="#-objectif-du-langage">🧭 Objectif du langage</a>
+<ul>
+<li><a href="#-vision-et-philosophie">🎯 Vision et philosophie</a></li>
+<li><a href="#-objectifs-principaux">🚀 Objectifs principaux</a></li>
+<li><a href="#-avantages-clés">🌟 Avantages clés</a></li>
+</ul></li>
+</ul>
+<h3 id="syntaxe-et-concepts-de-base">🔤 Syntaxe et concepts de base</h3>
+<ul>
+<li><a href="#-syntaxe-de-base">🔤 Syntaxe de base</a>
+<ul>
+<li><a href="#-structure-des-fichiers">📄 Structure des
+fichiers</a></li>
+<li><a href="#-style-déclaratif">🎨 Style déclaratif</a></li>
+<li><a href="#-commentaires">💬 Commentaires</a></li>
+<li><a href="#-types-de-valeurs-primitives">🔢 Types de valeurs
+primitives</a></li>
+<li><a href="#️-structure-dun-module">🏗️ Structure d’un module</a></li>
+</ul></li>
+</ul>
+<h3 id="organisation-du-code">📦 Organisation du code</h3>
+<ul>
+<li><a href="#-déclaration-des-modules-et-imports">📦 Déclaration des
+modules et imports</a>
+<ul>
+<li><a href="#-concept-et-objectifs">🎯 Concept et objectifs</a></li>
+<li><a href="#️-architecture-modulaire">🏗️ Architecture
+modulaire</a></li>
+<li><a href="#-syntaxe">📐 Syntaxe</a></li>
+<li><a href="#-sémantique">📚 Sémantique</a></li>
+<li><a href="#-types-dimports-supportés">🔧 Types d’imports
+supportés</a></li>
+<li><a href="#-ordre-des-déclarations">📋 Ordre des
+déclarations</a></li>
+<li><a href="#-export-des-déclarations">📤 Export des
+déclarations</a></li>
+<li><a href="#-convention-darborescence">📁 Convention
+d’arborescence</a></li>
+</ul></li>
+</ul>
+<h3 id="métadonnées-et-annotations">🏷️ Métadonnées et annotations</h3>
+<ul>
+<li><a href="#️-annotations">🏷️ Annotations</a>
+<ul>
+<li><a href="#-syntaxe-1">📐 Syntaxe</a></li>
+<li><a href="#-règles">🧠 Règles</a></li>
+<li><a href="#-annotations-avec-arguments-typés">🧩 Annotations avec
+arguments typés</a></li>
+<li><a href="#️-déclaration-des-types-dannotations">✍️ Déclaration des
+types d’annotations</a></li>
+<li><a href="#-types-de-base-autorisés-pour-les-annotations">🔤 Types de
+base autorisés</a></li>
+<li><a href="#-contraintes-sur-les-types-string">🎯 Contraintes sur les
+types String</a></li>
+<li><a href="#️-annotations-standard-stdlib">🏷️ Annotations Standard
+(StdLib)</a></li>
+</ul></li>
+</ul>
+<h3 id="types-de-données">🔢 Types de données</h3>
+<ul>
+<li><a href="#-énumérations">🔢 Énumérations</a>
+<ul>
+<li><a href="#-concept-et-objectifs-1">🎯 Concept et objectifs</a></li>
+<li><a href="#️-types-dénumérations">🏗️ Types d’énumérations</a></li>
+<li><a href="#-syntaxe-simple-inline">📐 Syntaxe simple
+(inline)</a></li>
+<li><a href="#-export-groupé">📤 Export groupé</a></li>
+<li><a href="#-règles-1">🧠 Règles</a></li>
+<li><a href="#-enums-avec-attributs-typés">🧩 Enums avec attributs
+typés</a></li>
+</ul></li>
+<li><a href="#-records-et-collections">📋 Records et
+Collections</a></li>
+<li><a href="#️-entités-et-relations">🏗️ Entités et Relations</a></li>
+<li><a href="#-traits">🧩 Traits</a></li>
+<li><a href="#-aspects">🎭 Aspects</a></li>
+</ul>
+<h3 id="contrôles-avancés">🔒 Contrôles avancés</h3>
+<ul>
+<li><a href="#-modificateur-sealed">🔒 Modificateur
+<code>sealed</code></a></li>
+<li><a href="#-artefacts-définissables">🧱 Artefacts
+définissables</a></li>
+</ul>
+<h3 id="ressources-et-bonnes-pratiques">📚 Ressources et bonnes
+pratiques</h3>
+<ul>
+<li><a href="#-décisions-de-conception">📘 Décisions de
+conception</a></li>
+<li><a href="#-bibliothèque-standard-stdlib">📚 Bibliothèque Standard
+(StdLib)</a></li>
+<li><a href="#-à-venir">🚧 À venir</a></li>
+<li><a href="#-bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
+conventions</a></li>
+</ul>
+<h3 id="annexes">📖 Annexes</h3>
+<ul>
+<li><a href="#annexes">Annexes</a>
+<ul>
+<li><a href="#annexe-a--grammaire-ebnf-référence">Annexe A — Grammaire
+EBNF (référence)</a></li>
+<li><a href="#annexe-b--grammaire-antlr-référence-python-target">Annexe
+B — Grammaire ANTLR (référence, Python target)</a></li>
+</ul></li>
+</ul>
+<hr />
+<h2 id="objectif-du-langage">🧭 Objectif du langage</h2>
+<p>Meshr-Lang est un langage déclaratif spécialisé conçu pour décrire et
+modéliser les artefacts d’une architecture
+<strong>Data-as-a-Product</strong> et d’entreprise. Il permet de définir
+de manière structurée et exécutable les domaines métier, produits de
+données, contrats, aspects (métadonnées), équipes, politiques, et leurs
+interrelations.</p>
+<h3 id="vision-et-philosophie">🎯 Vision et philosophie</h3>
+<p>Meshr-Lang s’inscrit dans la philosophie du <strong>Data
+Mesh</strong> et des architectures d’entreprise modernes où :</p>
+<ul>
+<li><strong>La donnée est un produit</strong> : Chaque dataset est
+traité comme un produit avec ses propres propriétaires, contrats, et
+SLA</li>
+<li><strong>La documentation est vivante</strong> : Le code source
+devient la source de vérité pour l’architecture</li>
+<li><strong>L’automatisation est centrale</strong> : Les modèles
+déclaratifs génèrent automatiquement les artefacts techniques</li>
+<li><strong>La gouvernance est intégrée</strong> : Les politiques et
+contraintes sont exprimées directement dans le modèle</li>
+</ul>
+<h3 id="objectifs-principaux">🚀 Objectifs principaux</h3>
+<p>Meshr-Lang vise à offrir une syntaxe lisible, formelle et exécutable
+pour :</p>
+<h4 id="documentation-vivante">📚 Documentation vivante</h4>
+<ul>
+<li><strong>Structurer la documentation</strong> : Transformer la
+documentation statique en modèles exécutables</li>
+<li><strong>Maintenir la cohérence</strong> : Assurer que la
+documentation reste synchronisée avec l’implémentation</li>
+<li><strong>Faciliter la compréhension</strong> : Rendre l’architecture
+d’entreprise accessible à tous les acteurs</li>
+</ul>
+<h4 id="génération-automatique">🔧 Génération automatique</h4>
+<ul>
+<li><strong>Représentations techniques</strong> : Générer
+automatiquement YAML, Rego, Terraform, OpenAPI, etc.</li>
+<li><strong>Code boilerplate</strong> : Réduire la duplication et les
+erreurs de codage manuel</li>
+<li><strong>Validation continue</strong> : Détecter les incohérences et
+violations de politiques</li>
+</ul>
+<h4 id="gouvernance-intégrée">🏢 Gouvernance intégrée</h4>
+<ul>
+<li><strong>Registres et catalogues</strong> : Alimenter automatiquement
+les plateformes de gouvernance</li>
+<li><strong>Self-service</strong> : Permettre aux équipes de découvrir
+et consommer les données facilement</li>
+<li><strong>Conformité</strong> : Intégrer les exigences réglementaires
+(RGPD, SOX, etc.) dans le modèle</li>
+</ul>
+<h3 id="avantages-clés">🌟 Avantages clés</h3>
+<ul>
+<li><strong>Lisibilité</strong> : Syntaxe claire et expressive inspirée
+des meilleures pratiques</li>
+<li><strong>Extensibilité</strong> : Architecture modulaire permettant
+l’ajout de nouveaux concepts</li>
+<li><strong>Intégration</strong> : Compatible avec l’écosystème moderne
+(CI/CD, IaC, observabilité)</li>
+<li><strong>Validation</strong> : Vérification statique des modèles et
+détection d’erreurs précoces</li>
+</ul>
+<hr />
+<h2 id="syntaxe-de-base">🔤 Syntaxe de base</h2>
+<p>Meshr-lang est un langage de modélisation déclaratif conçu pour
+décrire des architectures d’entreprise, des produits, des domaines
+métier et leurs relations. Sa syntaxe s’inspire de langages modernes
+comme HCL (HashiCorp Configuration Language), Kotlin DSL, et GraphQL
+Schema Definition Language (SDL).</p>
+<h3 id="structure-des-fichiers">📄 Structure des fichiers</h3>
+<p><strong>Extension de fichier</strong> : <code>.meshr</code></p>
+<p>Tous les fichiers Meshr-lang utilisent l’extension
+<code>.meshr</code> et suivent une structure modulaire où chaque fichier
+représente un module autonome contenant des déclarations de types,
+d’entités, d’énumérations, et d’autres artefacts métier.</p>
+<h3 id="style-déclaratif">🎨 Style déclaratif</h3>
+<p>Meshr-lang adopte un style <strong>déclaratif à blocs</strong> qui
+privilégie la lisibilité et la structure hiérarchique :</p>
+<ul>
+<li><strong>Blocs imbriqués</strong> : Les déclarations sont organisées
+en blocs logiques avec indentation</li>
+<li><strong>Syntaxe claire</strong> : Utilisation de mots-clés
+explicites et de ponctuation minimale</li>
+<li><strong>Lisibilité</strong> : Structure qui reflète naturellement la
+hiérarchie des concepts métier</li>
+</ul>
+<h3 id="commentaires">💬 Commentaires</h3>
+<p>Les commentaires permettent d’ajouter des explications et de la
+documentation directement dans le code source :</p>
+<ul>
+<li><strong>Commentaires de ligne</strong> : Commencent par
+<code>//</code> et s’étendent jusqu’à la fin de la ligne</li>
+<li><strong>Commentaires de bloc</strong> : Délimités par
+<code>/*</code> et <code>*/</code>, peuvent s’étendre sur plusieurs
+lignes</li>
+<li><strong>Ignorés par le parser</strong> : Les commentaires ne font
+pas partie de l’AST (Abstract Syntax Tree)</li>
+</ul>
+<h4 id="exemples-de-commentaires">Exemples de commentaires :</h4>
+<pre class="meshr"><code>// Ceci est un commentaire de ligne
+entity Customer {
+  // Commentaire sur un champ
+  name: String
+}
+
+/*
+ * Ceci est un commentaire de bloc
+ * qui peut s&#39;étendre sur plusieurs lignes
+ * pour documenter des concepts complexes
+ */</code></pre>
+<h3 id="types-de-valeurs-primitives">🔢 Types de valeurs primitives</h3>
+<p>Meshr-lang supporte plusieurs types de valeurs primitives pour
+exprimer des données de base :</p>
+<h4 id="chaînes-de-caractères">Chaînes de caractères</h4>
+<ul>
+<li><strong>Syntaxe</strong> :
+<code>"texte entre guillemets doubles"</code></li>
+<li><strong>Usage</strong> : Noms, descriptions, identifiants, valeurs
+textuelles</li>
+<li><strong>Exemples</strong> : <code>"Customer"</code>,
+<code>"John Doe"</code>, <code>"production"</code></li>
+</ul>
+<h4 id="valeurs-booléennes">Valeurs booléennes</h4>
+<ul>
+<li><strong>Syntaxe</strong> : <code>true</code> ou
+<code>false</code></li>
+<li><strong>Usage</strong> : Flags, conditions, propriétés binaires</li>
+<li><strong>Exemples</strong> : <code>isActive: true</code>,
+<code>isPublic: false</code></li>
+</ul>
+<h4 id="nombres">Nombres</h4>
+<ul>
+<li><strong>Nombres décimaux</strong> : <code>42</code>,
+<code>3.14</code>, <code>-15.5</code></li>
+<li><strong>Nombres hexadécimaux</strong> : <code>0xFF</code>,
+<code>0x00FF00</code>, <code>0x1A2B3C</code></li>
+<li><strong>Usage</strong> : Compteurs, identifiants numériques, valeurs
+de configuration</li>
+</ul>
+<h4 id="noms-qualifiés">Noms qualifiés</h4>
+<ul>
+<li><strong>Syntaxe</strong> : <code>module.Type.EnumValue</code></li>
+<li><strong>Usage</strong> : Références à des types, énumérations, ou
+constantes d’autres modules</li>
+<li><strong>Exemples</strong> : <code>privacy.Level.HIGH</code>,
+<code>core.Status.ACTIVE</code></li>
+</ul>
+<h4 id="intervalles-temporels">Intervalles temporels</h4>
+<ul>
+<li><strong>Syntaxe</strong> :
+<code>Interval &lt;valeur&gt; &lt;unité&gt;</code></li>
+<li><strong>Usage</strong> : Durées, périodes, délais d’expiration</li>
+<li><strong>Exemples</strong> :
+<ul>
+<li><code>Interval 12 month</code> : 12 mois</li>
+<li><code>Interval -1 day</code> : -1 jour (hier)</li>
+<li><code>Interval "2024-01" year to month</code> : de janvier 2024 à
+maintenant</li>
+</ul></li>
+</ul>
+<h3 id="structure-dun-module">🏗️ Structure d’un module</h3>
+<p>Un module Meshr-lang suit une structure hiérarchique bien définie
+:</p>
+<ol type="1">
+<li><strong>Déclarations d’import</strong> (optionnelles)</li>
+<li><strong>Déclaration du module</strong> (obligatoire)</li>
+<li><strong>Déclarations d’export</strong> (optionnelles)</li>
+<li><strong>Déclarations d’artefacts</strong> (entités, énumérations,
+types, etc.)</li>
+</ol>
+<h4 id="exemple-de-structure-de-module">Exemple de structure de module
+:</h4>
+<pre class="meshr"><code>// Ceci est un commentaire simple
+
+/*
+  Ceci est un commentaire
+  sur plusieurs lignes
+*/</code></pre>
+<hr />
+<h2 id="déclaration-des-modules-et-imports">📦 Déclaration des modules
+et imports</h2>
+<p>Le <strong>module</strong> est l’unité fondamentale d’organisation
+dans Meshr-lang. Il représente un espace de noms versionné et autonome
+qui contient des déclarations d’artefacts métier (entités, énumérations,
+types, etc.). Chaque fichier <code>.meshr</code> correspond à un module
+unique.</p>
+<h3 id="concept-et-objectifs">🎯 Concept et objectifs</h3>
+<p>Un module Meshr-lang sert à :</p>
+<ul>
+<li><strong>Encapsuler</strong> : Regrouper des concepts métier liés
+dans un espace de noms cohérent</li>
+<li><strong>Versionner</strong> : Permettre l’évolution des API et la
+gestion des dépendances</li>
+<li><strong>Réutiliser</strong> : Faciliter l’import et la réutilisation
+de composants entre modules</li>
+<li><strong>Organiser</strong> : Structurer l’architecture d’entreprise
+en composants modulaires</li>
+<li><strong>Isoler</strong> : Définir des frontières claires entre
+différents domaines métier</li>
+</ul>
+<h3 id="architecture-modulaire">🏗️ Architecture modulaire</h3>
+<p>Meshr-lang encourage une architecture modulaire où :</p>
+<ul>
+<li><strong>Un module = un domaine métier</strong> : Chaque module
+représente un domaine d’expertise spécifique</li>
+<li><strong>Dépendances explicites</strong> : Les relations entre
+modules sont déclarées via des imports</li>
+<li><strong>Namespace hiérarchique</strong> : Les noms de modules
+suivent une convention hiérarchique (ex: <code>core.types</code>,
+<code>marketing.analytics</code>)</li>
+<li><strong>Versioning sémantique</strong> : Chaque module peut être
+versionné indépendamment</li>
+</ul>
+<h3 id="syntaxe">📐 Syntaxe</h3>
+<pre class="meshr"><code>@experimental
+@version(&quot;0.2.0&quot;)
+module marketing.analytics
+
+// Import simple
+import Customer from marketing.shared
+
+// Import groupé (recommandé)
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { Version, Author, Documented } from meshr.annotations
+
+// Import wildcard
+import * from meshr.types
+
+// autres déclarations</code></pre>
+<h3 id="sémantique">📚 Sémantique</h3>
+<ul>
+<li><strong>Un fichier <code>.meshr</code> = un module
+unique</strong>.</li>
+<li>Le <code>module</code> définit le <strong>namespace</strong> des
+artefacts qu’il contient.</li>
+<li>Les <code>import</code> permettent d’accéder à des symboles publics
+d’autres modules.</li>
+<li>Des <strong>annotations peuvent précéder</strong> la déclaration
+<code>module</code> (ex.: <code>@experimental</code>,
+<code>@version("...")</code>).</li>
+</ul>
+<h3 id="types-dimports-supportés">🔧 Types d’imports supportés</h3>
+<h4 id="import-simple">Import simple</h4>
+<pre class="meshr"><code>import Customer from marketing.shared</code></pre>
+<p>Importe un seul élément (enum, aspect, trait, etc.) d’un module.</p>
+<h4 id="import-groupé-recommandé">Import groupé (recommandé)</h4>
+<pre class="meshr"><code>import { DataClassification, WithSecurity } from meshr.security</code></pre>
+<p>Importe plusieurs éléments spécifiques d’un module. C’est la méthode
+recommandée car elle est explicite et évite les conflits de noms.</p>
+<h4 id="import-wildcard">Import wildcard</h4>
+<pre class="meshr"><code>import * from meshr.types</code></pre>
+<p>Importe tous les éléments exportés d’un module. Utilisez avec
+précaution pour éviter les conflits de noms.</p>
+<h3 id="ordre-des-déclarations">📋 Ordre des déclarations</h3>
+<p>L’ordre correct dans un module Meshr-Lang est :</p>
+<pre class="meshr"><code>module mon.module
+
+// 1. Imports (après la déclaration du module)
+import { Item1, Item2 } from autre.module
+
+// 2. Exports (après les imports)
+export { MonItem }
+
+// 3. Déclarations (enums, aspects, traits, entités, etc.)
+enum MonEnum is (&quot;value1&quot;, &quot;value2&quot;)
+end</code></pre>
+<ul>
+<li>Les <code>import</code> permettent d’accéder à des symboles
+<strong>explicitement exportés</strong> d’autres modules.</li>
+<li>Les éléments d’un module <strong>ne sont pas visibles depuis
+l’extérieur</strong> s’ils ne sont pas précédés du mot-clé
+<code>export</code>.</li>
+<li>L’import de <code>{ * }</code> signifie <strong>importer tous les
+symboles exportés</strong> du module cible.</li>
+<li>L’import de <code>{ A, B }</code> permet une <strong>importation
+sélective</strong>.</li>
+<li>Les accolades <code>{}</code> sont <strong>optionnelles uniquement
+si un seul identifiant</strong> est importé.</li>
+<li>Si plusieurs identifiants sont importés d’un même module, l’usage
+des accolades est <strong>obligatoire</strong>.</li>
+</ul>
+<h3 id="export-des-déclarations">📤 Export des déclarations</h3>
+<p>Deux formes d’export sont possibles dans un module :</p>
+<h4 id="export-inline-immédiat">✅ Export inline (immédiat)</h4>
+<pre class="meshr"><code>export enum SensitivityLevel is (public, internal, restricted)</code></pre>
+<ul>
+<li>La déclaration est rendue publique immédiatement.</li>
+<li>Facile à lire mais répétitif si plusieurs artefacts sont à
+exporter.</li>
+</ul>
+<h4 id="export-groupé-centralisé">✅ Export groupé (centralisé)</h4>
+<pre class="meshr"><code>export { PIICategory, SensitivityLevel }
+
+enum PIICategory is (contact, identity, financial, health, biometric, location)
+enum SensitivityLevel is (public, internal, restricted, confidential)</code></pre>
+<ul>
+<li>Doit apparaître juste <strong>après les imports</strong>, jamais en
+fin de module.</li>
+<li>Permet de déclarer tous les artefacts exportés en un seul
+point.</li>
+<li>Aucune déclaration listée dans ce bloc n’a besoin du mot-clé
+<code>export</code> en ligne.</li>
+</ul>
+<h4 id="règles-de-priorité-dexport">🧠 Règles de priorité d’export</h4>
+<ol type="1">
+<li>Une déclaration précédée de <code>export</code> est
+<strong>immédiatement publique</strong>.</li>
+<li>Une déclaration listée dans <code>export { ... }</code> devient
+<strong>publique à posteriori</strong>.</li>
+<li>Un même nom peut apparaître dans les deux formes (toléré).</li>
+<li>Toute déclaration <strong>non exportée explicitement</strong> est
+<strong>privée</strong> au module.</li>
+</ol>
+<ul>
+<li><strong>Un fichier <code>.meshr</code> = un module
+unique</strong>.</li>
+<li>Le <code>module</code> définit le <strong>namespace</strong> des
+artefacts qu’il contient.</li>
+<li>Les <code>import</code> permettent d’accéder à des symboles publics
+d’autres modules.</li>
+<li>Les annotations <code>@module_*</code> sont optionnelles mais
+encouragées pour documenter les modules.</li>
+<li>Les <code>import</code> permettent d’accéder à des symboles
+<strong>explicitement exportés</strong> d’autres modules.</li>
+<li>Les éléments d’un module <strong>ne sont pas visibles depuis
+l’extérieur</strong> s’ils ne sont pas précédés du mot-clé
+<code>export</code>.</li>
+<li>L’import de <code>{ * }</code> signifie <strong>importer tous les
+symboles exportés</strong> du module cible.</li>
+<li>L’import de <code>{ A, B }</code> permet une <strong>importation
+sélective</strong>.</li>
+<li>Les accolades <code>{}</code> sont <strong>optionnelles uniquement
+si un seul identifiant</strong> est importé.</li>
+<li>Si plusieurs identifiants sont importés d’un même module, l’usage
+des accolades est <strong>obligatoire</strong>.</li>
+</ul>
+<h3 id="convention-darborescence">📁 Convention d’arborescence</h3>
+<p>Par convention (non obligatoire), l’arborescence des fichiers reflète
+les noms qualifiés des modules :</p>
+<table>
+<colgroup>
+<col style="width: 37%" />
+<col style="width: 62%" />
+</colgroup>
+<thead>
+<tr>
+<th>Module</th>
+<th>Fichier</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core.types</code></td>
+<td><code>modules/core/types.meshr</code></td>
+</tr>
+<tr>
+<td><code>marketing.analytics</code></td>
+<td><code>modules/marketing/analytics.meshr</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="annotations">🏷️ Annotations</h2>
+<p>Les <strong>annotations</strong> permettent d’ajouter des métadonnées
+structurées sur n’importe quelle déclaration du langage Meshr
+(<code>module</code>, <code>product</code>, <code>domain</code>,
+<code>enum</code>, etc.). Elles sont inspirées de langages comme Java,
+Kotlin ou GraphQL.</p>
+<h3 id="syntaxe-1">📐 Syntaxe</h3>
+<ul>
+<li>Une annotation commence par <code>@</code> suivie de son nom.</li>
+<li>Elle peut recevoir :
+<ul>
+<li>Aucun argument : <code>@experimental</code></li>
+<li>Une seule valeur : <code>@since("1.2.0")</code></li>
+<li>Une ou plusieurs paires clé-valeur :
+<code>@author(name="Greg")</code></li>
+<li>Des arguments mixtes :
+<code>@scope(level=ScopeLevel.Internal)</code></li>
+</ul></li>
+<li>Plusieurs annotations peuvent être empilées au-dessus d’une
+déclaration.</li>
+</ul>
+<h4 id="exemples">Exemples</h4>
+<pre class="meshr"><code>@experimental
+@version(&quot;0.2.0&quot;)
+@scope(level=ScopeLevel.Internal)
+@author(
+  name=&quot;Greg&quot;,
+  email=&quot;greg@example.com&quot;
+)
+@deprecated(reason=&quot;Use new module instead&quot;)
+@confidentiality(privacy.Level.HIGH)
+module metadata.annotations</code></pre>
+<h3 id="règles">🧠 Règles</h3>
+<ul>
+<li>Les valeurs peuvent être :
+<ul>
+<li>des chaînes : <code>"texte"</code></li>
+<li>des identifiants : <code>Internal</code></li>
+<li>des chemins qualifiés : <code>privacy.Level.HIGH</code></li>
+</ul></li>
+<li>Les paires <code>clé=valeur</code> peuvent être combinées dans une
+annotation.</li>
+<li>Les annotations sont <strong>optionnelles</strong> et <strong>non
+normatives</strong> mais peuvent être exploitées par les outils CLI ou
+LSP.</li>
+</ul>
+<h3 id="annotations-avec-arguments-typés">🧩 [2025-09-10] — Annotations
+avec arguments typés</h3>
+<ul>
+<li><strong>Contexte :</strong> Besoin d’enrichir les artefacts avec des
+métadonnées structurées.</li>
+<li><strong>Décision :</strong> Support des annotations avec arguments
+(valeur unique ou paires clé/valeur), et valeurs typées
+(<code>string</code>, <code>boolean</code>, <code>number</code> — y
+compris hex —, <code>qualifiedName</code>, <code>interval</code>).</li>
+<li><strong>Pourquoi :</strong> Permet une expressivité maximale tout en
+restant compatible avec une grammaire ANTLR claire et extensible.</li>
+</ul>
+<h3 id="déclaration-des-types-dannotations">✍️ Déclaration des types
+d’annotations</h3>
+<p>Meshr permet de déclarer des <strong>types d’annotations</strong>
+personnalisés à l’aide du mot-clé <code>annotation</code>.</p>
+<h4 id="syntaxe-2">📐 Syntaxe</h4>
+<pre class="meshr"><code>@Target(annotation)
+@Retention(model)
+annotation Documented is
+  required summary : String
+  optional description : String = &quot;&quot;
+  optional deprecated : Boolean = false
+end</code></pre>
+<h4 id="sémantique-1">🔎 Sémantique</h4>
+<ul>
+<li>Les types d’annotations sont eux-mêmes annotables
+(<code>@Target</code>, <code>@Retention</code>,
+<code>@Repeatable</code>…).</li>
+<li>Le bloc interne suit la forme :
+<ul>
+<li><code>required</code> : la valeur doit obligatoirement être fournie
+à l’usage, <strong>aucune valeur par défaut autorisée</strong>.</li>
+<li><code>optional</code> : la valeur est optionnelle, et peut être
+associée à une valeur par défaut.</li>
+</ul></li>
+<li>Si une annotation typée est utilisée sans renseigner un champ
+<code>optional</code>, alors la valeur par défaut s’applique.</li>
+<li>Les types autorisés incluent les <strong>types de base</strong>
+(<code>String</code>, <code>Boolean</code>, <code>Integer</code>,
+<code>Float</code>, <code>Double</code>, <code>Date</code>,
+<code>Datetime</code>, <code>Time</code>, <code>Timestamp</code>,
+<code>Geography</code>, <code>Bytes</code>, <code>Json</code>,
+<code>Interval</code>, <code>Range</code>) et les <strong>noms
+qualifiés</strong> (enums, types importés).</li>
+<li>Le mot-clé <code>end</code> est requis pour clore la
+déclaration.</li>
+</ul>
+<h4 id="règle-sémantique-required-vs-optional">🧠 Règle sémantique
+<code>required</code> vs <code>optional</code></h4>
+<ul>
+<li><code>required</code> : champ <strong>obligatoire</strong>,
+<strong>sans valeur par défaut</strong>, doit être explicitement
+renseigné à l’usage.</li>
+<li><code>optional</code> : champ <strong>optionnel</strong>,
+<strong>avec ou sans valeur par défaut</strong>.
+<ul>
+<li>Si valeur par défaut spécifiée → utilisée si champ non
+renseigné.</li>
+<li>Sinon → champ absent à l’usage.</li>
+</ul></li>
+</ul>
+<h3 id="types-de-base-autorisés-pour-les-annotations">🔤 Types de base
+autorisés pour les annotations</h3>
+<p>Les types suivants peuvent être utilisés dans les déclarations
+d’annotations :</p>
+<ul>
+<li><code>Boolean</code> : valeurs <code>true</code> ou
+<code>false</code></li>
+<li><code>String</code> : chaînes de caractères délimitées par des
+guillemets</li>
+<li><code>Integer</code> : nombre entier (ex: <code>42</code>)</li>
+<li><code>Float</code> : nombre décimal (ex: <code>3.14</code>)</li>
+<li><code>Double</code> : précision étendue (équivalent sémantique à
+<code>Float</code> pour l’instant)</li>
+<li><code>Date</code>, <code>Datetime</code>, <code>Time</code>,
+<code>Timestamp</code> : types temporels</li>
+<li><code>Geography</code> : localisation géographique (future
+extension)</li>
+<li><code>Bytes</code> : données binaires</li>
+<li><code>Json</code> : valeurs encodées en JSON (future extension)</li>
+<li><code>Interval</code> : intervalle sur un type temporel (ex:
+<code>Interval 2 hour</code>)</li>
+<li><code>Range</code> : intervalle contigu entre deux valeurs ordonnées
+(ex: <code>Range 1..10</code>)</li>
+</ul>
+<h3 id="contraintes-sur-les-types-string">🎯 Contraintes sur les types
+String</h3>
+<p>Les types <code>String</code> peuvent être enrichis avec des
+contraintes pour valider le format et la longueur des chaînes :</p>
+<h4 id="syntaxe-des-contraintes">Syntaxe des contraintes</h4>
+<pre class="meshr"><code>// Contrainte de pattern (regex)
+email : String pattern &quot;^[^@]+@[^@]+$&quot;
+
+// Contrainte de longueur
+username : String length 3..20
+
+// Contraintes combinées
+phone : String pattern &quot;^[0-9]{10,15}$&quot; length 10..15</code></pre>
+<h4 id="types-de-contraintes">Types de contraintes</h4>
+<ul>
+<li><strong><code>pattern</code></strong> : expression régulière pour
+valider le format
+<ul>
+<li>Exemple email : <code>String pattern "^[^@]+@[^@]+$"</code></li>
+<li>Exemple téléphone :
+<code>String pattern "^[0-9]{10,15}$"</code></li>
+<li>Exemple URL : <code>String pattern "^https?://.*"</code></li>
+</ul></li>
+<li><strong><code>length</code></strong> : bornes sur la longueur de la
+chaîne
+<ul>
+<li>Longueur fixe : <code>String length 10..10</code></li>
+<li>Longueur variable : <code>String length 1..100</code></li>
+<li>Longueur minimale : <code>String length 5..</code></li>
+</ul></li>
+</ul>
+<h4 id="utilisation-dans-tous-les-contextes">Utilisation dans tous les
+contextes</h4>
+<p>Les contraintes String peuvent être utilisées partout où un type
+<code>String</code> est autorisé :</p>
+<pre class="meshr"><code>// Dans les annotations
+annotation UserProfile is
+  required email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  required username : String length 3..20
+  optional phone : String pattern &quot;^[0-9]{10,15}$&quot; length 10..15
+end
+
+// Dans les enums
+enum HttpStatus(code: Integer, message: String pattern &quot;^[A-Z][a-z ]+$&quot;) is (
+  ok(code = 200, message = &quot;OK&quot;),
+  not_found(code = 404, message = &quot;Not Found&quot;)
+)
+
+// Dans les records
+record Contact is
+  name : String length 1..100
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  phone : String pattern &quot;^[0-9]{10,15}$&quot;
+end
+
+// Dans les traits
+trait Identifiable is
+  id : String pattern &quot;^[a-zA-Z0-9_-]+$&quot; length 1..50
+  name : String length 1..100
+end</code></pre>
+<h4 id="règles-sémantiques">Règles sémantiques</h4>
+<ul>
+<li>Les contraintes <code>pattern</code> et <code>length</code> peuvent
+être combinées</li>
+<li>L’ordre des contraintes n’est pas significatif</li>
+<li>Les contraintes sont optionnelles : <code>String</code> sans
+contrainte est valide</li>
+<li>Les erreurs de contraintes (double pattern, length incompatible)
+sont détectées par l’analyseur sémantique</li>
+</ul>
+<p>Les annotations peuvent utiliser les valeurs suivantes:</p>
+<ul>
+<li>Chaînes: <code>"abc"</code></li>
+<li>Booléens: <code>true</code>, <code>false</code></li>
+<li>Numériques: <code>42</code>, <code>3.14</code>, <code>0xFF</code>,
+<code>0x00FF00</code></li>
+<li>Noms qualifiés: <code>privacy.Level.HIGH</code></li>
+<li>Intervalles: voir section dédiée ci-dessous</li>
+</ul>
+<p>Les énumérations peuvent également être utilisées comme type
+d’attribut.</p>
+<pre class="meshr"><code>annotation Repeatable is
+  optional value : Boolean = true
+end
+
+enum Color(value: Integer) is (
+    red(value = 0xFF0000),
+    green(value = 0x00FF00),
+    blue(value = 0x0000FF)
+)</code></pre>
+<h4 id="exemples-1">📦 Exemples</h4>
+<pre class="meshr"><code>// Type d’annotation avec plusieurs champs
+@Target(annotation)
+@Retention(model)
+annotation Example is
+  required name : String
+  optional version : String = &quot;1.0&quot;
+  optional experimental : Boolean = false
+end</code></pre>
+<pre class="meshr"><code>// Annotation simple booléenne
+@Target(annotation)
+@Retention(model)
+annotation Repeatable is
+  optional value : Boolean = true
+end</code></pre>
+<h4 id="tests-valides">✅ Tests valides</h4>
+<pre class="meshr"><code>@Example(name=&quot;MeshrLang&quot;)
+annotation Test1 is end
+
+@Example(name=&quot;MeshrLang&quot;, experimental=true)
+annotation Test2 is end</code></pre>
+<h4 id="tests-invalides">❌ Tests invalides</h4>
+<p>Les tests invalides sont implémentés dans le fichier
+<code>invalid-annotation-decl-test.meshr</code> et couvrent :</p>
+<ul>
+<li><strong>Erreurs de syntaxe dans les annotations</strong> : Arguments
+d’annotations mal formés</li>
+<li><strong>Champs <code>required</code> non renseignés</strong> :
+Validation des champs obligatoires</li>
+<li><strong>Redondance entre champs</strong> : Détection des
+déclarations en double</li>
+<li><strong>Mauvais types</strong> : Validation des types dans les
+annotations</li>
+<li><strong>Syntaxe invalide</strong> : Structures d’annotations mal
+formées</li>
+</ul>
+<p><strong>Exemple d’erreur détectée :</strong></p>
+<pre class="meshr"><code>@Target(annotation)  // ❌ Erreur : argument mal formé
+@Retention(model)
+annotation InvalidAnnotation is
+  optional : String = &quot;missingName&quot;
+end</code></pre>
+<h3 id="annotations-standard-stdlib">🏷️ Annotations Standard
+(StdLib)</h3>
+<p>La bibliothèque standard Meshr-Lang fournit un ensemble d’annotations
+prédéfinies dans le module <code>meshr.annotations</code>, incluant les
+méta-annotations et les annotations communes.</p>
+<h4 id="import-des-annotations">📦 Import des annotations</h4>
+<pre class="meshr"><code>module mon.module
+
+// Import des annotations standard
+import { 
+  Target, Retention, Repeatable,
+  Experimental, Deprecated, Version, Author, 
+  Scope, Confidentiality, Documented 
+} from meshr.annotations
+
+export { MonEntite }</code></pre>
+<h4 id="méta-annotations">🔧 Méta-annotations</h4>
+<h5 id="target"><code>@Target</code></h5>
+<p>Spécifie sur quels types d’éléments l’annotation peut être
+utilisée.</p>
+<pre class="meshr"><code>@Target(&quot;all&quot;)           // Tous les éléments
+@Target(&quot;annotation&quot;)    // Seulement les annotations
+@Target(&quot;entity&quot;)        // Seulement les entités
+@Target(&quot;module&quot;)        // Seulement les modules</code></pre>
+<p><strong>Valeurs possibles :</strong> - <code>"all"</code> : Tous les
+éléments - <code>"annotation"</code> : Annotations - <code>"enum"</code>
+: Énumérations - <code>"module"</code> : Modules - <code>"record"</code>
+: Records - <code>"trait"</code> : Traits - <code>"aspect"</code> :
+Aspects - <code>"entity"</code> : Entités - <code>"type_relation"</code>
+: Types de relations - <code>"relation"</code> : Relations</p>
+<h5 id="retention"><code>@Retention</code></h5>
+<p>Spécifie la durée de vie de l’annotation.</p>
+<pre class="meshr"><code>@Retention(compile)  // Supprimée à la compilation
+@Retention(model)    // Conservée dans le modèle
+@Retention(export)   // Exportée avec l&#39;artefact</code></pre>
+<h5 id="repeatable"><code>@Repeatable</code></h5>
+<p>Indique si l’annotation peut être utilisée plusieurs fois sur le même
+élément.</p>
+<pre class="meshr"><code>@Repeatable(true)   // Peut être répétée
+@Repeatable(false)  // Ne peut pas être répétée</code></pre>
+<h4 id="annotations-communes">🏷️ Annotations communes</h4>
+<h5 id="experimental"><code>@Experimental</code></h5>
+<p>Marque un élément comme expérimental.</p>
+<pre class="meshr"><code>@Experimental(reason=&quot;Feature is experimental and may change&quot;)</code></pre>
+<h5 id="deprecated"><code>@Deprecated</code></h5>
+<p>Marque un élément comme déprécié.</p>
+<pre class="meshr"><code>@Deprecated(
+  reason=&quot;Use new OrderV2 entity instead&quot;,
+  since=&quot;2024-01-01&quot;,
+  replacement=&quot;OrderV2&quot;
+)</code></pre>
+<h5 id="version"><code>@Version</code></h5>
+<p>Spécifie la version d’un élément.</p>
+<pre class="meshr"><code>@Version(&quot;1.2.0&quot;)</code></pre>
+<h5 id="author"><code>@Author</code></h5>
+<p>Spécifie l’auteur d’un élément.</p>
+<pre class="meshr"><code>@Author(
+  name=&quot;Data Team&quot;,
+  email=&quot;data@company.com&quot;,
+  organization=&quot;ACME Corp&quot;
+)</code></pre>
+<h5 id="scope"><code>@Scope</code></h5>
+<p>Spécifie la portée d’un élément.</p>
+<pre class="meshr"><code>@Scope(level=&quot;internal&quot;, description=&quot;Internal use only&quot;)</code></pre>
+<p><strong>Niveaux possibles :</strong> - <code>"public"</code> : Public
+- <code>"internal"</code> : Interne - <code>"private"</code> : Privé</p>
+<h5 id="confidentiality"><code>@Confidentiality</code></h5>
+<p>Spécifie le niveau de confidentialité.</p>
+<pre class="meshr"><code>@Confidentiality(
+  level=&quot;confidential&quot;,
+  classification=&quot;PII&quot;,
+  handling_instructions=&quot;Encrypt at rest&quot;
+)</code></pre>
+<p><strong>Niveaux possibles :</strong> - <code>"public"</code> : Public
+- <code>"internal"</code> : Interne - <code>"confidential"</code> :
+Confidentiel - <code>"restricted"</code> : Restreint</p>
+<h5 id="documented"><code>@Documented</code></h5>
+<p>Ajoute de la documentation structurée.</p>
+<pre class="meshr"><code>@Documented(
+  summary=&quot;Customer entity with personal information&quot;,
+  description=&quot;Core entity for customer data management&quot;,
+  examples=&quot;See examples/ directory&quot;,
+  see_also=&quot;CustomerV2 entity&quot;
+)</code></pre>
+<h4 id="exemples-dutilisation">🎯 Exemples d’utilisation</h4>
+<h5 id="module-annoté">Module annoté</h5>
+<pre class="meshr"><code>@Version(&quot;1.0.0&quot;)
+@Author(name=&quot;Data Team&quot;, email=&quot;data@company.com&quot;)
+@Scope(level=&quot;internal&quot;)
+@Confidentiality(level=&quot;confidential&quot;)
+@Documented(summary=&quot;Customer management module&quot;)
+module examples.customer</code></pre>
+<h5 id="entité-annotée">Entité annotée</h5>
+<pre class="meshr"><code>@Version(&quot;1.2.0&quot;)
+@Author(name=&quot;Product Team&quot;)
+@Documented(summary=&quot;Customer entity with personal information&quot;)
+@Experimental(reason=&quot;New customer model, API may change&quot;)
+entity Customer is
+  id : String
+  name : String
+end</code></pre>
+<h5 id="annotation-personnalisée">Annotation personnalisée</h5>
+<pre class="meshr"><code>@Target(&quot;all&quot;)
+@Retention(model)
+@Repeatable(true)
+annotation QualityGate is
+  required level : String
+  optional automated : Boolean = true
+  optional reviewer : String = &quot;&quot;
+end
+
+@QualityGate(level=&quot;high&quot;, reviewer=&quot;senior-dev&quot;)
+entity CriticalEntity is
+  id : String
+end</code></pre>
+<h4 id="intégration-avec-la-stdlib">🔗 Intégration avec la stdlib</h4>
+<p>Les annotations s’intègrent parfaitement avec les autres modules de
+la stdlib :</p>
+<pre class="meshr"><code>import { DataClassification, WithSecurity } from meshr.security
+import { Version, Author, Documented } from meshr.annotations
+
+@Version(&quot;1.0.0&quot;)
+@Author(name=&quot;Security Team&quot;)
+@Documented(summary=&quot;Secure customer entity&quot;)
+entity SecureCustomer with WithSecurity is
+  id : String
+  
+  aspects {
+    DataClassification {
+      level: &quot;confidential&quot;,
+      encryption_required: true
+    }
+  }
+end</code></pre>
+<hr />
+<h2 id="énumérations">🔢 Énumérations</h2>
+<p>Les <strong>énumérations</strong> (ou enums) sont des types de
+données qui permettent de définir un ensemble fini et ordonné de valeurs
+symboliques. Elles sont particulièrement utiles pour représenter des
+catégories, des statuts, des niveaux de priorité, ou tout autre concept
+métier qui peut être exprimé par un nombre limité d’options
+prédéfinies.</p>
+<h3 id="concept-et-objectifs-1">🎯 Concept et objectifs</h3>
+<p>Les énumérations servent à :</p>
+<ul>
+<li><strong>Limiter les choix</strong> : Restreindre les valeurs
+possibles à un ensemble prédéfini et valide</li>
+<li><strong>Améliorer la lisibilité</strong> : Remplacer des valeurs
+numériques ou textuelles par des noms explicites</li>
+<li><strong>Assurer la cohérence</strong> : Garantir que seules des
+valeurs valides sont utilisées dans le système</li>
+<li><strong>Faciliter la maintenance</strong> : Centraliser la
+définition des valeurs possibles</li>
+<li><strong>Documenter le domaine</strong> : Exprimer explicitement les
+options disponibles dans un contexte métier</li>
+</ul>
+<h3 id="types-dénumérations">🏗️ Types d’énumérations</h3>
+<p>Meshr-lang supporte deux formes d’énumérations :</p>
+<h4 id="énumérations-simples">Énumérations simples</h4>
+<ul>
+<li><strong>Valeurs symboliques</strong> : Liste de noms représentant
+les options possibles</li>
+<li><strong>Usage</strong> : Statuts, catégories, niveaux de
+priorité</li>
+<li><strong>Exemple</strong> :
+<code>(active, inactive, pending)</code></li>
+</ul>
+<h4 id="énumérations-avec-paramètres">Énumérations avec paramètres</h4>
+<ul>
+<li><strong>Valeurs enrichies</strong> : Chaque valeur peut avoir des
+propriétés associées</li>
+<li><strong>Usage</strong> : Codes d’erreur avec messages, statuts avec
+métadonnées</li>
+<li><strong>Exemple</strong> :
+<code>active(code = 200, message = "OK")</code></li>
+</ul>
+<h3 id="syntaxe-simple-inline">📐 Syntaxe simple (inline)</h3>
+<pre class="meshr"><code>export enum PIICategory is (contact, identity, financial, health, biometric, location)</code></pre>
+<ul>
+<li>Le mot-clé <code>enum</code> introduit une énumération nommée.</li>
+<li>L’utilisation de <code>export</code> rend l’énumération visible à
+l’extérieur du module.</li>
+<li>Les valeurs sont listées entre parenthèses, séparées par des
+virgules.</li>
+<li>Cette forme convient aux déclarations rapides et lisibles.</li>
+</ul>
+<h3 id="export-groupé">📤 Export groupé</h3>
+<pre class="meshr"><code>export { PIICategory }
+
+enum PIICategory is (contact, identity, financial, health, biometric, location)</code></pre>
+<ul>
+<li>L’énumération est déclarée sans <code>export</code>, puis rendue
+publique via un bloc <code>export { ... }</code>.</li>
+<li>Cette forme permet de centraliser tous les artefacts publics après
+les imports.</li>
+</ul>
+<h3 id="règles-1">🧠 Règles</h3>
+<ul>
+<li>Les valeurs d’énum peuvent être des <strong>identifiants</strong> ou
+des <strong>chaînes</strong> (ex: <code>"export"</code>).</li>
+<li>Les identifiants de valeurs doivent être uniques et respectent la
+casse.</li>
+<li>Une énumération peut être annotée, comme tout autre artefact.</li>
+<li>Le nom de l’énumération doit être un identifiant valide.</li>
+</ul>
+<h3 id="enums-avec-attributs-typés">🧩 [2025-09-10] — Enums avec
+attributs typés</h3>
+<ul>
+<li><strong>Contexte :</strong> Il est utile de donner aux énumérations
+des attributs associés à chaque valeur (ex. code couleur, libellé,
+gravité).</li>
+<li><strong>Décision :</strong> On introduit une forme enrichie de
+déclaration d’<code>enum</code>, où chaque valeur peut porter une ou
+plusieurs <strong>propriétés typées</strong>, similaires aux
+<code>enum class</code> de Kotlin.</li>
+<li><strong>Pourquoi :</strong> Cela augmente l’expressivité du langage,
+permet des relations croisées entre enums, et reste compatible avec les
+aspects et politiques du langage.</li>
+</ul>
+<h3 id="syntaxe-enrichie">🧬 Syntaxe enrichie</h3>
+<pre class="meshr"><code>enum Color(value: Integer) is (
+  red(value = 0xFF0000),
+  green(value = 0x00FF00),
+  blue(value = 0x0000FF)
+)
+
+enum Severity(color: Color, severity: String = &quot;none&quot;) is (
+  none(color = Color.blue),
+  medium(color = Color.green, severity = &quot;medium&quot;),
+  high(color = Color.red, severity = &quot;high&quot;)
+)</code></pre>
+<blockquote>
+<p>🔎 Remarque : les valeurs entières peuvent être exprimées en
+hexadécimal (ex: <code>0xFF0000</code>) pour représenter des couleurs ou
+des flags binaires.</p>
+</blockquote>
+<h3 id="règles-2">🔎 Règles</h3>
+<ul>
+<li>Une énumération peut définir une <strong>signature
+d’attributs</strong> dans <code>( ...)</code> immédiatement après le
+nom.</li>
+<li>Chaque valeur de l’énumération doit fournir des arguments nommés (ex
+: <code>color = Color.red</code>).</li>
+<li>Les attributs peuvent avoir une <strong>valeur par défaut</strong>,
+comme <code>severity: String = "none"</code>.</li>
+<li>Les types d’attributs peuvent être des <strong>types de
+base</strong> (cf. liste) ou des <strong>noms qualifiés</strong> (ex.:
+autre enum).</li>
+<li>L’ordre des arguments dans les valeurs n’a pas besoin de suivre
+celui de la signature.</li>
+</ul>
+<blockquote>
+<p>ℹ️ Les nombres peuvent être fournis en <strong>hexadécimal</strong>
+(<code>0xFF0000</code>) pour des codes couleur, et les
+<strong>intervalles</strong> sont supportés dans les valeurs
+d’annotation.</p>
+</blockquote>
+<h3 id="intervalles-interval">⏱️ Intervalles (Interval)</h3>
+<p>Les littéraux d’intervalle sont supportés dans les annotations via la
+forme <code>Interval ...</code>.</p>
+<p>Formes supportées:</p>
+<ul>
+<li>Partie simple: <code>Interval 12 month</code>,
+<code>Interval -1 day</code>, <code>Interval 2 hour</code></li>
+<li>Avec bornes textuelles + précision:
+<code>Interval "2024-01" year to month</code></li>
+<li>Précisions supportées: <code>year</code>, <code>quarter</code>,
+<code>month</code>, <code>week</code>, <code>day</code>,
+<code>hour</code>, <code>minute</code>, <code>second</code>,
+<code>millisecond</code>, <code>microsecond</code></li>
+</ul>
+<p>Notes:</p>
+<ul>
+<li>Le signe <code>-</code> est autorisé devant les nombres
+d’intervalle: <code>Interval -10 day</code>.</li>
+<li>Les nombres hexadécimaux sont acceptés:
+<code>Interval 0x10 second</code>.</li>
+</ul>
+<h3 id="types-composites-list-map-range-record">🧩 Types composites:
+List, Map, Range, Record</h3>
+<p>Meshr supporte des types composites utilisables dans les signatures
+d’énumérations et les déclarations d’annotations via
+<code>typeRef</code>:</p>
+<ul>
+<li><code>List of T</code></li>
+<li><code>Map of K to V</code></li>
+<li><code>Range of T</code></li>
+<li><code>record</code> référencé par nom (voir ci-dessous)</li>
+</ul>
+<p>Exemples de types:</p>
+<pre class="meshr"><code>annotation Meta is
+  required owner : String
+  optional tags : List of String
+  optional conf : Map of String to Integer
+  optional span : Range of Integer
+end
+
+record Address is
+  street : String
+  zipcode : Integer
+  extras : Map of String to Integer
+end</code></pre>
+<h4 id="valeurs-par-défaut-dans-record">Valeurs par défaut dans
+<code>record</code></h4>
+<p>Les champs d’un <code>record</code> peuvent recevoir une valeur par
+défaut:</p>
+<pre class="meshr"><code>record Address is
+  street : String = &quot;foo&quot;
+  zipcode : Integer = 42
+  extras : Map of String to Integer = Map { &quot;foo&quot; : 42, &quot;bar&quot; : 69 }
+end</code></pre>
+<h4
+id="littéraux-composites-utilisables-dans-annotationvalue-et-les-valeurs-denum">Littéraux
+composites utilisables dans <code>annotationValue</code> et les valeurs
+d’<code>enum</code></h4>
+<ul>
+<li>List: <code>List[1,2,3]</code>, <code>List["a","b"]</code></li>
+<li>Map: <code>Map{"k1":1, "k2":2}</code></li>
+<li>Record anonyme: <code>Record{name:"Alice", age:42}</code></li>
+<li>Range: <code>Range -2048 .. 2048</code>,
+<code>Range 1..10</code></li>
+<li><strong>Json</strong>: <code>Json{"key": "value"}</code>,
+<code>Json[1,2,3]</code>, <code>Json"{\"raw\": \"json\"}"</code></li>
+<li><strong>Geography</strong>:
+<code>Geography"POINT(2.3522 48.8566)"</code>,
+<code>Geography{"type":"Point","coordinates":[2.3522,48.8566]}</code></li>
+<li><strong>Bytes</strong>: <code>Bytes"0xdeadbeef"</code>,
+<code>Bytes[255, 0, 255]</code>,
+<code>Bytes{"verified": false, "algorithm": "sha256"}</code></li>
+</ul>
+<p>Exemple d’usage dans une <code>enum</code>:</p>
+<pre class="meshr"><code>enum Product(status: String, owners: List of String, address: Address, limits: Range of Integer) is (
+  active(status = &quot;ok&quot;, owners = List[&quot;ops&quot;,&quot;qa&quot;], address = Record{street:&quot;A&quot;, zipcode:75001, extras:Map{&quot;r&quot;:1}}, limits = Range 1..10)
+)</code></pre>
+<p>Exemple d’usage avec des littéraux <strong>Json</strong>:</p>
+<pre class="meshr"><code>@ApiConfig(
+  endpoint=&quot;https://api.example.com&quot;,
+  headers=Json{&quot;Content-Type&quot;: &quot;application/json&quot;, &quot;Authorization&quot;: &quot;Bearer token&quot;},
+  schema=Json{&quot;type&quot;: &quot;object&quot;, &quot;properties&quot;: {&quot;name&quot;: {&quot;type&quot;: &quot;string&quot;}}}
+)
+annotation ApiConfig is
+  required endpoint : String
+  optional headers : Json = Json{&quot;Content-Type&quot;: &quot;application/json&quot;}
+  optional schema : Json = Json{&quot;type&quot;: &quot;object&quot;}
+end
+
+enum HttpStatus(code: Integer, details: Json) is (
+  ok(code = 200, details = Json{&quot;message&quot;: &quot;Success&quot;, &quot;data&quot;: {&quot;count&quot;: 0}}),
+  not_found(code = 404, details = Json{&quot;error&quot;: &quot;Not Found&quot;, &quot;code&quot;: &quot;E404&quot;}),
+  server_error(code = 500, details = Json{&quot;error&quot;: &quot;Internal Server Error&quot;, &quot;stack&quot;: []})
+)</code></pre>
+<h4 id="littéraux-bytes">🔢 Littéraux Bytes</h4>
+<p>Les littéraux <code>Bytes</code> permettent de représenter des
+données binaires de trois façons :</p>
+<ul>
+<li><strong>Chaîne hexadécimale</strong> :
+<code>Bytes"0xdeadbeef"</code>, <code>Bytes"FFD8FFE0"</code></li>
+<li><strong>Tableau de valeurs numériques</strong> :
+<code>Bytes[255, 0, 255]</code>,
+<code>Bytes[0x89, 0x50, 0x4E, 0x47]</code></li>
+<li><strong>Objet JSON</strong> :
+<code>Bytes{"verified": false, "algorithm": "sha256"}</code></li>
+</ul>
+<p>Les valeurs dans les tableaux peuvent être des nombres entiers
+(positifs ou négatifs) ou des valeurs hexadécimales.</p>
+<p>Exemple d’usage avec des littéraux <strong>Bytes</strong>:</p>
+<pre class="meshr"><code>@BinaryConfig(
+  signature=Bytes&quot;0xdeadbeef&quot;,
+  hash=Bytes&quot;a1b2c3d4e5f6&quot;,
+  data=Bytes&quot;U29tZSBiaW5hcnkgZGF0YQ==&quot;
+)
+annotation BinaryConfig is
+  required signature : Bytes
+  optional hash : Bytes = Bytes&quot;000000000000&quot;
+  optional data : Bytes = Bytes&quot;SGVsbG8gV29ybGQ=&quot;
+end
+
+enum FileType(extension: String, magic_bytes: Bytes, header: Bytes) is (
+  pdf(extension = &quot;pdf&quot;, magic_bytes = Bytes&quot;25504446&quot;, header = Bytes&quot;255044462D&quot;),
+  jpeg(extension = &quot;jpg&quot;, magic_bytes = Bytes&quot;FFD8FFE0&quot;, header = Bytes&quot;FFD8FFE000104A4649460001&quot;),
+  png(extension = &quot;png&quot;, magic_bytes = Bytes&quot;89504E47&quot;, header = Bytes&quot;89504E470D0A1A0A&quot;)
+)
+
+record ApiResponse is
+  status : Integer
+  data : Json = Json{}
+  metadata : Json = Json{&quot;timestamp&quot;: &quot;2024-01-01T00:00:00Z&quot;, &quot;version&quot;: &quot;1.0&quot;}
+end</code></pre>
+<p>Exemple d’usage avec des littéraux <strong>Geography</strong>:</p>
+<pre class="meshr"><code>@LocationConfig(
+  office=Geography&quot;POINT(2.3522 48.8566)&quot;,
+  coverage_area=Geography&quot;POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))&quot;,
+  delivery_route=Geography&quot;LINESTRING(2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568)&quot;
+)
+annotation LocationConfig is
+  required office : Geography
+  optional coverage_area : Geography = Geography&quot;POINT(0.0 0.0)&quot;
+  optional delivery_route : Geography = Geography&quot;LINESTRING(0.0 0.0, 1.0 1.0)&quot;
+end
+
+enum CityType(name: String, location: Geography, bounds: Geography) is (
+  paris(name = &quot;Paris&quot;, location = Geography&quot;POINT(2.3522 48.8566)&quot;, bounds = Geography&quot;POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))&quot;),
+  london(name = &quot;London&quot;, location = Geography&quot;POINT(0.1276 51.5074)&quot;, bounds = Geography{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[0.1276,51.5074],[0.1277,51.5075],[0.1278,51.5076],[0.1276,51.5074]]]}),
+  tokyo(name = &quot;Tokyo&quot;, location = Geography{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[139.6917,35.6895]}, bounds = Geography{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[139.6917,35.6895],[139.6918,35.6896],[139.6919,35.6897],[139.6917,35.6895]]]})
+)
+
+record Store is
+  name : String
+  location : Geography
+  service_area : Geography = Geography&quot;POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))&quot;
+  delivery_route : Geography = Geography&quot;LINESTRING(0.0 0.0, 1.0 1.0)&quot;
+end</code></pre>
+<h4 id="exemples-avancés-imbriqués">Exemples avancés (imbriqués)</h4>
+<pre class="meshr"><code>record Contact is
+  name      : String
+  emails    : List of String
+  attributes: Map of String to String = Map{&quot;role&quot;:&quot;owner&quot;}
+end
+
+record Team is
+  name    : String
+  members : List of Contact
+  quotas  : Map of String to Range of Integer = Map{&quot;daily&quot;: Range -100 .. 100}
+end
+
+annotation Project is
+  required name    : String
+  optional team    : Team
+  optional labels  : List of String = List[&quot;alpha&quot;,&quot;beta&quot;]
+  optional routing : Map of String to Map of String to Integer
+end
+
+@Project(
+  name = &quot;mesh&quot;,
+  team = Record{
+    name: &quot;core&quot;,
+    members: List[
+      Record{name:&quot;Alice&quot;, emails: List[&quot;a@example.com&quot;]},
+      Record{name:&quot;Bob&quot;,   emails: List[&quot;b@example.com&quot;,&quot;bob@work&quot;]}
+    ],
+    quotas: Map{&quot;daily&quot;: Range -50 .. 50}
+  },
+  routing = Map{
+    &quot;svcA&quot;: Map{&quot;p&quot;: 80, &quot;s&quot;: 20},
+    &quot;svcB&quot;: Map{&quot;p&quot;: 60, &quot;s&quot;: 40}
+  }
+)
+module demo.advanced</code></pre>
+<h2 id="records-et-collections">📋 Records et Collections</h2>
+<p>Les <strong>Records</strong> sont des structures de données composées
+qui permettent de regrouper des champs typés. Ils supportent la
+composition via les traits et peuvent contenir des
+<strong>collections</strong> (List, Map, Range).</p>
+<h3 id="syntaxe-des-records">📐 Syntaxe des Records</h3>
+<pre class="meshr"><code>record Contact is
+  name : String
+  email : String
+  age : Integer = 0
+end
+
+// Record avec composition de traits
+record User with Audit, Contactable is
+  id : String
+  role : String
+end</code></pre>
+<h3 id="types-de-collections">🧩 Types de Collections</h3>
+<p>Meshr supporte quatre types de collections :</p>
+<h4 id="list---listes-typées"><strong>List</strong> - Listes typées</h4>
+<pre class="meshr"><code>record UserProfile is
+  tags : List of String = List[&quot;default&quot;, &quot;user&quot;]
+  scores : List of Integer = List[85, 92, 78]
+end</code></pre>
+<h4 id="map---dictionnaires-typés"><strong>Map</strong> - Dictionnaires
+typés</h4>
+<pre class="meshr"><code>record Configuration is
+  settings : Map of String to String = Map{&quot;theme&quot;: &quot;dark&quot;, &quot;lang&quot;: &quot;fr&quot;}
+  limits : Map of String to Integer = Map{&quot;cpu&quot;: 80, &quot;memory&quot;: 512}
+end</code></pre>
+<h4 id="range---intervalles-typés"><strong>Range</strong> - Intervalles
+typés</h4>
+<pre class="meshr"><code>record Metrics is
+  score_range : Range of Integer = Range 0..100
+  temperature : Range of Float = Range -40.0..60.0
+end</code></pre>
+<h4 id="record-anonyme---structures-temporaires"><strong>Record
+anonyme</strong> - Structures temporaires</h4>
+<pre class="meshr"><code>@UserConfig(
+  profile = Record{name: &quot;Alice&quot;, age: 30},
+  preferences = Record{theme: &quot;dark&quot;, notifications: true}
+)
+annotation UserConfig is
+  required profile : UserProfile
+  required preferences : Preferences
+end</code></pre>
+<h3 id="collections-imbriquées">🔗 Collections imbriquées</h3>
+<p>Les collections peuvent être imbriquées pour créer des structures
+complexes :</p>
+<pre class="meshr"><code>record ComplexData is
+  // List de Maps
+  configs : List of Map of String to String = List[
+    Map{&quot;env&quot;: &quot;dev&quot;, &quot;debug&quot;: &quot;true&quot;},
+    Map{&quot;env&quot;: &quot;prod&quot;, &quot;debug&quot;: &quot;false&quot;}
+  ]
+  
+  // Map de Lists
+  categories : Map of String to List of String = Map{
+    &quot;colors&quot;: List[&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;],
+    &quot;sizes&quot;: List[&quot;small&quot;, &quot;medium&quot;, &quot;large&quot;]
+  }
+  
+  // Map de Ranges
+  limits : Map of String to Range of Integer = Map{
+    &quot;cpu&quot;: Range 0..100,
+    &quot;memory&quot;: Range 0..80
+  }
+end</code></pre>
+<h3 id="usage-dans-tous-les-contextes">🎯 Usage dans tous les
+contextes</h3>
+<p>Les collections peuvent être utilisées partout où un type est attendu
+:</p>
+<h4 id="dans-les-annotations"><strong>Dans les annotations</strong></h4>
+<pre class="meshr"><code>@Project(
+  tags = List[&quot;alpha&quot;, &quot;beta&quot;],
+  config = Map{&quot;timeout&quot;: 30, &quot;retries&quot;: 3},
+  range = Range 1..100
+)
+annotation Project is
+  required tags : List of String
+  required config : Map of String to Integer
+  required range : Range of Integer
+end</code></pre>
+<h4 id="dans-les-enums"><strong>Dans les enums</strong></h4>
+<pre class="meshr"><code>enum Status(
+  code: Integer, 
+  tags: List of String, 
+  metadata: Map of String to String
+) is (
+  active(
+    code = 200, 
+    tags = List[&quot;ok&quot;, &quot;healthy&quot;], 
+    metadata = Map{&quot;type&quot;: &quot;success&quot;, &quot;level&quot;: &quot;info&quot;}
+  )
+)</code></pre>
+<h4 id="dans-les-traits"><strong>Dans les traits</strong></h4>
+<pre class="meshr"><code>trait WithMetadata is
+  tags : List of String
+  config : Map of String to String
+  limits : Range of Integer
+end</code></pre>
+<h4 id="dans-les-aspects"><strong>Dans les aspects</strong></h4>
+<pre class="meshr"><code>aspect DataQuality is
+  metrics : List of String = List[&quot;accuracy&quot;, &quot;completeness&quot;]
+  thresholds : Map of String to Float = Map{&quot;accuracy&quot;: 0.95}
+  score_range : Range of Integer = Range 0..100
+end</code></pre>
+<h3 id="règles-sémantiques-1">🧠 Règles sémantiques</h3>
+<ul>
+<li>Les collections sont <strong>typées</strong> :
+<code>List of String</code>, <code>Map of String to Integer</code></li>
+<li>Les valeurs par défaut utilisent les <strong>littéraux</strong> :
+<code>List["a", "b"]</code>, <code>Map{"k": "v"}</code></li>
+<li>Les collections peuvent être <strong>imbriquées</strong> :
+<code>List of Map of String to String</code></li>
+<li>Les <strong>références circulaires</strong> sont interdites</li>
+<li>Les types dans les collections doivent être <strong>définis</strong>
+ou <strong>importés</strong></li>
+</ul>
+<hr />
+<h2 id="entités-et-relations">🏗️ Entités et Relations</h2>
+<p>Les <strong>Entités</strong> et <strong>Relations</strong> sont des
+artefacts déclaratifs pour la modélisation de données dans
+l’architecture Data-as-a-Product. Elles permettent de définir des
+structures de données persistantes et leurs interconnexions.</p>
+<h3 id="entités">🏢 Entités</h3>
+<p>Une <strong>entité</strong> est un artefact fondamental de Meshr-lang
+qui représente une structure de données persistante dans l’architecture
+d’entreprise. Elle modélise les concepts métier centraux et leurs
+propriétés.</p>
+<h4 id="concept-et-rôle">🎯 Concept et rôle</h4>
+<p>Les entités servent à :</p>
+<ul>
+<li><strong>Modéliser les concepts métier</strong> : Représenter les
+objets centraux du domaine (Customer, Product, Order, etc.)</li>
+<li><strong>Définir la structure des données</strong> : Spécifier les
+champs, types, et contraintes</li>
+<li><strong>Assurer la cohérence</strong> : Fournir un modèle de données
+unifié à travers l’organisation</li>
+<li><strong>Faciliter l’intégration</strong> : Servir de contrat pour
+les APIs et les échanges de données</li>
+<li><strong>Documenter le domaine</strong> : Exprimer explicitement les
+concepts et leurs relations</li>
+</ul>
+<h4 id="caractéristiques-des-entités">🏗️ Caractéristiques des
+entités</h4>
+<p>Une entité Meshr-lang possède :</p>
+<ul>
+<li><strong>Champs typés</strong> : Chaque champ a un type explicite
+(String, Integer, Date, etc.)</li>
+<li><strong>Contraintes</strong> : Validation des données via des
+patterns, ranges, ou contraintes personnalisées</li>
+<li><strong>Traits</strong> : Comportements réutilisables appliqués à
+l’entité (audit, versioning, etc.)</li>
+<li><strong>Aspects</strong> : Métadonnées et annotations spécifiques au
+contexte métier</li>
+<li><strong>Relations</strong> : Connexions avec d’autres entités via
+des relations typées</li>
+</ul>
+<h4 id="syntaxe-des-entités">📐 Syntaxe des Entités</h4>
+<pre class="meshr"><code>entity &lt;Name&gt; [with &lt;TraitName&gt; (, &lt;TraitName&gt;)*] is
+  &lt;field declarations&gt;
+  [aspects { &lt;AspectInstance&gt;* }]
+end</code></pre>
+<h4 id="exemples-dentités">🔧 Exemples d’Entités</h4>
+<pre class="meshr"><code>// Entité simple
+entity Customer with WithAudit is
+  CustomerId : String
+  Email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  BirthDate : Date
+  Phone : String length 10..15
+end
+
+// Entité avec aspects
+entity SensitiveData with WithAudit is
+  DataId : String
+  Content : String
+  Classification : String
+  
+  aspects {
+    DataRetention { retention: Interval 5 year, steward: &quot;dpo@example.com&quot; }
+  }
+end</code></pre>
+<h3 id="types-de-relations">🔗 Types de Relations</h3>
+<p>Un <strong>type de relation</strong> est un modèle réutilisable
+décrivant les propriétés, contraintes et traits qu’une relation peut
+hériter.</p>
+<h4 id="syntaxe-des-types-de-relations">📐 Syntaxe des Types de
+Relations</h4>
+<pre class="meshr"><code>type relation &lt;Name&gt; [with &lt;TraitName&gt; (, &lt;TraitName&gt;)*] is
+  &lt;field declarations&gt;
+  [aspects { &lt;AspectInstance&gt;* }]
+end</code></pre>
+<h4 id="exemples-de-types-de-relations">🔧 Exemples de Types de
+Relations</h4>
+<pre class="meshr"><code>type relation PLACED with WithAudit is
+  since : Date
+  channel : Channel
+  quantity : Integer = 1
+end
+
+type relation FRIENDSHIP with WithAudit is
+  since : Date
+  note : String length 0..280
+  closeness : Integer = 50
+end</code></pre>
+<h3 id="relations">🔗 Relations</h3>
+<p>Une <strong>relation</strong> relie deux entités. Elle peut être non
+typée (définie ad hoc) ou typée (basée sur un type de relation), et peut
+être unidirectionnelle ou bidirectionnelle.</p>
+<h4 id="syntaxe-des-relations">📐 Syntaxe des Relations</h4>
+<pre class="meshr"><code>[bidirectional] relation &lt;Name&gt; [of type &lt;RelationType&gt;] [with &lt;TraitName&gt; (, &lt;TraitName&gt;)*] is
+  from &lt;Entity&gt;(&lt;Field&gt;[, &lt;Field&gt;]*)
+  to   &lt;Entity&gt;(&lt;Field&gt;[, &lt;Field&gt;]*)
+  &lt;field declarations&gt;
+  [aspects { &lt;AspectInstance&gt;* }]
+end</code></pre>
+<h4 id="exemples-de-relations">🔧 Exemples de Relations</h4>
+<pre class="meshr"><code>// Relation non typée
+relation CurrentAssignment is
+  from Customer(SalesRepId)
+  to Employee(EmployeeId)
+  
+  since : Date
+  note : String length 0..140
+end
+
+// Relation typée
+relation ProductOrder of type PLACED is
+  from Product(ProductId)
+  to Order(ProductId)
+  
+  discount : Float = 0.0
+  special_instructions : String length 0..200
+end
+
+// Relation bidirectionnelle typée
+bidirectional relation Friendship of type FRIENDSHIP is
+  from Customer(CustomerId)
+  to Customer(CustomerId)
+  
+  mutual_interests : List of String = List[&quot;shopping&quot;, &quot;technology&quot;]
+end</code></pre>
+<h3 id="caractéristiques-des-entités-et-relations">🎯 Caractéristiques
+des Entités et Relations</h3>
+<ul>
+<li><strong>Composition de traits</strong> : Support de
+<code>with</code> pour injecter des comportements</li>
+<li><strong>Aspects</strong> : Instanciation d’aspects via
+<code>aspects { }</code></li>
+<li><strong>Modificateurs</strong> : Support de <code>sealed</code> et
+<code>export</code></li>
+<li><strong>Annotations</strong> : Métadonnées attachables via
+<code>@Annotation</code></li>
+<li><strong>Types de relations</strong> : Réutilisation via
+<code>of type &lt;RelationType&gt;</code></li>
+<li><strong>Bidirectionnalité</strong> : Relations symétriques via
+<code>bidirectional</code></li>
+<li><strong>Extrémités</strong> : Définition des clés de jointure via
+<code>from</code>/<code>to</code></li>
+</ul>
+<hr />
+<h2 id="traits">🧩 Traits</h2>
+<p>Un <strong>trait</strong> est un mécanisme de composition et de
+réutilisation dans Meshr-lang qui permet de définir des blocs de
+déclarations (champs, métadonnées, contraintes, aspects) qui peuvent
+être injectés dans d’autres artefacts via la clause <code>with</code>.
+Les traits favorisent la factorisation, la composition déclarative, et
+l’élimination de la duplication de code.</p>
+<h3 id="concept-et-rôle-1">🎯 Concept et rôle</h3>
+<p>Les traits servent à :</p>
+<ul>
+<li><strong>Factoriser le code</strong> : Éviter la duplication de
+déclarations communes entre artefacts</li>
+<li><strong>Composer des comportements</strong> : Combiner plusieurs
+traits pour créer des artefacts complexes</li>
+<li><strong>Standardiser les patterns</strong> : Définir des conventions
+et patterns réutilisables</li>
+<li><strong>Maintenir la cohérence</strong> : Assurer que les mêmes
+propriétés sont définies de manière identique</li>
+<li><strong>Faciliter l’évolution</strong> : Modifier un trait pour
+impacter tous les artefacts qui l’utilisent</li>
+</ul>
+<h3 id="caractéristiques-des-traits">🏗️ Caractéristiques des traits</h3>
+<p>Un trait Meshr-lang possède :</p>
+<ul>
+<li><strong>Champs typés</strong> : Définition de propriétés avec types
+et contraintes</li>
+<li><strong>Composition</strong> : Possibilité d’utiliser d’autres
+traits via <code>with</code></li>
+<li><strong>Aspects intégrés</strong> : Instanciation d’aspects qui
+seront hérités</li>
+<li><strong>Injection</strong> : Application aux artefacts via la clause
+<code>with</code></li>
+<li><strong>Réutilisabilité</strong> : Un même trait peut être utilisé
+par plusieurs artefacts</li>
+</ul>
+<h3 id="différence-avec-les-aspects">🔄 Différence avec les aspects</h3>
+<table>
+<colgroup>
+<col style="width: 48%" />
+<col style="width: 52%" />
+</colgroup>
+<thead>
+<tr>
+<th><strong>Traits</strong></th>
+<th><strong>Aspects</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Définissent des <strong>champs</strong> et
+<strong>comportements</strong></td>
+<td>Définissent des <strong>métadonnées</strong> et
+<strong>propriétés</strong></td>
+</tr>
+<tr>
+<td>Sont <strong>injectés</strong> via <code>with</code></td>
+<td>Sont <strong>instanciés</strong> via
+<code>aspects { ... }</code></td>
+</tr>
+<tr>
+<td>Ajoutent de la <strong>structure</strong></td>
+<td>Ajoutent du <strong>contexte</strong></td>
+</tr>
+<tr>
+<td>Héritage de <strong>champs</strong></td>
+<td>Héritage de <strong>métadonnées</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="syntaxe-3">📐 Syntaxe</h3>
+<pre class="meshr"><code>trait &lt;Identifier&gt; [with Base1, Base2] is
+  &lt;FieldName&gt; : typeRef [= &lt;valeur&gt;]
+  ...
+  [aspects { &lt;AspectInstance&gt;* }]
+end</code></pre>
+<h3 id="injection-via-with">🔗 Injection via <code>with</code></h3>
+<p>La clause <code>with</code> permet d’injecter un ou plusieurs traits
+dans un artefact. Aujourd’hui, elle est supportée sur
+<code>record</code> et <code>trait</code>.</p>
+<pre class="meshr"><code>trait Audit is
+  CreatedAt : Timestamp
+  UpdatedAt : Timestamp
+end
+
+record Contact with Audit is
+  Id : String
+end
+
+trait Contact is
+  Email : String
+end
+
+trait ExtendedContact with Contact is
+  Phone : String
+end
+
+record Person with Contact, Audit is
+  Name : String
+end</code></pre>
+<h3 id="aspects-dans-les-traits">🎭 Aspects dans les Traits</h3>
+<p>Les traits peuvent contenir des <strong>instanciations
+d’aspects</strong> qui seront héritées par tous les artefacts qui
+utilisent le trait via <code>with</code>. Cela permet de factoriser les
+politiques transversales.</p>
+<pre class="meshr"><code>// Définition des aspects
+aspect DataRetention is
+  retention : Interval
+  steward : String
+end
+
+aspect SecurityLevel is
+  level : String = &quot;public&quot;
+  encryption_required : Boolean = false
+end
+
+// Trait avec aspects
+trait WithSecurity is
+  access_level : String
+  permissions : List of String
+  
+  aspects {
+    SecurityLevel { level: &quot;restricted&quot;, encryption_required: true },
+    DataRetention { retention: Interval 5 year, steward: &quot;security@example.com&quot; }
+  }
+end
+
+// Utilisation du trait avec ses aspects
+record User with WithSecurity is
+  id : String
+  name : String
+end</code></pre>
+<p><strong>⚡ Héritage des Aspects :</strong> - Les aspects définis dans
+un trait sont <strong>automatiquement appliqués</strong> aux artefacts
+qui utilisent ce trait - Les aspects peuvent être
+<strong>redéfinis</strong> au niveau de l’artefact consommateur si
+nécessaire - Les règles de <strong>composition des aspects</strong>
+s’appliquent normalement (intersection, explicitation des conflits)</p>
+<h3 id="règles-de-composition-sémantique">🧠 Règles de composition
+(sémantique)</h3>
+<ul>
+<li>Monotonie: on ne relâche pas les exigences (required → optional
+interdit, suppression de contraintes interdite).</li>
+<li>Intersection: des contraintes compatibles s’additionnent; on garde
+la version la plus restrictive.</li>
+<li>Explicitation: en cas de conflit dur (types différents, contraintes
+incompatibles, aspects contradictoires), l’artefact consommateur doit
+redéfinir explicitement.</li>
+</ul>
+<p>Récapitulatif:</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>Situation</th>
+<th>Exemple</th>
+<th>Résolution</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Compatibilité parfaite</td>
+<td><code>X: string</code> + <code>X: string</code></td>
+<td>Fusion automatique</td>
+</tr>
+<tr>
+<td>Extension compatible</td>
+<td><code>Y: string</code> + <code>Y: string required</code></td>
+<td><code>required</code> l’emporte</td>
+</tr>
+<tr>
+<td>Contraintes compatibles</td>
+<td><code>Z: string</code> +
+<code>Z: string pattern "^[A-Z]+$"</code></td>
+<td>Conserve la contrainte (intersection)</td>
+</tr>
+<tr>
+<td>Conflit (types)</td>
+<td><code>A: int</code> + <code>A: string</code></td>
+<td>Erreur → redéfinir dans l’artefact</td>
+</tr>
+<tr>
+<td>Conflit (contraintes)</td>
+<td><code>B: string length 1..10</code> +
+<code>B: string length 20..30</code></td>
+<td>Erreur → redéfinir</td>
+</tr>
+<tr>
+<td>Conflit (aspects)</td>
+<td><code>C aspects { PII{level:high} }</code> +
+<code>C aspects { PII{level:low} }</code></td>
+<td>Erreur → redéfinir</td>
+</tr>
+</tbody>
+</table>
+<p>Notes: - Ces règles sont vérifiées par les outils (validation
+sémantique), pas à l’analyse syntaxique. - <code>typeRef</code> est
+autorisé dans les champs de <code>trait</code>, de <code>record</code>,
+dans les attributs d’énum et dans les champs d’annotations.</p>
+<hr />
+<h3 id="module-unité-namespace-et-fichier-unique">🧩 [2025-09-09] —
+Module = unité, namespace et fichier unique</h3>
+<ul>
+<li><strong>Contexte :</strong> Il fallait décider si l’on autorisait
+plusieurs modules par fichier, et s’il y avait un lien fort avec
+l’arborescence.</li>
+<li><strong>Décision :</strong> Le langage impose qu’un fichier
+<code>.meshr</code> déclare <strong>un seul module</strong>. Le nom du
+module est un <strong>namespace</strong>. L’arborescence n’est
+<strong>pas contrainte</strong>, mais une convention est proposée.</li>
+<li><strong>Pourquoi :</strong> Cela permet une résolution simple par
+les outils (CLI, LSP), évite les collisions de symboles, et reste
+lisible.</li>
+</ul>
+<hr />
+<h2 id="aspects">🎭 Aspects</h2>
+<p>Un <strong>Aspect</strong> est un mécanisme de métadonnées
+structurées dans Meshr-lang qui permet d’enrichir et d’annoter les
+artefacts avec des informations contextuelles spécifiques au domaine
+métier. Contrairement aux traits qui définissent des comportements, les
+aspects se concentrent sur la description de propriétés, contraintes, et
+métadonnées.</p>
+<h3 id="concept-et-rôle-2">🎯 Concept et rôle</h3>
+<p>Les aspects servent à :</p>
+<ul>
+<li><strong>Enrichir les métadonnées</strong> : Ajouter des informations
+contextuelles aux artefacts (gouvernance, qualité, sécurité)</li>
+<li><strong>Définir des politiques</strong> : Exprimer des règles métier
+et des contraintes de conformité</li>
+<li><strong>Documenter le contexte</strong> : Capturer des informations
+sur l’origine, l’usage, et la signification des données</li>
+<li><strong>Faciliter la gouvernance</strong> : Intégrer les exigences
+réglementaires et les bonnes pratiques</li>
+<li><strong>Améliorer la traçabilité</strong> : Associer des
+informations de provenance et de lineage</li>
+</ul>
+<h3 id="caractéristiques-des-aspects">🏗️ Caractéristiques des
+aspects</h3>
+<p>Un aspect Meshr-lang possède :</p>
+<ul>
+<li><strong>Champs typés</strong> : Propriétés avec types explicites et
+contraintes optionnelles</li>
+<li><strong>Valeurs par défaut</strong> : Définition de valeurs par
+défaut pour les champs optionnels</li>
+<li><strong>Héritage</strong> : Possibilité d’étendre d’autres aspects
+pour la réutilisation</li>
+<li><strong>Instanciation</strong> : Application aux artefacts via des
+blocs <code>aspects { ... }</code></li>
+<li><strong>Composition</strong> : Combinaison de plusieurs aspects sur
+un même artefact</li>
+</ul>
+<h3 id="syntaxe-de-base-1">🔧 Syntaxe de base</h3>
+<pre class="meshr"><code>// Aspect simple
+aspect BusinessDesc is
+  domain : String
+  summary : String
+end
+
+// Aspect abstrait
+abstract aspect GovernanceBase is
+  steward   : String
+  policy_id : String
+end
+
+// Aspect avec héritage
+aspect DataRetention extends GovernanceBase is
+  retention : Interval
+end
+
+// Aspect avec composition (traits)
+aspect DataQuality extends GovernanceBase with WithLifecycle is
+  quality_score : Float
+  validation_rules : List of String
+end</code></pre>
+<h3 id="héritage-et-composition">🏗️ Héritage et composition</h3>
+<p>Les Aspects supportent : - <strong>Héritage simple</strong> :
+<code>extends AspectName</code> - <strong>Composition</strong> :
+<code>with TraitName</code> (même syntaxe que les records/traits) -
+<strong>Combinaison</strong> :
+<code>extends AspectName with Trait1, Trait2</code></p>
+<pre class="meshr"><code>trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+abstract aspect GovernanceBase with WithLifecycle is
+  steward   : String
+  policy_id : String
+end
+
+aspect DataRetention extends GovernanceBase is
+  retention : Interval
+end</code></pre>
+<h3 id="types-daspects">🎯 Types d’Aspects</h3>
+<ul>
+<li><strong>Aspects abstraits</strong> : <code>abstract aspect</code> -
+définitions génériques non instanciables</li>
+<li><strong>Aspects concrets</strong> : <code>aspect</code> -
+instanciables dans les artefacts</li>
+</ul>
+<h3 id="champs-et-contraintes">📝 Champs et contraintes</h3>
+<p>Les Aspects supportent tous les types et contraintes disponibles
+:</p>
+<pre class="meshr"><code>aspect ComprehensiveMetadata is
+  // Types de base avec contraintes
+  name : String length 1..100
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+  
+  // Types composites
+  tags : List of String = List[&quot;default&quot;]
+  metadata : Map of String to String = Map{&quot;source&quot;:&quot;manual&quot;}
+  range : Range of Integer = Range 0..100
+  
+  // Types temporels
+  created : Timestamp
+  duration : Interval
+  
+  // Valeurs par défaut
+  active : Boolean = true
+  count : Integer = 0
+end</code></pre>
+<h3 id="annotations-sur-les-aspects">🏷️ Annotations sur les Aspects</h3>
+<p>Les Aspects peuvent être annotés comme tous les autres artefacts
+:</p>
+<pre class="meshr"><code>@since(&quot;1.0.0&quot;)
+@id(&quot;business-desc&quot;)
+@display_name(&quot;Business Description&quot;)
+@description(&quot;Un aspect permettant d&#39;enrichir les champs avec un domaine métier et un résumé.&quot;)
+aspect BusinessDesc is
+  domain : String
+  summary : String
+end</code></pre>
+<h3 id="règles-de-composition">🧠 Règles de composition</h3>
+<p>Les mêmes règles que pour les Traits s’appliquent lors de la fusion
+de définitions :</p>
+<ul>
+<li><strong>Fusion automatique</strong> si signatures identiques</li>
+<li><strong>Renforcement</strong> si extension compatible (ex. optional
+→ required)</li>
+<li><strong>Intersection</strong> des contraintes si compatibles</li>
+<li><strong>Erreur explicite</strong> si conflit strict (type,
+contrainte, aspect key clash)</li>
+</ul>
+<h3 id="instanciation-future">🔮 Instanciation (future)</h3>
+<p>Les Aspects seront instanciés avec le mot-clé
+<code>aspects { ... }</code> au niveau d’un artefact ou d’un champ :</p>
+<pre class="meshr"><code>// Syntaxe future pour l&#39;instanciation
+entity Customer is
+  CustomerId : String
+  Email      : String
+  aspects {
+    DataRetention { 
+      retention : Interval 1 year, 
+      steward   : &quot;dpo@example.com&quot;, 
+      policy_id : &quot;GDPR-001&quot; 
+    }
+  }
+end</code></pre>
+<hr />
+<h2 id="modificateur-sealed">🔒 Modificateur <code>sealed</code></h2>
+<p>Le modificateur <code>sealed</code> permet de <strong>verrouiller
+l’extension</strong> d’un artefact. Par défaut, tous les artefacts sont
+<strong>ouverts</strong> (extensibles). Un artefact marqué
+<code>sealed</code> ne peut plus être hérité, étendu ou redéfini
+partiellement. L’usage par référence ou instanciation <strong>reste
+autorisé</strong>.</p>
+<h3 id="syntaxe-4">📐 Syntaxe</h3>
+<p>Le modificateur <code>sealed</code> peut précéder : -
+<code>sealed enum</code> - <code>sealed record</code> -
+<code>sealed trait</code> - <code>sealed aspect</code></p>
+<p>⚠️ Les <strong>annotations</strong> ne peuvent pas être
+<code>sealed</code>. Toute tentative doit produire une erreur.</p>
+<h3 id="règles-dhéritage-et-dextension">🔒 Règles d’héritage et
+d’extension</h3>
+<h4 id="enum">Enum</h4>
+<pre class="meshr"><code>sealed enum Color is (&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;)</code></pre>
+<ul>
+<li>❌ <strong>INTERDIT</strong> : étendre ou redéfinir
+<code>Color</code></li>
+<li>✅ <strong>AUTORISÉ</strong> : utiliser <code>Color</code> comme
+type de champ</li>
+</ul>
+<h4 id="record">Record</h4>
+<pre class="meshr"><code>sealed record Address is
+  street : String
+  city   : String
+end</code></pre>
+<ul>
+<li>❌ <strong>INTERDIT</strong> : hériter de <code>Address</code></li>
+<li>✅ <strong>AUTORISÉ</strong> : l’utiliser comme type</li>
+</ul>
+<h4 id="trait">Trait</h4>
+<pre class="meshr"><code>sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end</code></pre>
+<ul>
+<li>❌ <strong>INTERDIT</strong> : créer
+<code>trait ExtendedAudit extends WithAudit</code></li>
+<li>✅ <strong>AUTORISÉ</strong> : utiliser <code>WithAudit</code> via
+<code>with</code></li>
+</ul>
+<h4 id="aspect">Aspect</h4>
+<pre class="meshr"><code>sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end</code></pre>
+<ul>
+<li>❌ <strong>INTERDIT</strong> :
+<code>aspect AdvancedGovernance extends Governance</code></li>
+<li>✅ <strong>AUTORISÉ</strong> : instancier <code>Governance</code>
+dans un bloc <code>aspects { ... }</code></li>
+</ul>
+<h3 id="exemples-valides">📝 Exemples valides</h3>
+<pre class="meshr"><code>sealed enum Color is (&quot;red&quot;, &quot;green&quot;, &quot;blue&quot;)
+
+sealed record Address is
+  street : String
+  city   : String
+end
+
+sealed trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+sealed aspect Governance is
+  steward   : String
+  policy_id : String
+end
+
+record User is
+  name    : String
+  address : Address  // ✅ Usage autorisé d&#39;un record sealed
+  color   : Color    // ✅ Usage autorisé d&#39;un enum sealed
+end
+
+record AuditLog with WithAudit is  // ✅ Usage autorisé d&#39;un trait sealed
+  action : String
+end</code></pre>
+<h3 id="exemples-invalides">❌ Exemples invalides</h3>
+<pre class="meshr"><code>// ❌ enum scellée ne peut pas être étendue
+enum ExtendedColor extends Color is (&quot;yellow&quot;)
+
+// ❌ record scellé ne peut pas être hérité
+record FullAddress extends Address is
+  country : String
+end
+
+// ❌ trait scellé ne peut pas être hérité
+trait ExtendedAudit extends WithAudit is
+  deleted_at : Timestamp
+end
+
+// ❌ aspect scellé ne peut pas être hérité
+aspect AdvancedGovernance extends Governance is
+  extra : String
+end
+
+// ❌ annotation ne peut pas être sealed
+sealed annotation InvalidAnnotation is
+  required name : String
+end</code></pre>
+<h3 id="règles-sémantiques-2">🧠 Règles sémantiques</h3>
+<ul>
+<li>Un artefact <code>sealed</code> <strong>ne peut pas être
+étendu</strong> via <code>extends</code></li>
+<li>Un artefact <code>sealed</code> <strong>peut être utilisé</strong>
+comme type de référence</li>
+<li>Un trait <code>sealed</code> <strong>peut être composé</strong> via
+<code>with</code></li>
+<li>Un aspect <code>sealed</code> <strong>peut être instancié</strong>
+dans des blocs <code>aspects</code></li>
+<li>Les <strong>annotations ne peuvent jamais être sealed</strong></li>
+<li>L’ordre des modificateurs est : <code>sealed abstract aspect</code>
+(pas <code>abstract sealed</code>)</li>
+</ul>
+<hr />
+<h2 id="artefacts-définissables">🧱 Artefacts définissables</h2>
+<h3 id="domain">1. <code>domain</code></h3>
+<p>Déclaration d’un domaine hiérarchique.</p>
+<pre class="meshr"><code>domain retail.marketing {
+  description = &quot;Marketing domain for the retail perimeter&quot;
+}</code></pre>
+<h3 id="product">2. <code>product</code></h3>
+<p>Déclaration d’un produit de données.</p>
+<pre class="meshr"><code>product leads_b2c_import {
+  domain = retail.marketing
+  contracts = [
+    contract:marketing:leads_b2c_import:1.0.0
+  ]
+}</code></pre>
+<h3 id="contract">3. <code>contract</code></h3>
+<p>(Défini dans une autre couche ou généré via DCDL)</p>
+<h3 id="aspect-1">4. <code>aspect</code></h3>
+<p>(TBD)</p>
+<h3 id="team">5. <code>team</code></h3>
+<p>(TBD)</p>
+<h3 id="policy">6. <code>policy</code></h3>
+<p>(TBD)</p>
+<hr />
+<h2 id="décisions-de-conception">📘 Décisions de conception</h2>
+<h3 id="syntaxe-déclarative-avec-blocs">🧩 [2025-09-09] — Syntaxe
+déclarative avec blocs <code>{}</code></h3>
+<ul>
+<li><strong>Contexte :</strong> Le langage doit rester simple, lisible
+pour les métiers, mais formalisable en grammaire ANTLR.</li>
+<li><strong>Décision :</strong> Utiliser une syntaxe à blocs
+(<code>{}</code>), proche de HCL/Terraform.</li>
+<li><strong>Pourquoi :</strong> Meilleure lisibilité et extensibilité
+que YAML/JSON, tout en étant facilement parsable.</li>
+</ul>
+<h3 id="visibilité-par-export-explicite">🧩 [2025-09-10] — Visibilité
+par export explicite</h3>
+<ul>
+<li><strong>Contexte :</strong> Le langage devait gérer la visibilité
+entre modules pour encourager l’encapsulation.</li>
+<li><strong>Décision :</strong> Un artefact déclaré dans un module n’est
+accessible depuis l’extérieur que s’il est précédé du mot-clé
+<code>export</code>.</li>
+<li><strong>Pourquoi :</strong> Cette règle encourage une séparation
+claire entre API publique et éléments internes, facilite la
+documentation automatique et le linting.</li>
+</ul>
+<h3 id="deux-formes-dexport-inline-ou-groupé">🧩 [2025-09-10] — Deux
+formes d’export : inline ou groupé</h3>
+<ul>
+<li><strong>Contexte :</strong> Besoin de contrôler la visibilité des
+artefacts à l’extérieur du module.</li>
+<li><strong>Décision :</strong> Deux formes sont supportées : inline
+(<code>export decl</code>) et groupée
+(<code>export { A, B }</code>).</li>
+<li><strong>Justification :</strong> Favorise à la fois la lisibilité
+locale (inline) et la gestion explicite de l’API publique (groupé après
+les imports).</li>
+</ul>
+<h3 id="modificateur-sealed-pour-contrôler-lextensibilité">🧩
+[2025-09-12] — Modificateur <code>sealed</code> pour contrôler
+l’extensibilité</h3>
+<ul>
+<li><strong>Contexte :</strong> Besoin de verrouiller l’extension de
+certains artefacts pour garantir la stabilité de l’API et éviter les
+dérivations non contrôlées.</li>
+<li><strong>Décision :</strong> Introduction du modificateur
+<code>sealed</code> applicable aux <code>enum</code>,
+<code>record</code>, <code>trait</code> et <code>aspect</code>. Les
+annotations ne peuvent pas être sealed.</li>
+<li><strong>Pourquoi :</strong> Permet de définir des contrats stables
+(ex: enums de statut, records d’adresse) tout en conservant la
+flexibilité de composition via <code>with</code> pour les traits.</li>
+</ul>
+<h3 id="types-de-collections-typés-et-littéraux">🧩 [2025-09-12] — Types
+de collections typés et littéraux</h3>
+<ul>
+<li><strong>Contexte :</strong> Besoin de structures de données
+complexes pour représenter des métadonnées, configurations et données
+structurées dans les artefacts Data Mesh.</li>
+<li><strong>Décision :</strong> Introduction de quatre types de
+collections : <code>List of T</code>, <code>Map of K to V</code>,
+<code>Range of T</code>, et <code>Record</code> anonyme, avec des
+littéraux syntaxiques (<code>List[...]</code>, <code>Map{...}</code>,
+<code>Range a..b</code>, <code>Record{...}</code>).</li>
+<li><strong>Pourquoi :</strong> Permet une expressivité maximale pour
+les métadonnées complexes tout en maintenant la sécurité des types et la
+lisibilité du code. Les collections peuvent être imbriquées et utilisées
+dans tous les contextes (annotations, enums, records, traits,
+aspects).</li>
+</ul>
+<h3 id="entités-et-relations-pour-la-modélisation-de-données">🧩
+[2025-09-12] — Entités et Relations pour la modélisation de données</h3>
+<ul>
+<li><strong>Contexte :</strong> Besoin de modéliser des structures de
+données persistantes et leurs interconnexions dans l’architecture
+Data-as-a-Product, avec support des relations complexes et de la
+gouvernance des données.</li>
+<li><strong>Décision :</strong> Introduction de trois nouveaux artefacts
+: <code>entity</code> (structures de données persistantes),
+<code>type relation</code> (modèles réutilisables de relations), et
+<code>relation</code> (connexions entre entités avec support
+bidirectionnel).</li>
+<li><strong>Pourquoi :</strong> Permet une modélisation complète du
+domaine métier avec support des relations complexes, de la gouvernance
+via les aspects, et de la réutilisabilité via les types de relations.
+Les entités et relations supportent tous les modificateurs existants
+(<code>sealed</code>, <code>export</code>, annotations) et s’intègrent
+parfaitement avec le système de traits et d’aspects.</li>
+</ul>
+<hr />
+<h2 id="bibliothèque-standard-stdlib">📚 Bibliothèque Standard
+(StdLib)</h2>
+<p>La <strong>bibliothèque standard</strong> de Meshr-Lang fournit un
+ensemble d’artefacts prédéfinis, d’aspects et de types communs pour
+faciliter le développement d’architectures Data-as-a-Product. Elle est
+organisée en modules thématiques et est disponible dans le dossier
+<code>stdlib/</code>.</p>
+<h3 id="objectifs">🎯 Objectifs</h3>
+<ul>
+<li><strong>Réutilisabilité</strong> : Composants standards pour les cas
+d’usage courants</li>
+<li><strong>Cohérence</strong> : Conventions et patterns établis</li>
+<li><strong>Productivité</strong> : Réduction du temps de
+développement</li>
+<li><strong>Qualité</strong> : Composants testés et validés</li>
+</ul>
+<h3 id="modules-disponibles">📦 Modules disponibles</h3>
+<h4 id="meshr.security">🔐
+<strong><code>meshr.security</code></strong></h4>
+<pre class="meshr"><code>// Aspects de sécurité
+aspect DataClassification is
+  level : String // &quot;public&quot;, &quot;internal&quot;, &quot;confidential&quot;, &quot;restricted&quot;
+  encryption_required : Boolean = false
+  access_control : String = &quot;role-based&quot;
+end
+
+aspect GDPRCompliance is
+  data_subject_rights : List of String
+  retention_period : Interval
+  lawful_basis : String
+  dpo_contact : String
+end
+
+// Types de relations de sécurité
+type relation ACCESS_CONTROL is
+  granted_by : String
+  granted_at : Timestamp
+  expires_at : Timestamp
+  permissions : List of String
+end</code></pre>
+<h4 id="meshr.governance">📊
+<strong><code>meshr.governance</code></strong></h4>
+<pre class="meshr"><code>// Aspects de gouvernance
+aspect DataStewardship is
+  steward : String
+  owner : String
+  business_domain : String
+  last_review : Date
+end
+
+aspect DataQuality is
+  quality_score : Float range 0.0..1.0
+  validation_rules : List of String
+  monitoring_frequency : Interval
+  alert_threshold : Float
+end
+
+// Traits de gouvernance
+trait WithStewardship is
+  steward : String
+  owner : String
+  
+  aspects {
+    DataStewardship { steward: steward, owner: owner, business_domain: &quot;default&quot; }
+  }
+end</code></pre>
+<h4 id="meshr.business">🏢
+<strong><code>meshr.business</code></strong></h4>
+<pre class="meshr"><code>// Types métier communs
+enum BusinessDomain is (
+  &quot;finance&quot;,
+  &quot;marketing&quot;, 
+  &quot;sales&quot;,
+  &quot;hr&quot;,
+  &quot;operations&quot;,
+  &quot;product&quot;
+)
+
+enum DataSensitivity is (
+  &quot;public&quot;,
+  &quot;internal&quot;, 
+  &quot;confidential&quot;,
+  &quot;restricted&quot;
+)
+
+// Traits métier
+trait WithBusinessContext is
+  domain : BusinessDomain
+  sensitivity : DataSensitivity
+  business_owner : String
+end</code></pre>
+<h4 id="meshr.lifecycle">🔄
+<strong><code>meshr.lifecycle</code></strong></h4>
+<pre class="meshr"><code>// Aspects de cycle de vie
+aspect DataLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String
+  status : String // &quot;draft&quot;, &quot;active&quot;, &quot;deprecated&quot;, &quot;archived&quot;
+  deprecation_date : Date
+end
+
+// Traits de cycle de vie
+trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String = &quot;1.0.0&quot;
+  
+  aspects {
+    DataLifecycle { 
+      created_at: created_at, 
+      updated_at: updated_at, 
+      version: version, 
+      status: &quot;active&quot; 
+    }
+  }
+end</code></pre>
+<h4 id="meshr.annotations">🏷️
+<strong><code>meshr.annotations</code></strong></h4>
+<pre class="meshr"><code>// Méta-annotations
+@Target(&quot;annotation&quot;)
+@Retention(model)
+annotation Target is
+  required value : AnnotationTarget
+end
+
+@Target(&quot;annotation&quot;)
+@Retention(model)
+annotation Retention is
+  required value : RetentionPolicy
+end
+
+@Target(&quot;annotation&quot;)
+@Retention(model)
+annotation Repeatable is
+  optional value : Boolean = true
+end
+
+// Annotations communes
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Experimental is
+  optional reason : String = &quot;Feature is experimental and may change&quot;
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Deprecated is
+  required reason : String
+  optional since : String = &quot;&quot;
+  optional replacement : String = &quot;&quot;
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Version is
+  required value : String
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Author is
+  required name : String
+  optional email : String = &quot;&quot;
+  optional organization : String = &quot;&quot;
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Scope is
+  required level : ScopeLevel
+  optional description : String = &quot;&quot;
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Confidentiality is
+  required level : ConfidentialityLevel
+  optional classification : String = &quot;&quot;
+  optional handling_instructions : String = &quot;&quot;
+end
+
+@Target(&quot;all&quot;)
+@Retention(model)
+annotation Documented is
+  required summary : String
+  optional description : String = &quot;&quot;
+  optional examples : String = &quot;&quot;
+  optional see_also : String = &quot;&quot;
+end</code></pre>
+<h4 id="meshr.types">📊 <strong><code>meshr.types</code></strong></h4>
+<pre class="meshr"><code>// Types de base et communs
+enum Status is (
+  &quot;active&quot;,
+  &quot;inactive&quot;, 
+  &quot;pending&quot;,
+  &quot;suspended&quot;,
+  &quot;archived&quot;
+)
+
+enum Priority is (
+  &quot;low&quot;,
+  &quot;medium&quot;,
+  &quot;high&quot;,
+  &quot;critical&quot;
+)
+
+aspect ContactInfo is
+  email : String
+  phone : String
+  mobile : String
+  website : String
+end
+
+aspect Address is
+  street : String
+  city : String
+  postal_code : String
+  country : String
+end
+
+trait WithContactInfo is
+  email : String
+  phone : String
+  
+  aspects {
+    ContactInfo {
+      email: email,
+      phone: phone,
+      mobile: &quot;&quot;,
+      website: &quot;&quot;
+    }
+  }
+end</code></pre>
+<h4 id="meshr.analytics">📈
+<strong><code>meshr.analytics</code></strong></h4>
+<pre class="meshr"><code>// Types pour l&#39;analytics
+enum MetricType is (
+  &quot;counter&quot;,
+  &quot;gauge&quot;, 
+  &quot;histogram&quot;,
+  &quot;summary&quot;
+)
+
+type relation DATA_LINEAGE is
+  source_system : String
+  transformation : String
+  frequency : Interval
+  last_updated : Timestamp
+end
+
+// Aspects d&#39;analytics
+aspect DataLineage is
+  source_systems : List of String
+  transformations : List of String
+  refresh_frequency : Interval
+  sla : Interval
+end</code></pre>
+<h3 id="structure-actuelle">🏗️ Structure actuelle</h3>
+<pre><code>stdlib/
+├── core/                    # Modules fondamentaux ✅
+│   ├── security.meshr      # Aspects et types de sécurité
+│   ├── governance.meshr    # Gouvernance des données
+│   ├── lifecycle.meshr     # Cycle de vie des données
+│   ├── types.meshr         # Types de base et communs
+│   └── annotations.meshr   # Annotations standard et méta-annotations
+├── examples/               # Exemples d&#39;utilisation ✅
+│   ├── simple-customer.meshr
+│   ├── customer-entity.meshr
+│   ├── simple-imports.meshr
+│   ├── imports-demo.meshr
+│   ├── annotations-usage.meshr
+│   └── meta-annotations.meshr
+├── business/               # Modules métier (à venir)
+│   ├── domains.meshr
+│   ├── entities.meshr
+│   └── processes.meshr
+├── analytics/              # Modules d&#39;analytics (à venir)
+│   ├── metrics.meshr
+│   ├── lineage.meshr
+│   └── quality.meshr
+└── integrations/           # Intégrations réglementaires (à venir)
+    ├── gdpr.meshr
+    ├── sox.meshr
+    └── iso27001.meshr</code></pre>
+<h3 id="cas-dusage">🎯 Cas d’usage</h3>
+<pre class="meshr"><code>// Exemple d&#39;utilisation de la stdlib
+import { DataClassification, GDPRCompliance, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle } from meshr.lifecycle
+import { Version, Author, Documented, Confidentiality } from meshr.annotations
+
+@Version(&quot;1.0.0&quot;)
+@Author(name=&quot;Data Team&quot;, email=&quot;data@company.com&quot;)
+@Documented(summary=&quot;Customer entity with full governance&quot;)
+@Confidentiality(level=&quot;confidential&quot;, classification=&quot;PII&quot;)
+entity Customer with WithSecurity, WithStewardship, WithLifecycle is
+  customer_id : String
+  email : String
+  personal_data : String
+  
+  aspects {
+    DataClassification { 
+      level: &quot;confidential&quot;, 
+      encryption_required: true 
+    },
+    GDPRCompliance {
+      data_subject_rights: List[&quot;access&quot;, &quot;rectification&quot;, &quot;erasure&quot;],
+      retention_period: Interval 7 year,
+      lawful_basis: &quot;consent&quot;,
+      dpo_contact: &quot;dpo@company.com&quot;
+    }
+  }
+end</code></pre>
+<h3 id="roadmap">📋 Roadmap</h3>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="" /><strong>Phase 1</strong>
+: Modules <code>security</code> et <code>governance</code>
+✅</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Phase 2</strong>
+: Modules <code>lifecycle</code>, <code>types</code> et
+<code>annotations</code> ✅</label></li>
+<li><label><input type="checkbox" checked="" /><strong>Phase 3</strong>
+: Exemples d’utilisation et documentation ✅</label></li>
+<li><label><input type="checkbox" /><strong>Phase 4</strong> : Modules
+<code>business</code> et <code>analytics</code></label></li>
+<li><label><input type="checkbox" /><strong>Phase 5</strong> :
+Intégrations réglementaires</label></li>
+<li><label><input type="checkbox" /><strong>Phase 6</strong> : Outils de
+validation et génération avancés</label></li>
+</ul>
+<hr />
+<h2 id="à-venir">🚧 À venir</h2>
+<ul>
+<li>Structuration des aspects (inline vs référence)</li>
+<li>Système de types</li>
+<li>Imports / Références croisées</li>
+<li>Mécanisme de validation</li>
+<li>Export YAML et JSON (Rego, Aspect (DataPlex Universal
+Catalog)…)</li>
+</ul>
+<hr />
+<h2 id="bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
+conventions</h2>
+<p>Cette section présente les bonnes pratiques recommandées pour écrire
+du code Meshr-lang efficace, maintenable et conforme aux standards de
+l’organisation.</p>
+<h3 id="conventions-de-nommage">📝 Conventions de nommage</h3>
+<h4 id="modules">Modules</h4>
+<ul>
+<li><strong>Format</strong> : <code>domain.subdomain</code> (ex:
+<code>marketing.analytics</code>, <code>core.types</code>)</li>
+<li><strong>Convention</strong> : Utiliser des noms en minuscules avec
+des points comme séparateurs</li>
+<li><strong>Éviter</strong> : Les noms trop génériques comme
+<code>common</code>, <code>utils</code>, <code>shared</code></li>
+</ul>
+<h4 id="entités-et-types">Entités et types</h4>
+<ul>
+<li><strong>Format</strong> : <code>PascalCase</code> (ex:
+<code>Customer</code>, <code>ProductCatalog</code>,
+<code>OrderStatus</code>)</li>
+<li><strong>Convention</strong> : Noms explicites qui reflètent le
+concept métier</li>
+<li><strong>Éviter</strong> : Abréviations et acronymes non
+standardisés</li>
+</ul>
+<h4 id="champs-et-propriétés">Champs et propriétés</h4>
+<ul>
+<li><strong>Format</strong> : <code>camelCase</code> (ex:
+<code>customerId</code>, <code>emailAddress</code>,
+<code>createdAt</code>)</li>
+<li><strong>Convention</strong> : Noms descriptifs et cohérents</li>
+<li><strong>Éviter</strong> : Noms génériques comme <code>data</code>,
+<code>info</code>, <code>value</code></li>
+</ul>
+<h4 id="énumérations-1">Énumérations</h4>
+<ul>
+<li><strong>Valeurs</strong> : <code>UPPER_SNAKE_CASE</code> (ex:
+<code>ACTIVE</code>, <code>PENDING_APPROVAL</code>,
+<code>HIGH_PRIORITY</code>)</li>
+<li><strong>Convention</strong> : Valeurs explicites et
+auto-documentées</li>
+<li><strong>Éviter</strong> : Valeurs numériques ou abréviations</li>
+</ul>
+<h3 id="organisation-des-modules">🏗️ Organisation des modules</h3>
+<h4 id="structure-recommandée">Structure recommandée</h4>
+<pre><code>modules/
+├── core/
+│   ├── types.meshr          # Types fondamentaux
+│   ├── governance.meshr     # Aspects de gouvernance
+│   └── security.meshr       # Aspects de sécurité
+├── business/
+│   ├── customer.meshr       # Domaine client
+│   ├── product.meshr        # Domaine produit
+│   └── order.meshr          # Domaine commande
+└── shared/
+    ├── common.meshr         # Types partagés
+    └── policies.meshr       # Politiques transversales</code></pre>
+<h4 id="principes-dorganisation">Principes d’organisation</h4>
+<ul>
+<li><strong>Un module = un domaine métier</strong> : Éviter les modules
+trop larges</li>
+<li><strong>Dépendances claires</strong> : Minimiser les dépendances
+circulaires</li>
+<li><strong>Séparation des responsabilités</strong> : Séparer les types,
+aspects, et politiques</li>
+</ul>
+<h3 id="utilisation-des-traits-et-aspects">🔧 Utilisation des traits et
+aspects</h3>
+<h4 id="traits-1">Traits</h4>
+<ul>
+<li><strong>Factorisation</strong> : Créer des traits pour les patterns
+récurrents</li>
+<li><strong>Composition</strong> : Préférer la composition à l’héritage
+complexe</li>
+<li><strong>Naming</strong> : Préfixer par <code>With</code> (ex:
+<code>WithAudit</code>, <code>WithTimestamps</code>)</li>
+</ul>
+<h4 id="aspects-1">Aspects</h4>
+<ul>
+<li><strong>Spécificité</strong> : Créer des aspects spécialisés plutôt
+que génériques</li>
+<li><strong>Réutilisabilité</strong> : Concevoir pour la réutilisation
+entre domaines</li>
+<li><strong>Documentation</strong> : Toujours documenter le rôle et
+l’usage des aspects</li>
+</ul>
+<h3 id="documentation-et-commentaires">📋 Documentation et
+commentaires</h3>
+<h4 id="commentaires-obligatoires">Commentaires obligatoires</h4>
+<ul>
+<li><strong>Modules</strong> : Description du domaine et des
+responsabilités</li>
+<li><strong>Entités complexes</strong> : Explication du rôle métier</li>
+<li><strong>Aspects personnalisés</strong> : Usage et contraintes</li>
+<li><strong>Relations</strong> : Cardinalité et règles métier</li>
+</ul>
+<h4 id="exemple-de-documentation">Exemple de documentation</h4>
+<pre class="meshr"><code>/**
+ * Module de gestion des clients et de leurs données personnelles.
+ * 
+ * Ce module définit les entités centrales du domaine client,
+ * incluant la conformité RGPD et les aspects de sécurité.
+ */
+module business.customer
+
+// Entité représentant un client dans le système
+entity Customer with WithAudit, WithSecurity is
+  customerId: String pattern &quot;^CUST-[0-9]{8}$&quot;
+  email: String pattern &quot;^[^@]+@[^@]+$&quot;
+  // ... autres champs
+end</code></pre>
+<h3 id="gestion-des-erreurs-et-validation">🚨 Gestion des erreurs et
+validation</h3>
+<h4 id="contraintes-de-validation">Contraintes de validation</h4>
+<ul>
+<li><strong>Patterns</strong> : Utiliser des expressions régulières pour
+valider les formats</li>
+<li><strong>Ranges</strong> : Définir des plages de valeurs pour les
+nombres</li>
+<li><strong>Required fields</strong> : Marquer explicitement les champs
+obligatoires</li>
+</ul>
+<h4 id="gestion-des-versions">Gestion des versions</h4>
+<ul>
+<li><strong>Versioning sémantique</strong> : Suivre le format
+<code>MAJOR.MINOR.PATCH</code></li>
+<li><strong>Rétrocompatibilité</strong> : Éviter les breaking changes
+dans les versions mineures</li>
+<li><strong>Dépréciation</strong> : Utiliser les annotations
+<code>@deprecated</code> pour les évolutions</li>
+</ul>
+<h3 id="sécurité-et-conformité">🔒 Sécurité et conformité</h3>
+<h4 id="données-sensibles">Données sensibles</h4>
+<ul>
+<li><strong>Classification</strong> : Toujours classifier les données
+avec des aspects appropriés</li>
+<li><strong>Chiffrement</strong> : Spécifier les exigences de
+chiffrement</li>
+<li><strong>Accès</strong> : Définir les niveaux d’accès et
+permissions</li>
+</ul>
+<h4 id="conformité-réglementaire">Conformité réglementaire</h4>
+<ul>
+<li><strong>RGPD</strong> : Inclure les aspects de rétention et de
+consentement</li>
+<li><strong>Audit</strong> : Traçabilité des modifications et accès</li>
+<li><strong>Gouvernance</strong> : Définir les rôles et
+responsabilités</li>
+</ul>
+<h3 id="tests-et-validation">🧪 Tests et validation</h3>
+<h4 id="tests-de-modèles">Tests de modèles</h4>
+<ul>
+<li><strong>Validation syntaxique</strong> : Vérifier la syntaxe des
+fichiers</li>
+<li><strong>Validation sémantique</strong> : Tester les contraintes et
+relations</li>
+<li><strong>Tests d’intégration</strong> : Valider les imports et
+dépendances</li>
+</ul>
+<h4 id="outils-recommandés">Outils recommandés</h4>
+<ul>
+<li><strong>Linting</strong> : Utiliser les outils de validation
+automatique</li>
+<li><strong>CI/CD</strong> : Intégrer la validation dans les
+pipelines</li>
+<li><strong>Documentation</strong> : Générer automatiquement la
+documentation</li>
+</ul>
+<hr />
+<h2 id="annexes-1">Annexes</h2>
+<h3 id="annexe-a-grammaire-ebnf-référence">Annexe A — Grammaire EBNF
+(référence)</h3>
+<pre class="ebnf"><code>(* ==============================
+   Meshr-Lang — Grammaire EBNF (alignée ANTLR)
+   Mise à jour: 2025-09-12
+   ============================== *)
+
+compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
+
+module-decl         = { annotation }, &quot;module&quot;, qualified-name ;
+
+import-decl         = &quot;import&quot;, import-items, &quot;from&quot;, qualified-name ;
+import-items        = &quot;*&quot;
+                    | identifier
+                    | &quot;{&quot;, import-item, { &quot;,&quot;, import-item }, &quot;}&quot; ;
+import-item         = identifier ;
+
+export-decl         = &quot;export&quot;, ( export-items | exportable-decl ) ;
+export-items        = &quot;{&quot;, identifier, { &quot;,&quot;, identifier }, &quot;}&quot; ;
+
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
+
+enum-decl           = { annotation }, [ &quot;sealed&quot; ], &quot;enum&quot;, identifier, [ enum-signature ], &quot;is&quot;, &quot;(&quot;, enum-values, &quot;)&quot; ;
+enum-signature      = &quot;(&quot;, enum-attribute, { &quot;,&quot;, enum-attribute }, &quot;)&quot; ;
+enum-attribute      = identifier, &quot;:&quot;, ( qualified-name | base-type ), [ &quot;=&quot;, annotation-value ] ;
+enum-values         = enum-value, { &quot;,&quot;, enum-value } ;
+enum-value          = (identifier | string-literal), [ &quot;(&quot;, enum-value-args, &quot;)&quot; ] ;
+enum-value-args     = enum-value-arg, { &quot;,&quot;, enum-value-arg } ;
+enum-value-arg      = identifier, &quot;=&quot;, annotation-value ;
+
+annotation-decl     = { annotation }, &quot;annotation&quot;, identifier, &quot;is&quot;, annotation-field, { annotation-field }, &quot;end&quot; ;
+annotation-field    = ( &quot;required&quot; | &quot;optional&quot; ), identifier, &quot;:&quot;, ( qualified-name | base-type ), [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+
+annotation          = &quot;@&quot;, identifier, [ &quot;(&quot;, [ annotation-args ], &quot;)&quot; ] ;
+annotation-args     = annotation-arg, { &quot;,&quot;, annotation-arg } ;
+annotation-arg      = annotation-arg-pair | annotation-value ;
+annotation-arg-pair = identifier, &quot;=&quot;, annotation-value ;
+annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal ;
+
+base-type           = &quot;Boolean&quot; | string-type | &quot;Integer&quot; | &quot;Float&quot; | &quot;Double&quot;
+                    | &quot;Date&quot; | &quot;Datetime&quot; | &quot;Time&quot; | &quot;Timestamp&quot;
+                    | &quot;Geography&quot; | &quot;Bytes&quot; | &quot;Json&quot;
+                    | &quot;Interval&quot; | &quot;Range&quot; ;
+
+(* Type String avec contraintes optionnelles *)
+string-type         = &quot;String&quot;, [ string-constraints ] ;
+string-constraints  = string-constraint, { string-constraint } ;
+string-constraint   = &quot;pattern&quot;, string-literal
+                    | &quot;length&quot;, signed-number, &quot;..&quot;, signed-number ;
+
+interval-literal    = &quot;Interval&quot;, interval-single-part
+                    | &quot;Interval&quot;, string-literal, &quot;year&quot;, &quot;to&quot;, &quot;month&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;year&quot;, &quot;to&quot;, &quot;day&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;year&quot;, &quot;to&quot;, &quot;hour&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;year&quot;, &quot;to&quot;, &quot;minute&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;year&quot;, &quot;to&quot;, &quot;second&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;month&quot;, &quot;to&quot;, &quot;day&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;month&quot;, &quot;to&quot;, &quot;hour&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;month&quot;, &quot;to&quot;, &quot;minute&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;month&quot;, &quot;to&quot;, &quot;second&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;day&quot;, &quot;to&quot;, &quot;hour&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;day&quot;, &quot;to&quot;, &quot;minute&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;day&quot;, &quot;to&quot;, &quot;second&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;hour&quot;, &quot;to&quot;, &quot;minute&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;hour&quot;, &quot;to&quot;, &quot;second&quot;
+                    | &quot;Interval&quot;, string-literal, &quot;minute&quot;, &quot;to&quot;, &quot;second&quot; ;
+
+interval-single-part = [ &#39;-&#39; ], number-literal, interval-unit ;
+interval-unit       = &quot;year&quot; | &quot;quarter&quot; | &quot;month&quot; | &quot;week&quot; | &quot;day&quot;
+                    | &quot;hour&quot; | &quot;minute&quot; | &quot;second&quot; | &quot;millisecond&quot; | &quot;microsecond&quot; ;
+
+qualified-name      = identifier, { &quot;.&quot;, identifier } ;
+boolean-literal     = &quot;true&quot; | &quot;false&quot; ;
+
+(* ========== RECORD DECLARATION ============ *)
+record-decl         = &quot;record&quot;, identifier, [ with-clause ], &quot;is&quot;, record-field, { record-field }, &quot;end&quot; ;
+record-field        = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+
+(* ========== TRAIT DECLARATION ============ *)
+trait-decl          = [ &quot;sealed&quot; ], &quot;trait&quot;, identifier, [ with-clause ], &quot;is&quot;, trait-field, { trait-field }, [ trait-aspects ], &quot;end&quot; ;
+trait-field         = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+with-clause         = &quot;with&quot;, qualified-name, { &quot;,&quot;, qualified-name } ;
+trait-aspects       = &quot;aspects&quot;, &quot;{&quot;, aspect-instance, { &quot;,&quot;, aspect-instance }, &quot;}&quot; ;
+
+(* ========== ASPECT DECLARATION ============ *)
+aspect-decl         = { annotation }, [ &quot;abstract&quot; ], &quot;aspect&quot;, identifier, [ aspect-inheritance ], &quot;is&quot;, aspect-field, { aspect-field }, &quot;end&quot; ;
+aspect-inheritance  = extends-clause, [ with-clause ]
+                    | with-clause, [ extends-clause ] ;
+extends-clause      = &quot;extends&quot;, qualified-name ;
+aspect-field        = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+
+(* ========== ENTITY ============= *)
+entity-decl         = { annotation }, [ &quot;sealed&quot; ], &quot;entity&quot;, identifier, [ with-clause ], &quot;is&quot;, entity-field, { entity-field }, [ entity-aspects ], &quot;end&quot; ;
+entity-field        = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+entity-aspects      = &quot;aspects&quot;, &quot;{&quot;, aspect-instance, { &quot;,&quot;, aspect-instance }, &quot;}&quot; ;
+
+(* ========== TYPE RELATION ============= *)
+type-relation-decl  = { annotation }, [ &quot;sealed&quot; ], &quot;type&quot;, &quot;relation&quot;, identifier, [ with-clause ], &quot;is&quot;, type-relation-field, { type-relation-field }, [ type-relation-aspects ], &quot;end&quot; ;
+type-relation-field = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+type-relation-aspects = &quot;aspects&quot;, &quot;{&quot;, aspect-instance, { &quot;,&quot;, aspect-instance }, &quot;}&quot; ;
+
+(* ========== RELATION ============= *)
+relation-decl       = { annotation }, [ &quot;sealed&quot; ], [ &quot;bidirectional&quot; ], &quot;relation&quot;, identifier, [ relation-type ], [ with-clause ], &quot;is&quot;, relation-endpoints, relation-field-list, [ relation-aspects ], &quot;end&quot; ;
+relation-type       = &quot;of&quot;, &quot;type&quot;, qualified-name ;
+relation-endpoints  = &quot;from&quot;, relation-endpoint, &quot;to&quot;, relation-endpoint ;
+relation-endpoint   = qualified-name, &quot;(&quot;, identifier, { &quot;,&quot;, identifier }, &quot;)&quot; ;
+relation-field-list = relation-field, { relation-field } ;
+relation-field      = identifier, &quot;:&quot;, type-ref, [ &quot;=&quot;, annotation-value ], [ NEWLINE ] ;
+relation-aspects    = &quot;aspects&quot;, &quot;{&quot;, aspect-instance, { &quot;,&quot;, aspect-instance }, &quot;}&quot; ;
+
+(* ========== ASPECT INSTANCES ============ *)
+aspect-instance     = identifier, &quot;{&quot;, [ aspect-instance-field-list ], &quot;}&quot; ;
+aspect-instance-field-list = aspect-instance-field, { &quot;,&quot;, aspect-instance-field } ;
+aspect-instance-field = identifier, &quot;:&quot;, annotation-value ;
+
+(* ========== COLLECTION/COMPOSITE LITTÉRAUX ============ *)
+list-literal        = &quot;List&quot;, &quot;[&quot;, [ annotation-value, { &quot;,&quot;, annotation-value } ], &quot;]&quot; ;
+map-literal         = &quot;Map&quot;,  &quot;{&quot;, [ map-entry, { &quot;,&quot;, map-entry } ], &quot;}&quot; ;
+map-entry           = annotation-value, &quot;:&quot;, annotation-value ;
+record-literal      = &quot;Record&quot;, &quot;{&quot;, [ record-lit-field, { &quot;,&quot;, record-lit-field } ], &quot;}&quot; ;
+record-lit-field    = identifier, &quot;:&quot;, annotation-value ;
+signed-number       = [ &#39;-&#39; ], number-literal ;
+range-literal       = &quot;Range&quot;, signed-number, &quot;..&quot;, signed-number ;
+
+(* ========== JSON LITTÉRAUX ============ *)
+json-literal        = &quot;Json&quot;, &quot;{&quot;, json-object-content, &quot;}&quot;
+                    | &quot;Json&quot;, &quot;[&quot;, json-array-content, &quot;]&quot;
+                    | &quot;Json&quot;, string-literal ;
+json-object-content = json-pair, { &quot;,&quot;, json-pair } ;
+json-array-content  = json-value, { &quot;,&quot;, json-value } ;
+json-pair           = string-literal, &quot;:&quot;, json-value ;
+json-value          = string-literal
+                    | number-literal
+                    | boolean-literal
+                    | &quot;null&quot;
+                    | &quot;{&quot;, json-object-content, &quot;}&quot;
+                    | &quot;[&quot;, json-array-content, &quot;]&quot; ;
+
+(* ========== GEOGRAPHY LITTÉRAUX ============ *)
+geography-literal    = &quot;Geography&quot;, string-literal
+                    | &quot;Geography&quot;, &quot;{&quot;, json-object-content, &quot;}&quot; ;
+
+(* ========== BYTES LITTÉRAUX ============ *)
+bytes-literal       = &quot;Bytes&quot;, string-literal
+                    | &quot;Bytes&quot;, &quot;[&quot;, bytes-array-content, &quot;]&quot;
+                    | &quot;Bytes&quot;, &quot;{&quot;, json-object-content, &quot;}&quot; ;
+bytes-array-content = bytes-value, { &quot;,&quot;, bytes-value } ;
+bytes-value         = signed-number ;
+
+string-literal      = &#39;&quot;&#39;, { character - &#39;&quot;&#39; | &#39;\\&quot;&#39; }, &#39;&quot;&#39; ;
+number-literal      = digit, { digit } | &quot;0x&quot;, hex-digit, { hex-digit } ;
+identifier          = letter, { letter | digit | &quot;_&quot; } ;
+NEWLINE             = (&quot;\r&quot;?), &quot;\n&quot;, { (&quot;\r&quot;?), &quot;\n&quot; } ;</code></pre>
+<h3 id="annexe-b-grammaire-antlr-référence-python-target">Annexe B —
+Grammaire ANTLR (référence, Python target)</h3>
+<pre class="antlr"><code>grammar MeshrModule;
+
+// ==============================
+// Entrée principale
+// ==============================
+compilationUnit
+    : annotatedModuleDecl importDecl* exportDecl* topLevelDecl* EOF
+    ;
+
+// ==============================
+// Déclarations de module
+// ==============================
+annotatedModuleDecl
+    : annotation* &#39;module&#39; qualifiedName
+    ;
+
+// ==============================
+// Import / Export
+// ==============================
+importDecl
+    : &#39;import&#39; importItemsWithOptionalBraces &#39;from&#39; qualifiedName
+    ;
+
+importItemsWithOptionalBraces
+    : IDENTIFIER                          # SingleImport
+    | &#39;*&#39;                                 # WildcardImport
+    | &#39;{&#39; importItems &#39;}&#39;                # GroupImport
+    ;
+
+importItems
+    : IDENTIFIER (&#39;,&#39; IDENTIFIER)+
+    ;
+
+exportDecl
+    : &#39;export&#39; exportableDecl            # InlineExport
+    | &#39;export&#39; &#39;{&#39; exportItems &#39;}&#39;       # GroupedExport
+    ;
+
+exportItems
+    : IDENTIFIER (&#39;,&#39; IDENTIFIER)*
+    ;
+
+// ==============================
+// Déclarations de haut niveau
+// ==============================
+topLevelDecl
+    : annotatedEnumDecl
+    | sealedEnumDecl
+    | annotatedAnnotationDecl
+    | sealedRecordDecl
+    | recordDecl
+    | sealedTraitDecl
+    | traitDecl
+    | annotatedAspectDecl
+    | sealedAspectDecl
+    | annotatedEntityDecl
+    | sealedEntityDecl
+    | annotatedTypeRelationDecl
+    | sealedTypeRelationDecl
+    | annotatedRelationDecl
+    | sealedRelationDecl
+    ;
+
+// ========== ENUM =============
+exportableDecl
+    : enumDecl
+    | sealedEnumDecl
+    | entityDecl
+    | sealedEntityDecl
+    | typeRelationDecl
+    | sealedTypeRelationDecl
+    | relationDecl
+    | sealedRelationDecl
+    ;
+
+annotatedEnumDecl
+    : annotation* enumDecl
+    ;
+
+sealedEnumDecl
+    : SEALED enumDecl
+    ;
+
+// ========== ENTITY =============
+annotatedEntityDecl
+    : annotation* entityDecl
+    ;
+
+sealedEntityDecl
+    : SEALED entityDecl
+    ;
+
+enumDecl
+    : &#39;enum&#39; IDENTIFIER enumSignature? &#39;is&#39; &#39;(&#39; enumValueList &#39;)&#39;
+    ;
+
+enumSignature
+    : &#39;(&#39; enumAttributeList &#39;)&#39;
+    ;
+
+enumAttributeList
+    : enumAttribute (&#39;,&#39; enumAttribute)*
+    ;
+
+enumAttribute
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)?
+    ;
+
+enumValueList
+    : enumValue (&#39;,&#39; enumValue)*
+    ;
+
+enumValue
+    : (IDENTIFIER | STRING_LITERAL) (&#39;(&#39; enumValueArgList? &#39;)&#39;)?
+    ;
+
+enumValueArgList
+    : enumValueArg (&#39;,&#39; enumValueArg)*
+    ;
+
+enumValueArg
+    : IDENTIFIER &#39;=&#39; annotationValue
+    ;
+
+// ========== ENTITY DECLARATION ============
+entityDecl
+    : ENTITY IDENTIFIER withClause? &#39;is&#39; entityFieldList entityAspects? &#39;end&#39;
+    ;
+
+entityFieldList
+    : entityField+
+    ;
+
+entityField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)?
+    ;
+
+entityAspects
+    : ASPECTS &#39;{&#39; aspectInstanceList &#39;}&#39;
+    ;
+
+aspectInstanceList
+    : aspectInstance (&#39;,&#39; aspectInstance)*
+    ;
+
+aspectInstance
+    : IDENTIFIER &#39;{&#39; aspectInstanceFieldList? &#39;}&#39;
+    ;
+
+aspectInstanceFieldList
+    : aspectInstanceField (&#39;,&#39; aspectInstanceField)*
+    ;
+
+aspectInstanceField
+    : IDENTIFIER &#39;:&#39; annotationValue
+    ;
+
+// ========== TYPE RELATION DECLARATION ============
+annotatedTypeRelationDecl
+    : annotation* typeRelationDecl
+    ;
+
+sealedTypeRelationDecl
+    : SEALED typeRelationDecl
+    ;
+
+typeRelationDecl
+    : TYPE RELATION IDENTIFIER withClause? &#39;is&#39; typeRelationFieldList typeRelationAspects? &#39;end&#39;
+    ;
+
+typeRelationFieldList
+    : typeRelationField+
+    ;
+
+typeRelationField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)?
+    ;
+
+typeRelationAspects
+    : ASPECTS &#39;{&#39; aspectInstanceList &#39;}&#39;
+    ;
+
+// ========== RELATION DECLARATION ============
+annotatedRelationDecl
+    : annotation* relationDecl
+    ;
+
+sealedRelationDecl
+    : SEALED relationDecl
+    ;
+
+relationDecl
+    : BIDIRECTIONAL? RELATION IDENTIFIER relationType? withClause? &#39;is&#39; relationEndpoints relationFieldList? relationAspects? &#39;end&#39;
+    ;
+
+relationType
+    : &#39;of&#39; TYPE IDENTIFIER
+    ;
+
+relationEndpoints
+    : FROM relationEndpoint TO relationEndpoint
+    ;
+
+relationEndpoint
+    : IDENTIFIER &#39;(&#39; IDENTIFIER (&#39;,&#39; IDENTIFIER)* &#39;)&#39;
+    ;
+
+relationFieldList
+    : relationField+
+    ;
+
+relationField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)?
+    ;
+
+relationAspects
+    : ASPECTS &#39;{&#39; aspectInstanceList &#39;}&#39;
+    ;
+
+// ========== ANNOTATION DECLARATION ============
+annotatedAnnotationDecl
+    : annotation* annotationDecl
+    ;
+
+annotationDecl
+    : &#39;annotation&#39; IDENTIFIER &#39;is&#39; annotationFieldList &#39;end&#39;
+    ;
+
+annotationFieldList
+    : annotationField+
+    ;
+
+annotationField
+    : (&#39;required&#39; | &#39;optional&#39;) IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)? NEWLINE?
+    ;
+
+// ========== ANNOTATION USAGE ============
+annotation
+    : &#39;@&#39; IDENTIFIER (&#39;(&#39; annotationArgs? &#39;)&#39;)?
+    ;
+
+annotationArgs
+    : annotationArg (&#39;,&#39; annotationArg)*
+    ;
+
+annotationArg
+    : annotationArgPair
+    | annotationValue
+    ;
+
+annotationArgPair
+    : IDENTIFIER &#39;=&#39; annotationValue
+    ;
+
+// ========== TYPES DE BASE ============
+  
+// Types de base reconnus
+baseType
+    : &#39;Boolean&#39;
+    | stringType
+    | &#39;Integer&#39;
+    | &#39;Float&#39;
+    | &#39;Double&#39;
+    | &#39;Date&#39;
+    | &#39;Datetime&#39;
+    | &#39;Time&#39;
+    | &#39;Geography&#39;
+    | &#39;Timestamp&#39;
+    | &#39;Bytes&#39;
+    | &#39;Json&#39;
+    | &#39;Interval&#39;
+    | &#39;Range&#39;
+    ;
+
+// Type String avec contraintes optionnelles
+stringType
+    : &#39;String&#39; stringConstraints?
+    ;
+
+stringConstraints
+    : stringConstraint (stringConstraint)*
+    ;
+
+stringConstraint
+    : &#39;pattern&#39; STRING_LITERAL
+    | &#39;length&#39; signedNumber &#39;..&#39; signedNumber
+    ;
+
+// ========== SHARED ============
+qualifiedName
+    : IDENTIFIER (&#39;.&#39; IDENTIFIER)*
+    ;
+
+// ========== TYPE REFERENCES ============
+typeRef
+    : qualifiedName
+    | baseType
+    | listType
+    | mapType
+    | rangeType
+    ;
+
+listType
+    : &#39;List&#39; &#39;of&#39; typeRef
+    ;
+
+mapType
+    : &#39;Map&#39; &#39;of&#39; typeRef &#39;to&#39; typeRef
+    ;
+
+rangeType
+    : &#39;Range&#39; &#39;of&#39; typeRef
+    ;
+
+// ========== ANNOTATION USAGE ============
+annotationValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | qualifiedName
+    | intervalLiteral
+    | listLiteral
+    | mapLiteral
+    | recordLiteral
+    | rangeLiteral
+    | jsonLiteral
+    | geographyLiteral
+    | bytesLiteral
+    ;
+
+// ========== INTERVAL LITERALS ============
+intervalLiteral
+    : &#39;Interval&#39; intervalSinglePart
+    | &#39;Interval&#39; STRING_LITERAL &#39;year&#39; &#39;to&#39; &#39;month&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;year&#39; &#39;to&#39; &#39;day&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;year&#39; &#39;to&#39; &#39;hour&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;year&#39; &#39;to&#39; &#39;minute&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;year&#39; &#39;to&#39; &#39;second&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;month&#39; &#39;to&#39; &#39;day&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;month&#39; &#39;to&#39; &#39;hour&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;month&#39; &#39;to&#39; &#39;minute&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;month&#39; &#39;to&#39; &#39;second&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;day&#39; &#39;to&#39; &#39;hour&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;day&#39; &#39;to&#39; &#39;minute&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;day&#39; &#39;to&#39; &#39;second&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;hour&#39; &#39;to&#39; &#39;minute&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;hour&#39; &#39;to&#39; &#39;second&#39;
+    | &#39;Interval&#39; STRING_LITERAL &#39;minute&#39; &#39;to&#39; &#39;second&#39;
+    ;
+
+intervalSinglePart
+    : &#39;-&#39;? NUMBER_LITERAL intervalUnit
+    ;
+
+intervalUnit
+    : &#39;year&#39; | &#39;quarter&#39; | &#39;month&#39; | &#39;week&#39; | &#39;day&#39;
+    | &#39;hour&#39; | &#39;minute&#39; | &#39;second&#39; | &#39;millisecond&#39; | &#39;microsecond&#39;
+    ;
+
+// ========== RECORD DECLARATION ==========
+recordDecl
+    : &#39;record&#39; IDENTIFIER withClause? &#39;is&#39; recordFieldList &#39;end&#39;
+    ;
+
+sealedRecordDecl
+    : SEALED recordDecl
+    ;
+
+recordFieldList
+    : recordField+
+    ;
+
+recordField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)? NEWLINE?
+    ;
+
+// ========== TRAIT DECLARATION ==========
+traitDecl
+    : &#39;trait&#39; IDENTIFIER withClause? &#39;is&#39; traitFieldList traitAspects? &#39;end&#39;
+    ;
+
+sealedTraitDecl
+    : SEALED traitDecl
+    ;
+
+traitFieldList
+    : traitField+
+    ;
+
+traitField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)? NEWLINE?
+    ;
+
+traitAspects
+    : ASPECTS &#39;{&#39; aspectInstanceList &#39;}&#39;
+    ;
+
+withClause
+    : &#39;with&#39; qualifiedName (&#39;,&#39; qualifiedName)*
+    ;
+
+// ========== ASPECT DECLARATION ==========
+annotatedAspectDecl
+    : annotation* aspectDecl
+    ;
+
+aspectDecl
+    : &#39;abstract&#39;? &#39;aspect&#39; IDENTIFIER aspectInheritance? &#39;is&#39; aspectFieldList &#39;end&#39;
+    ;
+
+sealedAspectDecl
+    : SEALED aspectDecl
+    ;
+
+aspectInheritance
+    : extendsClause withClause?
+    | withClause extendsClause?
+    ;
+
+extendsClause
+    : &#39;extends&#39; qualifiedName
+    ;
+
+aspectFieldList
+    : aspectField+
+    ;
+
+aspectField
+    : IDENTIFIER &#39;:&#39; typeRef (&#39;=&#39; annotationValue)? NEWLINE?
+    ;
+
+// ========== COLLECTION AND COMPOSITE LITERALS ==========
+listLiteral
+    : &#39;List&#39; &#39;[&#39; (annotationValue (&#39;,&#39; annotationValue)*)? &#39;]&#39;
+    ;
+
+mapLiteral
+    : &#39;Map&#39; &#39;{&#39; (mapEntry (&#39;,&#39; mapEntry)*)? &#39;}&#39;
+    ;
+
+mapEntry
+    : annotationValue &#39;:&#39; annotationValue
+    ;
+
+recordLiteral
+    : &#39;Record&#39; &#39;{&#39; (recordLitField (&#39;,&#39; recordLitField)*)? &#39;}&#39;
+    ;
+
+recordLitField
+    : IDENTIFIER &#39;:&#39; annotationValue
+    ;
+
+rangeLiteral
+    : &#39;Range&#39; signedNumber &#39;..&#39; signedNumber
+    ;
+
+// ========== JSON LITERALS ==========
+jsonLiteral
+    : &#39;Json&#39; &#39;{&#39; jsonObjectContent &#39;}&#39;
+    | &#39;Json&#39; &#39;[&#39; jsonArrayContent &#39;]&#39;
+    | &#39;Json&#39; STRING_LITERAL
+    ;
+
+jsonObjectContent
+    : jsonPair (&#39;,&#39; jsonPair)*
+    | // empty
+    ;
+
+jsonArrayContent
+    : jsonValue (&#39;,&#39; jsonValue)*
+    | // empty
+    ;
+
+jsonPair
+    : STRING_LITERAL &#39;:&#39; jsonValue
+    ;
+
+jsonValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | &#39;null&#39;
+    | &#39;{&#39; jsonObjectContent &#39;}&#39;
+    | &#39;[&#39; jsonArrayContent &#39;]&#39;
+    ;
+
+signedNumber
+    : &#39;-&#39;? NUMBER_LITERAL
+    ;
+
+// ========== GEOGRAPHY LITERALS ==========
+geographyLiteral
+    : &#39;Geography&#39; STRING_LITERAL
+    | &#39;Geography&#39; &#39;{&#39; jsonObjectContent &#39;}&#39;
+    ;
+
+// ========== BYTES LITERALS ==========
+bytesLiteral
+    : &#39;Bytes&#39; STRING_LITERAL
+    | &#39;Bytes&#39; &#39;[&#39; bytesArrayContent &#39;]&#39;
+    | &#39;Bytes&#39; &#39;{&#39; jsonObjectContent &#39;}&#39;
+    ;
+
+bytesArrayContent
+    : bytesValue (&#39;,&#39; bytesValue)*
+    | // empty
+    ;
+
+bytesValue
+    : signedNumber
+    ;
+
+// ========== TERMINALS ============
+fragment ESC
+    : &#39;\\&#39; [&quot;\\/bfnrt]
+    ;
+
+AT: &#39;@&#39;;
+STRING_LITERAL: &#39;&quot;&#39; (ESC | ~[&quot;\\\r\n])* &#39;&quot;&#39;;
+
+// Keywords
+SEALED: &#39;sealed&#39;;
+ENTITY: &#39;entity&#39;;
+TYPE: &#39;type&#39;;
+RELATION: &#39;relation&#39;;
+BIDIRECTIONAL: &#39;bidirectional&#39;;
+FROM: &#39;from&#39;;
+TO: &#39;to&#39;;
+ASPECTS: &#39;aspects&#39;;
+
+NUMBER_LITERAL
+    : [0-9]+ (&#39;.&#39; [0-9]+)?
+    | &#39;0&#39; [xX] [0-9a-fA-F]+
+    ;
+
+BOOLEAN_LITERAL
+    : &#39;true&#39; | &#39;false&#39;
+    ;
+
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
+
+WS: [ \t\r\n]+ -&gt; skip ;
+NEWLINE: (&#39;\r&#39;? &#39;\n&#39;)+ -&gt; skip ;
+COMMENT: &#39;//&#39; ~[\r\n]* -&gt; skip ;
+MULTILINE_COMMENT: &#39;/*&#39; .*? &#39;*/&#39; -&gt; skip ;</code></pre>
+</body>
+</html>

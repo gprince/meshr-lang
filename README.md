@@ -49,12 +49,19 @@ make test-failures
 
 ## 📋 Commandes disponibles
 
+### 🔧 Développement
 - `make grammar` : Génère le parser ANTLR
 - `make test` : Exécute tous les tests
 - `make test-failures` : Affiche uniquement les tests qui échouent
 - `make test-stdlib` : Teste les modules de la bibliothèque standard
 - `make clean` : Nettoie les fichiers générés
 - `make all` : Exécute grammar + test + test-stdlib
+
+### 📚 Documentation
+- `make docs` : Génère la documentation PDF et HTML
+- `make docs-pdf` : Génère uniquement la documentation PDF
+- `make docs-html` : Génère uniquement la documentation HTML
+- `make docs-clean` : Supprime les fichiers de documentation générés
 
 ---
 
