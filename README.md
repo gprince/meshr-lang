@@ -6,7 +6,7 @@
 
 - `grammar/` → ANTLR v4 grammar files (.g4)
 - `cli/`     → CLI tool (Python or Kotlin)
-- `lsp/`     → Language Server (VSCode/Cursor)
+- `lsp/`     → Language Server Protocol & Extension VSCode/Cursor
 - `docs/`    → Markdown documentation
 - `examples/`→ DSL examples (.ms)
 - `stdlib/`  → Standard library modules (.meshr)
@@ -63,6 +63,14 @@ make test-failures
 - `make docs-pdf` : Génère uniquement la documentation PDF
 - `make docs-html` : Génère uniquement la documentation HTML
 - `make docs-clean` : Supprime les fichiers de documentation générés
+
+### 🔌 LSP & Extension VSCode
+- `make lsp` : Configure le LSP et l'extension VSCode
+- `make lsp-install` : Installe les dépendances LSP
+- `make lsp-test` : Teste le serveur LSP
+- `make lsp-package` : Crée le package de l'extension
+- `make lsp-install-extension` : Installe l'extension dans Cursor/VSCode
+- `make lsp-clean` : Nettoie les fichiers de build LSP
 
 ---
 

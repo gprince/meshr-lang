@@ -1,0 +1,126 @@
+{
+  "Module Declaration": {
+    "prefix": "module",
+    "body": [
+      "module ${1:com.example.module};",
+      "",
+      "${2:// Contenu du module}"
+    ],
+    "description": "Déclaration de module"
+  },
+  "Import Statement": {
+    "prefix": "import",
+    "body": [
+      "import ${1:com.example.module};"
+    ],
+    "description": "Import d'un module"
+  },
+  "Entity Declaration": {
+    "prefix": "entity",
+    "body": [
+      "entity ${1:EntityName} {",
+      "    ${2:// Champs de l'entité}",
+      "}"
+    ],
+    "description": "Déclaration d'entité"
+  },
+  "Entity with Fields": {
+    "prefix": "entity-fields",
+    "body": [
+      "entity ${1:EntityName} {",
+      "    ${2:String} ${3:fieldName} = ${4:\"default\"};",
+      "    ${5:Number} ${6:anotherField};",
+      "}"
+    ],
+    "description": "Entité avec des champs"
+  },
+  "Enum Declaration": {
+    "prefix": "enum",
+    "body": [
+      "enum ${1:EnumName} {",
+      "    ${2:VALUE1},",
+      "    ${3:VALUE2}",
+      "}"
+    ],
+    "description": "Déclaration d'énumération"
+  },
+  "Trait Declaration": {
+    "prefix": "trait",
+    "body": [
+      "trait ${1:TraitName} {",
+      "    ${2:// Définition du trait}",
+      "}"
+    ],
+    "description": "Déclaration de trait"
+  },
+  "Aspect Declaration": {
+    "prefix": "aspect",
+    "body": [
+      "aspect ${1:AspectName} {",
+      "    ${2:// Définition de l'aspect}",
+      "}"
+    ],
+    "description": "Déclaration d'aspect"
+  },
+  "Annotated Entity": {
+    "prefix": "entity-annotated",
+    "body": [
+      "@${1:Documented}",
+      "entity ${2:EntityName} {",
+      "    ${3:// Champs de l'entité}",
+      "}"
+    ],
+    "description": "Entité avec annotation"
+  },
+  "List Type": {
+    "prefix": "list",
+    "body": [
+      "List of ${1:String}"
+    ],
+    "description": "Type List"
+  },
+  "Map Type": {
+    "prefix": "map",
+    "body": [
+      "Map of ${1:String} to ${2:String}"
+    ],
+    "description": "Type Map"
+  },
+  "Bytes Literal": {
+    "prefix": "bytes",
+    "body": [
+      "Bytes[${1:0, 1, 2, 3}]"
+    ],
+    "description": "Littéral Bytes"
+  },
+  "JSON Literal": {
+    "prefix": "json",
+    "body": [
+      "Json{\"${1:key}\": \"${2:value}\"}"
+    ],
+    "description": "Littéral JSON"
+  },
+  "Geography Literal": {
+    "prefix": "geo",
+    "body": [
+      "Geography{\"${1:POINT(2.3522 48.8566)}\"}"
+    ],
+    "description": "Littéral Geography"
+  },
+  "Comment Block": {
+    "prefix": "comment",
+    "body": [
+      "/*",
+      " * ${1:Commentaire}",
+      " */"
+    ],
+    "description": "Bloc de commentaire"
+  },
+  "TODO Comment": {
+    "prefix": "todo",
+    "body": [
+      "// TODO: ${1:Description de la tâche}"
+    ],
+    "description": "Commentaire TODO"
+  }
+}

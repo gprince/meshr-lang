@@ -1,0 +1,47 @@
+// Test de l'extension Meshr-Lang
+// Ce fichier devrait avoir la coloration syntaxique et l'autocomplétion
+
+module com.example.test;
+
+import core.types;
+
+// Test d'autocomplétion - tapez '@' et vous devriez voir des suggestions
+@Documented
+entity TestEntity {
+    String name;
+    Number age;
+    Boolean active;
+    List of String tags;
+}
+
+// Test d'énumération
+enum Status {
+    ACTIVE,
+    INACTIVE,
+    PENDING
+}
+
+// Test de trait
+trait Timestamped {
+    String createdAt;
+    String updatedAt;
+}
+
+// Test d'aspect
+aspect AuditInfo {
+    String createdBy;
+    String lastModifiedBy;
+}
+
+// Test de relation
+relation UserToOrder {
+    User user;
+    Order order;
+    String createdAt;
+}
+
+type relation PLACED with WithAudit is
+  since : Date
+  channel : Channel
+  quantity : Integer = 1
+end

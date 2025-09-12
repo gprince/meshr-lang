@@ -4,7 +4,7 @@ ANTLR_JAR = grammar/antlr-4.13.2-complete.jar
 GRAMMAR_FILE = grammar/MeshrModule.g4
 GEN_DIR = grammar/generated
 
-.PHONY: all clean grammar test test-stdlib test-examples test-failures docs docs-pdf docs-html docs-clean
+.PHONY: all clean grammar test test-stdlib test-examples test-failures docs docs-pdf docs-html docs-clean lsp lsp-install lsp-test lsp-clean lsp-package lsp-install-extension
 
 all: 
 	$(MAKE) grammar
@@ -66,5 +66,41 @@ docs-clean:
 	@rm -f docs/meshr-lang.pdf docs/meshr-lang.html
 	@echo "✅ Documentation cleaned"
 
-clean: docs-clean
+# LSP Development
+lsp: lsp-install
+	@echo "✅ LSP setup completed"
+
+lsp-install:
+	@echo "Installing LSP server dependencies..."
+	@cd lsp/server && pip install -r requirements.txt
+	@echo "Installing LSP client dependencies..."
+	@cd lsp/client && npm install
+	@echo "Compiling LSP client..."
+	@cd lsp/client && npm run compile
+	@echo "✅ LSP dependencies installed"
+
+lsp-test:
+	@echo "Testing LSP server..."
+	@PYTHONPATH=. ~/.pyenv/versions/3.12.0/bin/python3 lsp/tests/test_lsp.py
+	@echo "✅ LSP tests completed"
+
+lsp-package:
+	@echo "Packaging LSP extension..."
+	@cd lsp/client && npm run compile
+	@cd lsp/client && vsce package
+	@echo "✅ LSP extension packaged"
+
+lsp-install-extension:
+	@echo "Installing LSP extension..."
+	@cd lsp/client && cursor --install-extension meshr-lang-0.1.0.vsix || echo "Cursor CLI not found, install manually"
+	@echo "✅ LSP extension installed"
+
+lsp-clean:
+	@echo "Cleaning LSP build files..."
+	@rm -rf lsp/client/out
+	@rm -rf lsp/client/node_modules
+	@rm -f lsp/client/*.vsix
+	@echo "✅ LSP cleaned"
+
+clean: docs-clean lsp-clean
 	rm -rf $(GEN_DIR)/*.py $(GEN_DIR)/*.tokens $(GEN_DIR)/*.interp

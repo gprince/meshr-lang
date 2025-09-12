@@ -1,0 +1,114 @@
+{
+  "name": "meshr-lang",
+  "displayName": "Meshr-Lang",
+  "description": "Support du langage Meshr-Lang pour VSCode/Cursor",
+  "version": "0.1.0",
+  "publisher": "meshr-lang",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Snippets"
+  ],
+  "keywords": [
+    "meshr",
+    "dsl",
+    "data-mesh",
+    "domain-driven-design"
+  ],
+  "activationEvents": [
+    "onLanguage:meshr"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "meshr",
+        "aliases": [
+          "Meshr-Lang",
+          "meshr"
+        ],
+        "extensions": [
+          ".meshr"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "meshr",
+        "scopeName": "source.meshr",
+        "path": "./syntaxes/meshr.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "meshr",
+        "path": "./snippets/meshr.json"
+      }
+    ],
+    "commands": [
+      {
+        "command": "meshr-lang.restartServer",
+        "title": "Redémarrer le serveur LSP",
+        "category": "Meshr-Lang"
+      },
+      {
+        "command": "meshr-lang.showOutput",
+        "title": "Afficher la sortie du serveur",
+        "category": "Meshr-Lang"
+      }
+    ],
+    "configuration": {
+      "title": "Meshr-Lang",
+      "properties": {
+        "meshr-lang.server.path": {
+          "type": "string",
+          "default": "python",
+          "description": "Chemin vers l'exécutable Python pour le serveur LSP"
+        },
+        "meshr-lang.server.args": {
+          "type": "array",
+          "default": ["-m", "lsp.server.main"],
+          "description": "Arguments pour le serveur LSP"
+        },
+        "meshr-lang.server.cwd": {
+          "type": "string",
+          "default": "${workspaceFolder}",
+          "description": "Répertoire de travail du serveur LSP"
+        },
+        "meshr-lang.format.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Activer le formatage automatique"
+        },
+        "meshr-lang.diagnostics.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Activer les diagnostics en temps réel"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "eslint": "^8.28.0",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^8.1.0"
+  }
+}

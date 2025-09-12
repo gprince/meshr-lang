@@ -1,0 +1,130 @@
+{
+  "name": "Meshr-Lang",
+  "scopeName": "source.meshr",
+  "fileTypes": ["meshr"],
+  "patterns": [
+    {
+      "include": "#comments"
+    },
+    {
+      "include": "#keywords"
+    },
+    {
+      "include": "#types"
+    },
+    {
+      "include": "#annotations"
+    },
+    {
+      "include": "#strings"
+    },
+    {
+      "include": "#numbers"
+    },
+    {
+      "include": "#identifiers"
+    }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.meshr",
+          "begin": "//",
+          "end": "$",
+          "patterns": [
+            {
+              "name": "keyword.other.todo.meshr",
+              "match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b"
+            }
+          ]
+        },
+        {
+          "name": "comment.block.meshr",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "patterns": [
+            {
+              "name": "keyword.other.todo.meshr",
+              "match": "\\b(TODO|FIXME|NOTE|HACK|XXX)\\b"
+            }
+          ]
+        }
+      ]
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.meshr",
+          "match": "\\b(module|import|entity|enum|trait|aspect|relation|sealed|export|of|extends|implements)\\b"
+        },
+        {
+          "name": "keyword.other.meshr",
+          "match": "\\b(true|false|null)\\b"
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        {
+          "name": "support.type.primitive.meshr",
+          "match": "\\b(String|Number|Boolean|Bytes|List|Map)\\b"
+        }
+      ]
+    },
+    "annotations": {
+      "patterns": [
+        {
+          "name": "storage.type.annotation.meshr",
+          "match": "@[a-zA-Z_][a-zA-Z0-9_]*"
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.meshr",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.meshr",
+              "match": "\\\\."
+            }
+          ]
+        },
+        {
+          "name": "string.quoted.single.meshr",
+          "begin": "'",
+          "end": "'",
+          "patterns": [
+            {
+              "name": "constant.character.escape.meshr",
+              "match": "\\\\."
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.meshr",
+          "match": "\\b[0-9]+(\\.[0-9]+)?([eE][+-]?[0-9]+)?\\b"
+        },
+        {
+          "name": "constant.numeric.hex.meshr",
+          "match": "\\b0[xX][0-9a-fA-F]+\\b"
+        }
+      ]
+    },
+    "identifiers": {
+      "patterns": [
+        {
+          "name": "variable.other.meshr",
+          "match": "\\b[a-zA-Z_][a-zA-Z0-9_]*\\b"
+        }
+      ]
+    }
+  }
+}
