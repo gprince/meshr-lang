@@ -1,0 +1,188 @@
+// Module de test pour les littéraux Bytes valides
+module test.bytes_literals
+
+// ========== ANNOTATIONS AVEC LITTÉRAUX BYTES ==========
+
+@BinaryConfig(
+  signature=Bytes"0xdeadbeef",
+  hash=Bytes"a1b2c3d4e5f6",
+  data=Bytes"U29tZSBiaW5hcnkgZGF0YQ=="
+)
+annotation BinaryConfig is
+  required signature : Bytes
+  optional hash : Bytes = Bytes"000000000000"
+  optional data : Bytes = Bytes"SGVsbG8gV29ybGQ="
+end
+
+@CryptoConfig(
+  public_key=Bytes"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA...\n-----END PUBLIC KEY-----",
+  encrypted_data=Bytes"U2FsdGVkX1+vupppZksvRf5pq5g5XjFRlipRkwB0K1Y="
+)
+annotation CryptoConfig is
+  required public_key : Bytes
+  optional encrypted_data : Bytes = Bytes""
+end
+
+@ArrayConfig(
+  byte_array=Bytes[255, 0, 255, 0],
+  hex_array=Bytes[0xFF, 0x00, 0xFF, 0x00],
+  mixed_array=Bytes[255, 0x00, 255, 0]
+)
+annotation ArrayConfig is
+  required byte_array : Bytes
+  optional hex_array : Bytes = Bytes[0, 0, 0, 0]
+  optional mixed_array : Bytes = Bytes[0, 0, 0, 0]
+end
+
+@JsonConfig(
+  metadata=Bytes{"data": "U29tZSBiaW5hcnkgZGF0YQ==", "encoding": "base64", "size": 20},
+  binary_info=Bytes{"hash": "a1b2c3d4e5f6", "algorithm": "sha256", "format": "hex"}
+)
+annotation JsonConfig is
+  required metadata : Bytes
+  optional binary_info : Bytes = Bytes{"data": "", "encoding": "base64"}
+end
+
+// ========== ENUMS AVEC LITTÉRAUX BYTES ==========
+
+enum FileType(extension: String, magic_bytes: Bytes, header: Bytes) is (
+  pdf(extension = "pdf", magic_bytes = Bytes"25504446", header = Bytes"255044462D"),
+  jpeg(extension = "jpg", magic_bytes = Bytes"FFD8FFE0", header = Bytes"FFD8FFE000104A4649460001"),
+  png(extension = "png", magic_bytes = Bytes"89504E47", header = Bytes"89504E470D0A1A0A"),
+  zip(extension = "zip", magic_bytes = Bytes"504B0304", header = Bytes"504B0304140000000800")
+)
+
+enum CryptoAlgorithm(name: String, key_size: Integer, sample_key: Bytes) is (
+  aes128(name = "AES-128", key_size = 16, sample_key = Bytes[0x2B, 0x7E, 0x15, 0x16, 0x28, 0xAE, 0xD2, 0xA6, 0xAB, 0xF7, 0x15, 0x88, 0x09, 0xCF, 0x4F, 0x3C]),
+  aes256(name = "AES-256", key_size = 32, sample_key = Bytes[0x60, 0x3D, 0xEB, 0x10, 0x15, 0xCA, 0x71, 0xBE, 0x2B, 0x73, 0xAE, 0xF0, 0x85, 0x7D, 0x77, 0x81, 0x1F, 0x35, 0x2C, 0x07, 0x3B, 0x61, 0x08, 0xD7, 0x2D, 0x98, 0x10, 0xA3, 0x09, 0x14, 0xDF, 0xF4])
+)
+
+// ========== RECORDS AVEC LITTÉRAUX BYTES ==========
+
+record BinaryFile is
+  filename : String
+  content : Bytes = Bytes""
+  checksum : Bytes = Bytes"00000000000000000000000000000000"
+  metadata : Bytes = Bytes{"size": 0, "type": "unknown"}
+end
+
+record CryptoKey is
+  key_id : String
+  public_key : Bytes
+  private_key : Bytes = Bytes""
+  key_fingerprint : Bytes = Bytes[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+end
+
+record ImageData is
+  width : Integer
+  height : Integer
+  pixel_data : Bytes = Bytes[0, 0, 0, 0]
+  color_profile : Bytes = Bytes""
+  compression_info : Bytes = Bytes{"algorithm": "none", "quality": 100}
+end
+
+// ========== TRAITS AVEC LITTÉRAUX BYTES ==========
+
+trait WithChecksum is
+  checksum : Bytes = Bytes"00000000000000000000000000000000"
+  hash_algorithm : Bytes = Bytes"sha256"
+end
+
+trait WithEncryption is
+  encryption_key : Bytes = Bytes""
+  encryption_algorithm : Bytes = Bytes"aes256"
+end
+
+// ========== ASPECTS AVEC LITTÉRAUX BYTES ==========
+
+aspect BinaryIntegrity is
+  expected_checksum : Bytes = Bytes"00000000000000000000000000000000"
+  verification_key : Bytes = Bytes""
+  integrity_metadata : Bytes = Bytes{"verified": false, "algorithm": "sha256"}
+end
+
+aspect DataProtection is
+  encryption_key : Bytes = Bytes""
+  access_control : Bytes = Bytes{"level": "public", "encryption": false}
+  audit_trail : Bytes = Bytes{"enabled": true, "retention_days": 365}
+end
+
+// ========== ENTITÉS AVEC LITTÉRAUX BYTES ==========
+
+entity Document with WithChecksum is
+  DocumentId : String
+  Content : Bytes = Bytes""
+  DigitalSignature : Bytes = Bytes""
+  
+  aspects {
+    BinaryIntegrity {
+      expected_checksum: Bytes"00000000000000000000000000000000",
+      verification_key: Bytes"",
+      integrity_metadata: Bytes{"verified": false, "algorithm": "sha256"}
+    }
+  }
+end
+
+entity SecureFile with WithEncryption is
+  FileId : String
+  EncryptedContent : Bytes
+  DecryptionKey : Bytes = Bytes""
+  
+  aspects {
+    DataProtection {
+      encryption_key: Bytes"",
+      access_control: Bytes{"level": "private", "encryption": true},
+      audit_trail: Bytes{"enabled": true, "retention_days": 2555}
+    }
+  }
+end
+
+// ========== LITTÉRAUX BYTES COMPLEXES ==========
+
+@ComplexBinaryConfig(
+  multi_part_data=Bytes[255, 0, 255, 0, 255, 0, 255, 255, 255],
+  encoded_metadata=Bytes{"parts": [{"data": "U29tZSBkYXRh", "encoding": "base64"}, {"data": "0xdeadbeef", "encoding": "hex"}]},
+  binary_sequence=Bytes[0x48, 0x65, 0x6C, 0x6C, 0x6F, 0x20, 0x57, 0x6F, 0x72, 0x6C, 0x64]
+)
+annotation ComplexBinaryConfig is
+  required multi_part_data : Bytes
+  optional encoded_metadata : Bytes = Bytes{"parts": []}
+  optional binary_sequence : Bytes = Bytes[0x00]
+end
+
+// ========== LITTÉRAUX BYTES EN STRING ==========
+
+@RawBytes(
+  hex_string=Bytes"deadbeef",
+  base64_string=Bytes"SGVsbG8gV29ybGQ=",
+  binary_string=Bytes"0100100001100101011011000110110001101111"
+)
+annotation RawBytes is
+  required hex_string : Bytes
+  optional base64_string : Bytes = Bytes""
+  optional binary_string : Bytes = Bytes"00000000"
+end
+
+// ========== EXEMPLES D'USAGE RÉEL ==========
+
+@ImageProcessing(
+  watermark=Bytes[0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A],
+  filter_kernel=Bytes[0, -1, 0, -1, 5, -1, 0, -1, 0],
+  color_lut=Bytes[0, 0, 0, 255, 255, 255, 128, 128, 128]
+)
+annotation ImageProcessing is
+  required watermark : Bytes
+  optional filter_kernel : Bytes = Bytes[0, 0, 0, 0, 1, 0, 0, 0, 0]
+  optional color_lut : Bytes = Bytes[0, 0, 0, 255, 255, 255]
+end
+
+@NetworkPacket(
+  ethernet_header=Bytes[0x00, 0x1B, 0x21, 0x3C, 0x4D, 0x5E, 0x00, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x08, 0x00],
+  ip_header=Bytes[0x45, 0x00, 0x00, 0x3C, 0x1C, 0x46, 0x40, 0x00, 0x40, 0x01, 0x00, 0x00, 0xC0, 0xA8, 0x01, 0x01, 0xC0, 0xA8, 0x01, 0x02],
+  payload=Bytes"Hello, World!"
+)
+annotation NetworkPacket is
+  required ethernet_header : Bytes
+  optional ip_header : Bytes = Bytes[0x45, 0x00, 0x00, 0x14, 0x00, 0x00, 0x40, 0x00, 0x40, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]
+  optional payload : Bytes = Bytes""
+end

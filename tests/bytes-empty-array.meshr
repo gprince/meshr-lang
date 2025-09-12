@@ -1,0 +1,9 @@
+// Test pour array Bytes vide
+module test.bytes_empty_array
+
+@EmptyArrayBytes(
+  empty_array=Bytes[]
+)
+annotation EmptyArrayBytes is
+  required empty_array : Bytes
+end

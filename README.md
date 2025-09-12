@@ -9,6 +9,7 @@
 - `lsp/`     → Language Server (VSCode/Cursor)
 - `docs/`    → Markdown documentation
 - `examples/`→ DSL examples (.ms)
+- `stdlib/`  → Standard library modules (.meshr)
 - `tests/`   → Parser and CLI unit tests
 
 ---
@@ -28,6 +29,12 @@ make grammar
 
 # 4. Run test parser
 python tests/parse_module.py
+
+# 5. Run all tests
+make test
+
+# 6. Check for test failures only
+make test-failures
 ```
 
 ---
@@ -39,6 +46,15 @@ python tests/parse_module.py
 - **Runtime**: `antlr4-python3-runtime`
 - **Grammar file**: [`grammar/MeshrModule.g4`](grammar/MeshrModule.g4)
 - **Generated code**: `grammar/generated/`
+
+## 📋 Commandes disponibles
+
+- `make grammar` : Génère le parser ANTLR
+- `make test` : Exécute tous les tests
+- `make test-failures` : Affiche uniquement les tests qui échouent
+- `make test-stdlib` : Teste les modules de la bibliothèque standard
+- `make clean` : Nettoie les fichiers générés
+- `make all` : Exécute grammar + test + test-stdlib
 
 ---
 

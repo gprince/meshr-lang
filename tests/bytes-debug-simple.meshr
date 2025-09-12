@@ -1,0 +1,5 @@
+module test.debug
+
+annotation Test is
+  required x : Integer = 255
+end

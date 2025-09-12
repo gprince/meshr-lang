@@ -56,7 +56,8 @@ annotation-value    = string-literal
                     | record-literal
                     | range-literal
                     | json-literal
-                    | geography-literal ;
+                    | geography-literal
+                    | bytes-literal ;
 
 (* ========== TYPES DE BASE ============ *)
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
@@ -168,6 +169,17 @@ json-value          = string-literal
 (* ========== GEOGRAPHY LITTÉRAUX ============ *)
 geography-literal    = "Geography", string-literal
                     | "Geography", "{", json-object-content, "}" ;
+
+(* ========== BYTES LITTÉRAUX ============ *)
+bytes-literal        = "Bytes", string-literal
+                    | "Bytes", "[", bytes-array-content, "]"
+                    | "Bytes", "{", json-object-content, "}" ;
+
+bytes-array-content  = bytes-value, { ",", bytes-value } ;
+bytes-value          = number-literal
+                    | "0x", hex-number ;
+
+hex-number           = hex-digit, { hex-digit } ;
 
 (* ========== TERMINAUX (approx) ============ *)
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;

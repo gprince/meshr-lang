@@ -1,0 +1,8 @@
+module test.debug
+
+@DebugBytes(
+  decimal=Bytes[255]
+)
+annotation DebugBytes is
+  required decimal : Bytes
+end

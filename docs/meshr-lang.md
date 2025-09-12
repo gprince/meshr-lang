@@ -268,7 +268,7 @@ Les types suivants peuvent être utilisés dans les déclarations d’annotation
 - `Double` : précision étendue (équivalent sémantique à `Float` pour l’instant)
 - `Date`, `Datetime`, `Time`, `Timestamp` : types temporels
 - `Geography` : localisation géographique (future extension)
-- `Bytes` : données binaires (future extension)
+- `Bytes` : données binaires
 - `Json` : valeurs encodées en JSON (future extension)
 - `Interval` : intervalle sur un type temporel (ex: `Interval 2 hour`)
 - `Range` : intervalle contigu entre deux valeurs ordonnées (ex: `Range 1..10`)
@@ -747,6 +747,7 @@ end
 - Range: `Range -2048 .. 2048`, `Range 1..10`
 - **Json**: `Json{"key": "value"}`, `Json[1,2,3]`, `Json"{\"raw\": \"json\"}"`
 - **Geography**: `Geography"POINT(2.3522 48.8566)"`, `Geography{"type":"Point","coordinates":[2.3522,48.8566]}`
+- **Bytes**: `Bytes"0xdeadbeef"`, `Bytes[255, 0, 255]`, `Bytes{"verified": false, "algorithm": "sha256"}`
 
 Exemple d'usage dans une `enum`:
 
@@ -774,6 +775,37 @@ enum HttpStatus(code: Integer, details: Json) is (
   ok(code = 200, details = Json{"message": "Success", "data": {"count": 0}}),
   not_found(code = 404, details = Json{"error": "Not Found", "code": "E404"}),
   server_error(code = 500, details = Json{"error": "Internal Server Error", "stack": []})
+)
+```
+
+#### 🔢 Littéraux Bytes
+
+Les littéraux `Bytes` permettent de représenter des données binaires de trois façons :
+
+- **Chaîne hexadécimale** : `Bytes"0xdeadbeef"`, `Bytes"FFD8FFE0"`
+- **Tableau de valeurs numériques** : `Bytes[255, 0, 255]`, `Bytes[0x89, 0x50, 0x4E, 0x47]`
+- **Objet JSON** : `Bytes{"verified": false, "algorithm": "sha256"}`
+
+Les valeurs dans les tableaux peuvent être des nombres entiers (positifs ou négatifs) ou des valeurs hexadécimales.
+
+Exemple d'usage avec des littéraux **Bytes**:
+
+```meshr
+@BinaryConfig(
+  signature=Bytes"0xdeadbeef",
+  hash=Bytes"a1b2c3d4e5f6",
+  data=Bytes"U29tZSBiaW5hcnkgZGF0YQ=="
+)
+annotation BinaryConfig is
+  required signature : Bytes
+  optional hash : Bytes = Bytes"000000000000"
+  optional data : Bytes = Bytes"SGVsbG8gV29ybGQ="
+end
+
+enum FileType(extension: String, magic_bytes: Bytes, header: Bytes) is (
+  pdf(extension = "pdf", magic_bytes = Bytes"25504446", header = Bytes"255044462D"),
+  jpeg(extension = "jpg", magic_bytes = Bytes"FFD8FFE0", header = Bytes"FFD8FFE000104A4649460001"),
+  png(extension = "png", magic_bytes = Bytes"89504E47", header = Bytes"89504E470D0A1A0A")
 )
 
 record ApiResponse is
@@ -1964,7 +1996,7 @@ annotation          = "@", identifier, [ "(", [ annotation-args ], ")" ] ;
 annotation-args     = annotation-arg, { ",", annotation-arg } ;
 annotation-arg      = annotation-arg-pair | annotation-value ;
 annotation-arg-pair = identifier, "=", annotation-value ;
-annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal ;
+annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal ;
 
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
                     | "Date" | "Datetime" | "Time" | "Timestamp"
@@ -2068,6 +2100,13 @@ json-value          = string-literal
 (* ========== GEOGRAPHY LITTÉRAUX ============ *)
 geography-literal    = "Geography", string-literal
                     | "Geography", "{", json-object-content, "}" ;
+
+(* ========== BYTES LITTÉRAUX ============ *)
+bytes-literal       = "Bytes", string-literal
+                    | "Bytes", "[", bytes-array-content, "]"
+                    | "Bytes", "{", json-object-content, "}" ;
+bytes-array-content = bytes-value, { ",", bytes-value } ;
+bytes-value         = signed-number ;
 
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;
 number-literal      = digit, { digit } | "0x", hex-digit, { hex-digit } ;

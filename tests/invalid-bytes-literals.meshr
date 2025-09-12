@@ -1,0 +1,180 @@
+// Module de test pour les littéraux Bytes invalides
+// Ces tests doivent échouer lors du parsing
+
+module test.invalid_bytes_literals
+
+// ========== ERREURS DE SYNTAXE BYTES ==========
+
+// ❌ Erreur : Bytes sans contenu
+@InvalidBytesConfig(
+  empty_bytes=Bytes
+)
+annotation InvalidBytesConfig is
+  required empty_bytes : Bytes
+end
+
+// ❌ Erreur : Bytes avec contenu invalide
+@InvalidBytesConfig2(
+  invalid_bytes=Bytes{invalid: syntax}
+)
+annotation InvalidBytesConfig2 is
+  required invalid_bytes : Bytes
+end
+
+// ❌ Erreur : Bytes avec array mal formé
+@InvalidBytesConfig3(
+  malformed_array=Bytes[255, 0, 255, 0, "invalid"]
+)
+annotation InvalidBytesConfig3 is
+  required malformed_array : Bytes
+end
+
+// ❌ Erreur : Bytes avec hex invalide
+@InvalidBytesConfig4(
+  invalid_hex=Bytes[0xGG, 0xHH, 0xII]
+)
+annotation InvalidBytesConfig4 is
+  required invalid_hex : Bytes
+end
+
+// ❌ Erreur : Bytes avec valeurs hors range
+@InvalidBytesConfig5(
+  out_of_range=Bytes[256, -1, 1000]
+)
+annotation InvalidBytesConfig5 is
+  required out_of_range : Bytes
+end
+
+// ❌ Erreur : Bytes avec JSON mal formé
+@InvalidBytesConfig6(
+  malformed_json=Bytes{"data": "U29tZSBiaW5hcnkgZGF0YQ==", "encoding": "base64", "unclosed": "string}
+)
+annotation InvalidBytesConfig6 is
+  required malformed_json : Bytes
+end
+
+// ========== ERREURS DE TYPES BYTES ==========
+
+// ❌ Erreur : valeur non-Bytes dans littéral Bytes
+@InvalidBytesConfig7(
+  non_bytes_value=Bytes{some_identifier: "value"}
+)
+annotation InvalidBytesConfig7 is
+  required non_bytes_value : Bytes
+end
+
+// ❌ Erreur : mot-clé réservé utilisé comme valeur
+@InvalidBytesConfig8(
+  reserved_keyword=Bytes{"type": Bytes}
+)
+annotation InvalidBytesConfig8 is
+  required reserved_keyword : Bytes
+end
+
+// ========== ERREURS DE STRUCTURE ==========
+
+// ❌ Erreur : Bytes avec contenu invalide
+@InvalidBytesConfig9(
+  invalid_content=Bytes{invalid_syntax}
+)
+annotation InvalidBytesConfig9 is
+  required invalid_content : Bytes
+end
+
+// ❌ Erreur : Bytes avec array mal formé
+@InvalidBytesConfig10(
+  malformed_array=Bytes[255, 0, 255, 0, "unclosed": "string]
+)
+annotation InvalidBytesConfig10 is
+  required malformed_array : Bytes
+end
+
+// ========== ERREURS DANS LES ENUMS ==========
+
+// ❌ Erreur : enum avec Bytes invalide
+enum InvalidBytesEnum(data: Bytes) is (
+  bad_item(data = Bytes{invalid: syntax})
+)
+
+// ❌ Erreur : enum avec Bytes mal formé
+enum InvalidBytesEnum2(data: Bytes) is (
+  bad_item2(data = Bytes[255, 0, 255, 0, "unclosed": "string])
+)
+
+// ========== ERREURS DANS LES RECORDS ==========
+
+// ❌ Erreur : record avec Bytes invalide par défaut
+record InvalidBytesRecord is
+  bad_field : Bytes = Bytes{invalid: syntax}
+end
+
+// ❌ Erreur : record avec Bytes mal formé
+record InvalidBytesRecord2 is
+  bad_field2 : Bytes = Bytes[255, 0, 255, 0, "missing": "comma" "another": "value"]
+end
+
+// ========== ERREURS DANS LES ASPECTS ==========
+
+// ❌ Erreur : aspect avec Bytes invalide
+aspect InvalidBytesAspect is
+  bad_config : Bytes = Bytes{invalid: syntax}
+end
+
+// ❌ Erreur : aspect avec Bytes mal formé
+aspect InvalidBytesAspect2 is
+  bad_config2 : Bytes = Bytes[255, 0, 255, 0, "unclosed": "object}
+end
+
+// ========== ERREURS DE VALEURS HEXADÉCIMALES ==========
+
+// ❌ Erreur : hex sans 0x
+@InvalidBytesConfig11(
+  missing_0x=Bytes[FF, 00, FF, 00]
+)
+annotation InvalidBytesConfig11 is
+  required missing_0x : Bytes
+end
+
+// ❌ Erreur : hex avec caractères invalides
+@InvalidBytesConfig12(
+  invalid_hex_chars=Bytes[0xGG, 0xHH, 0xII, 0xJJ]
+)
+annotation InvalidBytesConfig12 is
+  required invalid_hex_chars : Bytes
+end
+
+// ========== ERREURS DE VALEURS DÉCIMALES ==========
+
+// ❌ Erreur : valeurs négatives
+@InvalidBytesConfig13(
+  negative_values=Bytes[-1, -2, -3]
+)
+annotation InvalidBytesConfig13 is
+  required negative_values : Bytes
+end
+
+// ❌ Erreur : valeurs trop grandes
+@InvalidBytesConfig14(
+  too_large_values=Bytes[256, 257, 258, 1000]
+)
+annotation InvalidBytesConfig14 is
+  required too_large_values : Bytes
+end
+
+// ========== ERREURS DE FORMAT JSON ==========
+
+// ❌ Erreur : JSON avec types invalides
+@InvalidBytesConfig15(
+  invalid_json_types=Bytes{"data": 123, "encoding": true, "size": "large"}
+)
+annotation InvalidBytesConfig15 is
+  required invalid_json_types : Bytes
+end
+
+// ❌ Erreur : JSON avec structure invalide
+@InvalidBytesConfig16(
+  invalid_json_structure=Bytes{"data": {"nested": "object"}, "encoding": "base64"}
+)
+annotation InvalidBytesConfig16 is
+  required invalid_json_structure : Bytes
+end

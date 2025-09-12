@@ -325,6 +325,7 @@ annotationValue
     | rangeLiteral
     | jsonLiteral
     | geographyLiteral
+    | bytesLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -493,6 +494,22 @@ geographyLiteral
     | 'Geography' '{' jsonObjectContent '}'
     ;
 
+// ========== BYTES LITERALS ==========
+bytesLiteral
+    : 'Bytes' STRING_LITERAL
+    | 'Bytes' '[' bytesArrayContent ']'
+    | 'Bytes' '{' jsonObjectContent '}'
+    ;
+
+bytesArrayContent
+    : bytesValue (',' bytesValue)*
+    | // empty
+    ;
+
+bytesValue
+    : signedNumber
+    ;
+
 // ========== TERMINALS ============
 fragment ESC
     : '\\' ["\\/bfnrt]
@@ -511,13 +528,6 @@ FROM: 'from';
 TO: 'to';
 ASPECTS: 'aspects';
 
-IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
-
-WS: [ \t\r\n]+ -> skip ;
-NEWLINE: ('\r'? '\n')+ -> skip ;
-COMMENT: '//' ~[\r\n]* -> skip ;
-MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
-
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?
     | '0' [xX] [0-9a-fA-F]+
@@ -526,3 +536,10 @@ NUMBER_LITERAL
 BOOLEAN_LITERAL
     : 'true' | 'false'
     ;
+
+IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
+
+WS: [ \t\r\n]+ -> skip ;
+NEWLINE: ('\r'? '\n')+ -> skip ;
+COMMENT: '//' ~[\r\n]* -> skip ;
+MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
