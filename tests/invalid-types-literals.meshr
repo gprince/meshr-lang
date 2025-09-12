@@ -1,0 +1,16 @@
+@Bad(name="X", duration=Interval 1 fortnight)
+module test.literals_invalid
+
+annotation Bad is
+  required name : String
+  optional duration : Interval
+  optional flag : Boolean
+  optional count : Integer
+end
+
+enum Broken(value: Integer, ok: Boolean, span: Interval) is (
+  a(value = 0xGG),                 // hex invalide
+  b(value = 42, ok = True),        // booléen invalide (majuscules)
+  c(value = 7, span = Interval --1 day) // double signe invalide
+)
+

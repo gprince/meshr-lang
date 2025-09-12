@@ -46,6 +46,9 @@ exportItems
 topLevelDecl
     : annotatedEnumDecl
     | annotatedAnnotationDecl
+    | traitDecl
+    | recordDecl
+    | annotatedAspectDecl
     ;
 
 // ========== ENUM =============
@@ -70,7 +73,7 @@ enumAttributeList
     ;
 
 enumAttribute
-    : IDENTIFIER ':' (qualifiedName | baseType) ('=' annotationValue)?
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
     ;
 
 enumValueList
@@ -99,11 +102,11 @@ annotationDecl
     ;
 
 annotationFieldList
-    : annotationField*
+    : annotationField+
     ;
 
 annotationField
-    : ('required' | 'optional') IDENTIFIER ':' (qualifiedName | baseType) ('=' annotationValue)? NEWLINE?
+    : ('required' | 'optional') IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
     ;
 
 // ========== ANNOTATION USAGE ============
@@ -129,7 +132,7 @@ annotationArgPair
 // Types de base reconnus
 baseType
     : 'Boolean'
-    | 'String'
+    | stringType
     | 'Integer'
     | 'Float'
     | 'Double'
@@ -144,9 +147,44 @@ baseType
     | 'Range'
     ;
 
+// Type String avec contraintes optionnelles
+stringType
+    : 'String' stringConstraints?
+    ;
+
+stringConstraints
+    : stringConstraint (stringConstraint)*
+    ;
+
+stringConstraint
+    : 'pattern' STRING_LITERAL
+    | 'length' signedNumber '..' signedNumber
+    ;
+
 // ========== SHARED ============
 qualifiedName
     : IDENTIFIER ('.' IDENTIFIER)*
+    ;
+
+// ========== TYPE REFERENCES ============
+typeRef
+    : qualifiedName
+    | baseType
+    | listType
+    | mapType
+    | rangeType
+    ;
+
+listType
+    : 'List' 'of' typeRef
+    ;
+
+mapType
+    : 'Map' 'of' typeRef 'to' typeRef
+    ;
+
+rangeType
+    : 'Range' 'of' typeRef
     ;
 
 // ========== ANNOTATION USAGE ============
@@ -155,7 +193,127 @@ annotationValue
     | NUMBER_LITERAL
     | BOOLEAN_LITERAL
     | qualifiedName
+    | intervalLiteral
+    | listLiteral
+    | mapLiteral
+    | recordLiteral
+    | rangeLiteral
     ;
+
+// ========== INTERVAL LITERALS ============
+intervalLiteral
+    : 'Interval' intervalSinglePart
+    | 'Interval' STRING_LITERAL 'year' 'to' 'month'
+    | 'Interval' STRING_LITERAL 'year' 'to' 'day'
+    | 'Interval' STRING_LITERAL 'year' 'to' 'hour'
+    | 'Interval' STRING_LITERAL 'year' 'to' 'minute'
+    | 'Interval' STRING_LITERAL 'year' 'to' 'second'
+    | 'Interval' STRING_LITERAL 'month' 'to' 'day'
+    | 'Interval' STRING_LITERAL 'month' 'to' 'hour'
+    | 'Interval' STRING_LITERAL 'month' 'to' 'minute'
+    | 'Interval' STRING_LITERAL 'month' 'to' 'second'
+    | 'Interval' STRING_LITERAL 'day' 'to' 'hour'
+    | 'Interval' STRING_LITERAL 'day' 'to' 'minute'
+    | 'Interval' STRING_LITERAL 'day' 'to' 'second'
+    | 'Interval' STRING_LITERAL 'hour' 'to' 'minute'
+    | 'Interval' STRING_LITERAL 'hour' 'to' 'second'
+    | 'Interval' STRING_LITERAL 'minute' 'to' 'second'
+    ;
+
+intervalSinglePart
+    : '-'? NUMBER_LITERAL intervalUnit
+    ;
+
+intervalUnit
+    : 'year' | 'quarter' | 'month' | 'week' | 'day'
+    | 'hour' | 'minute' | 'second' | 'millisecond' | 'microsecond'
+    ;
+
+// ========== RECORD DECLARATION ==========
+recordDecl
+    : 'record' IDENTIFIER withClause? 'is' recordFieldList 'end'
+    ;
+
+recordFieldList
+    : recordField+
+    ;
+
+recordField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    ;
+
+// ========== TRAIT DECLARATION ==========
+traitDecl
+    : 'trait' IDENTIFIER withClause? 'is' traitFieldList 'end'
+    ;
+
+traitFieldList
+    : traitField+
+    ;
+
+traitField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    ;
+
+withClause
+    : 'with' qualifiedName (',' qualifiedName)*
+    ;
+
+// ========== ASPECT DECLARATION ==========
+annotatedAspectDecl
+    : annotation* aspectDecl
+    ;
+
+aspectDecl
+    : 'abstract'? 'aspect' IDENTIFIER aspectInheritance? 'is' aspectFieldList 'end'
+    ;
+
+aspectInheritance
+    : extendsClause withClause?
+    | withClause extendsClause?
+    ;
+
+extendsClause
+    : 'extends' qualifiedName
+    ;
+
+aspectFieldList
+    : aspectField+
+    ;
+
+aspectField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    ;
+
+// ========== COLLECTION AND COMPOSITE LITERALS ==========
+listLiteral
+    : 'List' '[' (annotationValue (',' annotationValue)*)? ']'
+    ;
+
+mapLiteral
+    : 'Map' '{' (mapEntry (',' mapEntry)*)? '}'
+    ;
+
+mapEntry
+    : annotationValue ':' annotationValue
+    ;
+
+recordLiteral
+    : 'Record' '{' (recordLitField (',' recordLitField)*)? '}'
+    ;
+
+recordLitField
+    : IDENTIFIER ':' annotationValue
+    ;
+
+rangeLiteral
+    : 'Range' signedNumber '..' signedNumber
+    ;
+
+signedNumber
+    : '-'? NUMBER_LITERAL
+    ;
+
 
 // ========== TERMINALS ============
 fragment ESC

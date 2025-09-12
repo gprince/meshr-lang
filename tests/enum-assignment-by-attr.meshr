@@ -1,0 +1,16 @@
+module demo.enum_assignment
+
+// Affectation via attribut principal `value`
+enum Status(value: Integer) is (
+  ok(value = 0),
+  warning(value = 1),
+  error(value = 2)
+)
+
+// Exemple mixte avec plusieurs attributs
+enum HttpCode(code: Integer, label: String) is (
+  ok(code = 200, label = "OK"),
+  not_found(code = 404, label = "Not Found"),
+  internal_error(code = 500, label = "Internal Error")
+)
+

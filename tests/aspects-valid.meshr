@@ -1,0 +1,105 @@
+module demo.aspects
+
+// ========== TRAIT pour la composition ==========
+trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+// ========== ASPECT SIMPLE ==========
+@since("1.0.0")
+@id("business-desc")
+@display_name("Business Description")
+@description("Un aspect permettant d'enrichir les champs avec un domaine métier et un résumé.")
+aspect BusinessDesc is
+  domain : String
+  summary : String
+end
+
+// ========== ASPECT ABSTRAIT ==========
+@since("1.0.0")
+@id("governance-base")
+@display_name("Governance Base")
+@description("Aspect abstrait de base pour la gouvernance")
+abstract aspect GovernanceBase with WithLifecycle is
+  steward   : String
+  policy_id : String
+end
+
+// ========== ASPECT AVEC HÉRITAGE ==========
+@since("1.1.0")
+@id("data-retention")
+@display_name("Data Retention")
+@description("Aspect déclarant la politique de rétention des données")
+aspect DataRetention extends GovernanceBase is
+  retention : Interval
+end
+
+// ========== ASPECT AVEC HÉRITAGE ET COMPOSITION ==========
+@since("1.2.0")
+@id("data-quality")
+@display_name("Data Quality")
+@description("Aspect pour la qualité des données")
+aspect DataQuality extends GovernanceBase with WithLifecycle is
+  quality_score : Float
+  validation_rules : List of String
+end
+
+// ========== ASPECT AVEC COMPOSITION SEULEMENT ==========
+@since("1.0.0")
+@id("with-lifecycle")
+@display_name("With Lifecycle")
+@description("Bloc réutilisable définissant des métadonnées de cycle de vie")
+aspect LifecycleAspect with WithLifecycle is
+  version : String
+  status : String
+end
+
+// ========== ASPECT AVEC CONTRAINTES STRING ==========
+@since("1.3.0")
+@id("contact-info")
+@display_name("Contact Information")
+@description("Aspect pour les informations de contact")
+aspect ContactInfo is
+  email : String pattern "^[^@]+@[^@]+$"
+  phone : String pattern "^[0-9]{10,15}$" length 10..15
+  website : String pattern "^https?://.*" length 7..200
+end
+
+// ========== ASPECT AVEC VALEURS PAR DÉFAUT ==========
+@since("1.4.0")
+@id("security-level")
+@display_name("Security Level")
+@description("Aspect pour définir le niveau de sécurité")
+aspect SecurityLevel is
+  level : String = "public"
+  encryption_required : Boolean = false
+  access_control : String = "open"
+end
+
+// ========== ASPECT COMPLEXE AVEC TOUS LES TYPES ==========
+@since("1.5.0")
+@id("comprehensive-metadata")
+@display_name("Comprehensive Metadata")
+@description("Aspect complet avec tous les types de données")
+aspect ComprehensiveMetadata is
+  // Types de base
+  name : String length 1..100
+  description : String length 0..500
+  active : Boolean = true
+  count : Integer = 0
+  ratio : Float = 1.0
+  
+  // Types composites
+  tags : List of String = List["default"]
+  metadata : Map of String to String = Map{"source":"manual"}
+  range : Range of Integer = Range 0..100
+  
+  // Types temporels
+  created : Timestamp
+  duration : Interval
+  
+  // Contraintes String
+  email : String pattern "^[^@]+@[^@]+$"
+  code : String pattern "^[A-Z]{2,4}$" length 2..4
+end

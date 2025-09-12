@@ -1,0 +1,7 @@
+module demo.traits_invalid
+
+// Clause with mal formée (virgule initiale)
+trait Bad with , PII is
+  A : String
+end
+

@@ -1,5 +1,18 @@
+(* ==============================
+   Meshr-Lang — Grammaire EBNF (alignée ANTLR)
+   Mise à jour: 2025-09-10
+   ============================== *)
+
+(* ==============================
+   Entrée principale
+   ============================== *)
+compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
+
 module-decl         = { annotation }, "module", qualified-name ;
 
+(* ==============================
+   Import / Export
+   ============================== *)
 import-decl         = "import", import-items, "from", qualified-name ;
 import-items        = "*"
                     | identifier
@@ -9,64 +22,120 @@ import-item         = identifier ;
 export-decl         = "export", ( export-items | exportable-decl ) ;
 export-items        = "{", identifier, { ",", identifier }, "}" ;
 
-annotation          = "@", identifier, [ "(", annotation-args, ")" ] ;
+(* ==============================
+   Déclarations de haut niveau
+   ============================== *)
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl ;
+exportable-decl     = enum-decl ;
+
+(* ========== ENUM ============= *)
+enum-decl           = { annotation }, "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
+enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
+enum-attribute      = identifier, ":", type-ref, [ "=", annotation-value ] ;
+enum-values         = enum-value, { ",", enum-value } ;
+enum-value          = (identifier | string-literal), [ "(", enum-value-args, ")" ] ;
+enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
+enum-value-arg      = identifier, "=", annotation-value ;
+
+(* ========== ANNOTATION DECL ============ *)
+annotation-decl     = { annotation }, "annotation", identifier, "is", annotation-field, { annotation-field }, "end" ;
+annotation-field    = ( "required" | "optional" ), identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+
+(* ========== ANNOTATION USAGE ============ *)
+annotation          = "@", identifier, [ "(", [ annotation-args ], ")" ] ;
 annotation-args     = annotation-arg, { ",", annotation-arg } ;
 annotation-arg      = annotation-arg-pair | annotation-value ;
 annotation-arg-pair = identifier, "=", annotation-value ;
 annotation-value    = string-literal
                     | number-literal
                     | boolean-literal
-                    | qualified-name ;
+                    | qualified-name
+                    | interval-literal
+                    | list-literal
+                    | map-literal
+                    | record-literal
+                    | range-literal ;
 
-boolean-literal     = "true" | "false" ;
-
-qualified-name      = identifier, { ".", identifier } ;
-
-base-type           = "Boolean" | "String" | "Integer" | "Float" | "Double"
+(* ========== TYPES DE BASE ============ *)
+base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
                     | "Date" | "Datetime" | "Time" | "Timestamp"
                     | "Geography" | "Bytes" | "Json"
                     | "Interval" | "Range" ;
 
-product-decl        = "product", identifier, "is", field-block ;
-trait-decl          = "trait", identifier, "is", field-block ;
-entity-decl         = "entity", identifier, "is", field-block, [ aspects-block ], "end" ;
-relation-decl       = "relation", identifier, "is", field-block, "end" ;
+(* Type String avec contraintes optionnelles *)
+string-type         = "String", [ string-constraints ] ;
+string-constraints  = string-constraint, { string-constraint } ;
+string-constraint   = "pattern", string-literal
+                    | "length", signed-number, "..", signed-number ;
 
-enum-decl           = { annotation }, "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
-enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
-enum-attribute      = identifier, ":", qualified-name, [ "=", annotation-value ] ;
-enum-values         = enum-value, { ",", enum-value } ;
-enum-value          = (identifier | string-literal), [ "(", enum-value-args, ")" ] ;
-enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
-enum-value-arg      = identifier, "=", annotation-value ;
+(* ========== TYPES RÉFÉRENCES (composites) ============ *)
+type-ref            = qualified-name | base-type | list-type | map-type | range-type ;
+list-type           = "List", "of", type-ref ;
+map-type            = "Map", "of", type-ref, "to", type-ref ;
+range-type          = "Range", "of", type-ref ;
 
-annotation-decl     = { annotation }, "annotation", identifier, "is", annotation-attribute-block ;
-annotation-attribute-block = "{", annotation-attribute, { annotation-attribute }, "}" ;
-annotation-attribute = modifier, identifier, ":", qualified-name, [ "=", annotation-value ] ;
-modifier            = "required" | "optional" ;
+(* ========== INTERVAL LITERALS ============ *)
+interval-literal    = "Interval", interval-single-part
+                    | "Interval", string-literal, "year", "to", "month"
+                    | "Interval", string-literal, "year", "to", "day"
+                    | "Interval", string-literal, "year", "to", "hour"
+                    | "Interval", string-literal, "year", "to", "minute"
+                    | "Interval", string-literal, "year", "to", "second"
+                    | "Interval", string-literal, "month", "to", "day"
+                    | "Interval", string-literal, "month", "to", "hour"
+                    | "Interval", string-literal, "month", "to", "minute"
+                    | "Interval", string-literal, "month", "to", "second"
+                    | "Interval", string-literal, "day", "to", "hour"
+                    | "Interval", string-literal, "day", "to", "minute"
+                    | "Interval", string-literal, "day", "to", "second"
+                    | "Interval", string-literal, "hour", "to", "minute"
+                    | "Interval", string-literal, "hour", "to", "second"
+                    | "Interval", string-literal, "minute", "to", "second" ;
 
-exportable-decl     = product-decl
-                    | trait-decl
-                    | entity-decl
-                    | relation-decl
-                    | enum-decl
-                    | annotation-decl ;
+interval-single-part = [ '-' ], number-literal, interval-unit ;
+interval-unit       = "year" | "quarter" | "month" | "week" | "day"
+                    | "hour" | "minute" | "second" | "millisecond" | "microsecond" ;
 
-field-block         = "{", field, { field }, "}" ;
-field               = identifier, ":", qualified-name, [ "=", expression ] ;
-expression          = annotation-value ; (* simplified for now *)
+(* ========== SHARED ============ *)
+qualified-name      = identifier, { ".", identifier } ;
+boolean-literal     = "true" | "false" ;
 
-aspects-block       = "aspects", "{", aspect-instance, { aspect-instance }, "}" ;
-aspect-instance     = qualified-name, "(", "…", ")" ; (* placeholder *)
+(* ========== RECORD DECLARATION ============ *)
+record-decl         = "record", identifier, [ with-clause ], "is", record-field, { record-field }, "end" ;
+record-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 
-string-literal      = '"', { character - '"' | '\"' }, '"' ;
+(* ========== TRAIT DECLARATION ============ *)
+trait-decl          = "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, "end" ;
+trait-field         = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+with-clause         = "with", qualified-name, { ",", qualified-name } ;
+
+(* ========== ASPECT DECLARATION ============ *)
+aspect-decl         = { annotation }, [ "abstract" ], "aspect", identifier, [ aspect-inheritance ], "is", aspect-field, { aspect-field }, "end" ;
+aspect-inheritance  = extends-clause, [ with-clause ]
+                    | with-clause, [ extends-clause ] ;
+extends-clause      = "extends", qualified-name ;
+aspect-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+
+(* ========== COLLECTION/COMPOSITE LITTÉRAUX ============ *)
+list-literal        = "List", "[", [ annotation-value, { ",", annotation-value } ], "]" ;
+map-literal         = "Map",  "{", [ map-entry, { ",", map-entry } ], "}" ;
+map-entry           = annotation-value, ":", annotation-value ;
+record-literal      = "Record", "{", [ record-lit-field, { ",", record-lit-field } ], "}" ;
+record-lit-field    = identifier, ":", annotation-value ;
+signed-number       = [ '-' ], number-literal ;
+range-literal       = "Range", signed-number, "..", signed-number ;
+
+(* ========== TERMINAUX (approx) ============ *)
+string-literal      = '"', { character - '"' | '\\"' }, '"' ;
 number-literal      = digit, { digit }
                     | "0x", hex-digit, { hex-digit } ;
 
 identifier          = letter, { letter | digit | "_" } ;
+NEWLINE             = ("\r"?), "\n", { ("\r"?), "\n" } ;
 
 comment             = line-comment | block-comment ;
 line-comment        = "//", { character - end-of-line } ;
 block-comment       = "/*", { character - "*/" }, "*/" ;
 
-/* (* Test files prefixed by `invalid-` are expected to fail parsing. *) */
+(* (* Test files prefixed by `invalid-` are expected to fail parsing. *) *)
+

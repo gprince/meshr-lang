@@ -1,0 +1,19 @@
+@Sample(title="OK", retention=Interval 12 month, window=Interval "2024-01" year to month)
+module test.literals
+
+annotation Sample is
+  required title : String
+  optional active : Boolean = true
+  optional timeout : Integer = 30
+  optional ratio : Float = 3.14
+  optional color : Integer = 0xFF00FF
+  optional retention : Interval
+  optional window : Interval
+end
+
+enum Color(value: Integer, label: String, enabled: Boolean = true, duration: Interval) is (
+  red(value = 0xFF0000, label = "Red",   duration = Interval -1 day),
+  green(value = 0x00FF00, label = "Green", duration = Interval 2 hour),
+  blue(value = 0x0000FF, label = "Blue",  duration = Interval 0x10 second)
+)
+

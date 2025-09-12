@@ -1,0 +1,36 @@
+@Project(
+  name = "mesh",
+  team = Record{
+    name: "core",
+    members: List[
+      Record{name:"Alice", emails: List["a@example.com"]},
+      Record{name:"Bob",   emails: List["b@example.com","bob@work"]}
+    ],
+    quotas: Map{"daily": Range -50 .. 50}
+  },
+  routing = Map{
+    "svcA": Map{"p": 80, "s": 20},
+    "svcB": Map{"p": 60, "s": 40}
+  }
+)
+module demo.advanced
+
+annotation Project is
+  required name    : String
+  optional team    : Team
+  optional labels  : List of String = List["alpha","beta"]
+  optional routing : Map of String to Map of String to Integer
+end
+
+record Contact is
+  name      : String
+  emails    : List of String
+  attributes: Map of String to String = Map{"role":"owner"}
+end
+
+record Team is
+  name    : String
+  members : List of Contact
+  quotas  : Map of String to Range of Integer = Map{"daily": Range -100 .. 100}
+end
+

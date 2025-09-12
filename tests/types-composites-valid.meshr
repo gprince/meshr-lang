@@ -1,0 +1,25 @@
+@Meta(owner="greg", tags=List["alpha","beta"], conf=Map{"r":1,"w":2}, span=Range 0..100)
+module demo.composites
+
+annotation Meta is
+  required owner : String
+  optional tags : List of String = List [ "foo", "bar", "bar" ]
+  optional conf : Map of String to Integer
+  optional span : Range of Integer = Range -2048 .. 2048
+end
+
+record Address is
+  street : String = "foo"
+  zipcode : Integer = 42
+  extras : Map of String to Integer = Map { "foo" : 42, "bar" : 69 }
+end
+
+record MetaRecord is
+  name : String
+  age  : Integer = 42
+end
+
+enum Product(status: String, owners: List of String, address: Address, limits: Range of Integer, meta: MetaRecord) is (
+  active(status = "ok", owners = List["ops","qa"], address = Record{street:"A", zipcode:75001, extras:Map{"r":1}}, limits = Range 1..10, meta = Record{name:"x", age:42})
+)
+

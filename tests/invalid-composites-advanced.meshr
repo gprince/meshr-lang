@@ -1,0 +1,21 @@
+@Project(name = 123, team = Record{name:"x", emails: List"oops"})
+module demo.advanced_invalid
+
+annotation Project is
+  required name    : String
+  optional team    : Team
+  optional labels  : List of String
+  optional routing : Map of String to Map of String to Integer
+end
+
+record Contact is
+  name      : String
+  emails    : List of String
+end
+
+record Team is
+  name    : String
+  members : List of Contact
+  quotas  : Map of String to Range of Integer
+end
+

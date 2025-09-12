@@ -1,0 +1,68 @@
+module demo.string_constraints
+
+// ========== ANNOTATION avec contraintes String ==========
+annotation UserProfile is
+  required email : String pattern "^[^@]+@[^@]+$"
+  required username : String length 3..20
+  optional phone : String pattern "^[0-9]{10,15}$" length 10..15
+  optional bio : String length 0..500
+end
+
+// ========== ENUM avec contraintes String ==========
+enum Status(value: String, description: String) is (
+  active(value = "active", description = "System is operational"),
+  maintenance(value = "maintenance", description = "System under maintenance"),
+  error(value = "error", description = "System error occurred")
+)
+
+enum HttpStatus(code: Integer, message: String pattern "^[A-Z][a-z ]+$") is (
+  ok(code = 200, message = "OK"),
+  not_found(code = 404, message = "Not Found"),
+  internal_error(code = 500, message = "Internal Server Error")
+)
+
+// ========== RECORD avec contraintes String ==========
+record Contact is
+  name : String length 1..100
+  email : String pattern "^[^@]+@[^@]+$"
+  phone : String pattern "^[0-9]{10,15}$" length 10..15
+  website : String pattern "^https?://.*" length 7..200
+end
+
+record Address is
+  street : String length 1..200
+  city : String length 1..100
+  postalCode : String pattern "^[0-9]{5}(-[0-9]{4})?$"
+  country : String length 2..3
+end
+
+// ========== TRAIT avec contraintes String ==========
+trait Identifiable is
+  id : String pattern "^[a-zA-Z0-9_-]+$" length 1..50
+  name : String length 1..100
+end
+
+trait Contactable is
+  email : String pattern "^[^@]+@[^@]+$"
+  phone : String pattern "^[0-9]{10,15}$"
+end
+
+trait Timestamped is
+  createdAt : String pattern "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+  updatedAt : String pattern "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+end
+
+// ========== RECORD avec TRAITS (composition) ==========
+record User with Identifiable, Contactable, Timestamped is
+  role : String pattern "^(admin|user|guest)$"
+  status : String pattern "^(active|inactive|suspended)$"
+end
+
+// ========== ANNOTATION avec contraintes complexes ==========
+// Exemple d'utilisation de l'annotation UserProfile :
+// @UserProfile(
+//   email = "user@example.com",
+//   username = "johndoe",
+//   phone = "1234567890",
+//   bio = "Software developer with 5 years experience"
+// )

@@ -1,0 +1,19 @@
+@Bad(name="X", tags=List "oops")
+module demo.composites_invalid
+
+annotation Bad is
+  required name : String
+  optional tags : List of String
+  optional conf : Map of String to Integer
+  optional span : Range of Integer
+end
+
+record Person is
+  name : String
+  age : Integer
+end
+
+enum BadEnum(values: List of Integer, table: Map of String to Integer, who: Person, span: Range of Integer) is (
+  a(values = List[1,2,], table = Map{"a",1}, who = Record{name=42}, span = Range 1...10)
+)
+

@@ -1,0 +1,20 @@
+module demo.traits
+
+trait PII is
+  Email       : String
+  PhoneNumber : String
+end
+
+trait Audit is
+  CreatedAt : Timestamp
+  UpdatedAt : Timestamp
+end
+
+trait ExtendedContact with PII is
+  DisplayName : String
+end
+
+record Contact with PII, Audit is
+  Id    : String
+end
+

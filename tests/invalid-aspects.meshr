@@ -1,0 +1,101 @@
+module demo.invalid_aspects
+
+// ========== TRAIT pour la composition ==========
+trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+// ========== ASPECT AVEC ERREURS DE SYNTAXE ==========
+@since("1.0.0")
+@id("bad-aspect")
+@display_name("Bad Aspect")
+@description("Aspect avec erreurs de syntaxe")
+aspect BadAspect is
+  // Erreur: pas de type spécifié
+  bad_field
+  // Erreur: type invalide
+  invalid_field : InvalidType
+  // Erreur: valeur par défaut sans type
+  default_field = "value"
+end
+
+// ========== ASPECT AVEC HÉRITAGE INVALIDE ==========
+@since("1.1.0")
+@id("bad-inheritance")
+@display_name("Bad Inheritance")
+@description("Aspect avec héritage invalide")
+aspect BadInheritance extends NonExistentAspect is
+  field : String
+end
+
+// ========== ASPECT AVEC COMPOSITION INVALIDE ==========
+@since("1.2.0")
+@id("bad-composition")
+@display_name("Bad Composition")
+@description("Aspect avec composition invalide")
+aspect BadComposition with NonExistentTrait is
+  field : String
+end
+
+// ========== ASPECT AVEC HÉRITAGE ET COMPOSITION INVALIDE ==========
+@since("1.3.0")
+@id("bad-both")
+@display_name("Bad Both")
+@description("Aspect avec héritage et composition invalides")
+aspect BadBoth extends NonExistentAspect with NonExistentTrait is
+  field : String
+end
+
+// ========== ASPECT AVEC CONTRAINTES INVALIDE ==========
+@since("1.4.0")
+@id("bad-constraints")
+@display_name("Bad Constraints")
+@description("Aspect avec contraintes invalides")
+aspect BadConstraints is
+  // Erreur: double pattern
+  email : String pattern "^[^@]+@[^@]+$" pattern "^[a-z]+$"
+  // Erreur: double length
+  username : String length 3..20 length 5..15
+  // Erreur: length incompatible
+  phone : String pattern "^[0-9]{10,15}$" length 5..10
+  // Erreur: min > max
+  bio : String length 20..10
+end
+
+// ========== ASPECT AVEC VALEURS PAR DÉFAUT INVALIDE ==========
+@since("1.5.0")
+@id("bad-defaults")
+@display_name("Bad Defaults")
+@description("Aspect avec valeurs par défaut invalides")
+aspect BadDefaults is
+  // Erreur: type mismatch
+  count : Integer = "not a number"
+  // Erreur: type mismatch
+  active : Boolean = 42
+  // Erreur: type mismatch
+  name : String = 123
+end
+
+// ========== ASPECT AVEC SYNTAXE INVALIDE ==========
+@since("1.6.0")
+@id("bad-syntax")
+@display_name("Bad Syntax")
+@description("Aspect avec syntaxe invalide")
+aspect BadSyntax is
+  // Erreur: pas de deux points
+  field String
+  // Erreur: pas de type
+  another_field :
+  // Erreur: syntaxe invalide
+  bad_field : String = "value" = "another value"
+end
+
+// ========== ASPECT AVEC MODIFICATEUR INVALIDE ==========
+@since("1.7.0")
+@id("bad-modifier")
+@display_name("Bad Modifier")
+@description("Aspect avec modificateur invalide")
+concrete aspect BadModifier is  // Erreur: modificateur invalide
+  field : String
+end
