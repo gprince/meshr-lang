@@ -1,0 +1,108 @@
+// Module de test pour les littéraux Geography valides
+module test.geography_literals
+
+// ========== ANNOTATIONS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+@LocationConfig(
+  office=Geography"POINT(2.3522 48.8566)",
+  coverage_area=Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))",
+  delivery_route=Geography"LINESTRING(2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568)"
+)
+annotation LocationConfig is
+  required office : Geography
+  optional coverage_area : Geography = Geography"POINT(0.0 0.0)"
+  optional delivery_route : Geography = Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+end
+
+@GeoJsonConfig(
+  feature=Geography{"type":"Point","coordinates":[2.3522,48.8566]},
+  feature_collection=Geography{"type":"FeatureCollection","features":[{"type":"Feature","geometry":{"type":"Point","coordinates":[2.3522,48.8566]},"properties":{"name":"Paris"}}]}
+)
+annotation GeoJsonConfig is
+  required feature : Geography
+  optional feature_collection : Geography = Geography{"type":"FeatureCollection","features":[]}
+end
+
+// ========== ENUMS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+enum CityType(name: String, location: Geography, bounds: Geography) is (
+  paris(name = "Paris", location = Geography"POINT(2.3522 48.8566)", bounds = Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))"),
+  london(name = "London", location = Geography"POINT(0.1276 51.5074)", bounds = Geography{"type":"Polygon","coordinates":[[[0.1276,51.5074],[0.1277,51.5075],[0.1278,51.5076],[0.1276,51.5074]]]}),
+  tokyo(name = "Tokyo", location = Geography{"type":"Point","coordinates":[139.6917,35.6895]}, bounds = Geography{"type":"Polygon","coordinates":[[[139.6917,35.6895],[139.6918,35.6896],[139.6919,35.6897],[139.6917,35.6895]]]})
+)
+
+enum DeliveryZone(zone_id: String, area: Geography, center: Geography) is (
+  north(zone_id = "N1", area = Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))", center = Geography"POINT(2.3523 48.8567)"),
+  south(zone_id = "S1", area = Geography{"type":"Polygon","coordinates":[[[2.3522,48.8566],[2.3523,48.8567],[2.3524,48.8568],[2.3522,48.8566]]]}, center = Geography{"type":"Point","coordinates":[2.3523,48.8567]})
+)
+
+// ========== RECORDS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+record Address is
+  street : String
+  city : String
+  coordinates : Geography = Geography"POINT(0.0 0.0)"
+  delivery_area : Geography = Geography{"type":"Polygon","coordinates":[[[0.0,0.0],[1.0,0.0],[1.0,1.0],[0.0,1.0],[0.0,0.0]]]}
+end
+
+record Store is
+  name : String
+  location : Geography
+  service_area : Geography = Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))"
+  delivery_route : Geography = Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+end
+
+// ========== TRAITS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+trait WithLocation is
+  location : Geography
+  coverage_radius : Geography = Geography"POINT(0.0 0.0)"
+end
+
+// ========== ASPECTS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+aspect GeographicConstraints is
+  allowed_region : Geography = Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))"
+  restricted_zones : Geography = Geography{"type":"FeatureCollection","features":[]}
+  service_boundary : Geography = Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+end
+
+// ========== ENTITÉS AVEC LITTÉRAUX GEOGRAPHY ==========
+
+entity Customer with WithLocation is
+  CustomerId : String
+  HomeAddress : Geography = Geography"POINT(0.0 0.0)"
+  WorkLocation : Geography = Geography{"type":"Point","coordinates":[0.0,0.0]}
+  
+  aspects {
+    GeographicConstraints {
+      allowed_region: Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))",
+      restricted_zones: Geography{"type":"FeatureCollection","features":[]},
+      service_boundary: Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+    }
+  }
+end
+
+// ========== LITTÉRAUX GEOGRAPHY COMPLEXES ==========
+
+@ComplexGeoConfig(
+  multi_point=Geography{"type":"MultiPoint","coordinates":[[2.3522,48.8566],[0.1276,51.5074],[139.6917,35.6895]]},
+  multi_line=Geography{"type":"MultiLineString","coordinates":[[[2.3522,48.8566],[2.3523,48.8567]],[[0.1276,51.5074],[0.1277,51.5075]]]},
+  multi_polygon=Geography{"type":"MultiPolygon","coordinates":[[[[2.3522,48.8566],[2.3523,48.8567],[2.3524,48.8568],[2.3522,48.8566]]],[[[0.1276,51.5074],[0.1277,51.5075],[0.1278,51.5076],[0.1276,51.5074]]]]}
+)
+annotation ComplexGeoConfig is
+  required multi_point : Geography
+  optional multi_line : Geography = Geography{"type":"MultiLineString","coordinates":[]}
+  optional multi_polygon : Geography = Geography{"type":"MultiPolygon","coordinates":[]}
+end
+
+// ========== LITTÉRAUX GEOGRAPHY EN STRING ==========
+
+@RawGeography(
+  wkt_string=Geography"POINT(2.3522 48.8566)",
+  geojson_string=Geography"{\"type\":\"Point\",\"coordinates\":[2.3522,48.8566]}"
+)
+annotation RawGeography is
+  required wkt_string : Geography
+  optional geojson_string : Geography = Geography"{\"type\":\"Point\",\"coordinates\":[0.0,0.0]}"
+end

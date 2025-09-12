@@ -323,6 +323,8 @@ annotationValue
     | mapLiteral
     | recordLiteral
     | rangeLiteral
+    | jsonLiteral
+    | geographyLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -451,10 +453,45 @@ rangeLiteral
     : 'Range' signedNumber '..' signedNumber
     ;
 
+// ========== JSON LITERALS ==========
+jsonLiteral
+    : 'Json' '{' jsonObjectContent '}'
+    | 'Json' '[' jsonArrayContent ']'
+    | 'Json' STRING_LITERAL
+    ;
+
+jsonObjectContent
+    : jsonPair (',' jsonPair)*
+    | // empty
+    ;
+
+jsonArrayContent
+    : jsonValue (',' jsonValue)*
+    | // empty
+    ;
+
+jsonPair
+    : STRING_LITERAL ':' jsonValue
+    ;
+
+jsonValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | 'null'
+    | '{' jsonObjectContent '}'
+    | '[' jsonArrayContent ']'
+    ;
+
 signedNumber
     : '-'? NUMBER_LITERAL
     ;
 
+// ========== GEOGRAPHY LITERALS ==========
+geographyLiteral
+    : 'Geography' STRING_LITERAL
+    | 'Geography' '{' jsonObjectContent '}'
+    ;
 
 // ========== TERMINALS ============
 fragment ESC

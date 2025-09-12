@@ -1,0 +1,51 @@
+// Module de test simple pour les littéraux JSON
+module test.json_simple
+
+// ========== ANNOTATIONS AVEC LITTÉRAUX JSON SIMPLES ==========
+
+@ApiConfig(
+  endpoint="https://api.example.com",
+  headers=Json{"Content-Type": "application/json"},
+  schema=Json{"type": "object"}
+)
+annotation ApiConfig is
+  required endpoint : String
+  optional headers : Json = Json{"Content-Type": "application/json"}
+  optional schema : Json = Json{"type": "object"}
+end
+
+// ========== ENUMS AVEC LITTÉRAUX JSON SIMPLES ==========
+
+enum HttpStatus(code: Integer, details: Json) is (
+  ok(code = 200, details = Json{"message": "Success"}),
+  not_found(code = 404, details = Json{"error": "Not Found"}),
+  server_error(code = 500, details = Json{"error": "Internal Server Error"})
+)
+
+// ========== RECORDS AVEC LITTÉRAUX JSON SIMPLES ==========
+
+record ApiResponse is
+  status : Integer
+  data : Json = Json{}
+  metadata : Json = Json{"timestamp": "2024-01-01T00:00:00Z"}
+end
+
+// ========== LITTÉRAUX JSON EN STRING ==========
+
+@RawJson(
+  json_string=Json"{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"}}}"
+)
+annotation RawJson is
+  required json_string : Json
+end
+
+// ========== LITTÉRAUX JSON AVEC ARRAYS ==========
+
+@ArrayConfig(
+  items=Json["item1", "item2", "item3"],
+  numbers=Json[1, 2, 3, 4, 5]
+)
+annotation ArrayConfig is
+  required items : Json
+  optional numbers : Json = Json[]
+end

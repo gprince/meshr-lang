@@ -739,19 +739,76 @@ record Address is
 end
 ```
 
-#### Littéraux composites utilisables dans `annotationValue` et les valeurs d’`enum`
+#### Littéraux composites utilisables dans `annotationValue` et les valeurs d'`enum`
 
 - List: `List[1,2,3]`, `List["a","b"]`
 - Map: `Map{"k1":1, "k2":2}`
 - Record anonyme: `Record{name:"Alice", age:42}`
 - Range: `Range -2048 .. 2048`, `Range 1..10`
+- **Json**: `Json{"key": "value"}`, `Json[1,2,3]`, `Json"{\"raw\": \"json\"}"`
+- **Geography**: `Geography"POINT(2.3522 48.8566)"`, `Geography{"type":"Point","coordinates":[2.3522,48.8566]}`
 
-Exemple d’usage dans une `enum`:
+Exemple d'usage dans une `enum`:
 
 ```meshr
 enum Product(status: String, owners: List of String, address: Address, limits: Range of Integer) is (
   active(status = "ok", owners = List["ops","qa"], address = Record{street:"A", zipcode:75001, extras:Map{"r":1}}, limits = Range 1..10)
 )
+```
+
+Exemple d'usage avec des littéraux **Json**:
+
+```meshr
+@ApiConfig(
+  endpoint="https://api.example.com",
+  headers=Json{"Content-Type": "application/json", "Authorization": "Bearer token"},
+  schema=Json{"type": "object", "properties": {"name": {"type": "string"}}}
+)
+annotation ApiConfig is
+  required endpoint : String
+  optional headers : Json = Json{"Content-Type": "application/json"}
+  optional schema : Json = Json{"type": "object"}
+end
+
+enum HttpStatus(code: Integer, details: Json) is (
+  ok(code = 200, details = Json{"message": "Success", "data": {"count": 0}}),
+  not_found(code = 404, details = Json{"error": "Not Found", "code": "E404"}),
+  server_error(code = 500, details = Json{"error": "Internal Server Error", "stack": []})
+)
+
+record ApiResponse is
+  status : Integer
+  data : Json = Json{}
+  metadata : Json = Json{"timestamp": "2024-01-01T00:00:00Z", "version": "1.0"}
+end
+```
+
+Exemple d'usage avec des littéraux **Geography**:
+
+```meshr
+@LocationConfig(
+  office=Geography"POINT(2.3522 48.8566)",
+  coverage_area=Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))",
+  delivery_route=Geography"LINESTRING(2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568)"
+)
+annotation LocationConfig is
+  required office : Geography
+  optional coverage_area : Geography = Geography"POINT(0.0 0.0)"
+  optional delivery_route : Geography = Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+end
+
+enum CityType(name: String, location: Geography, bounds: Geography) is (
+  paris(name = "Paris", location = Geography"POINT(2.3522 48.8566)", bounds = Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))"),
+  london(name = "London", location = Geography"POINT(0.1276 51.5074)", bounds = Geography{"type":"Polygon","coordinates":[[[0.1276,51.5074],[0.1277,51.5075],[0.1278,51.5076],[0.1276,51.5074]]]}),
+  tokyo(name = "Tokyo", location = Geography{"type":"Point","coordinates":[139.6917,35.6895]}, bounds = Geography{"type":"Polygon","coordinates":[[[139.6917,35.6895],[139.6918,35.6896],[139.6919,35.6897],[139.6917,35.6895]]]})
+)
+
+record Store is
+  name : String
+  location : Geography
+  service_area : Geography = Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))"
+  delivery_route : Geography = Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
+end
 ```
 
 #### Exemples avancés (imbriqués)
@@ -1907,7 +1964,7 @@ annotation          = "@", identifier, [ "(", [ annotation-args ], ")" ] ;
 annotation-args     = annotation-arg, { ",", annotation-arg } ;
 annotation-arg      = annotation-arg-pair | annotation-value ;
 annotation-arg-pair = identifier, "=", annotation-value ;
-annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal ;
+annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal ;
 
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
                     | "Date" | "Datetime" | "Time" | "Timestamp"
@@ -1993,6 +2050,24 @@ record-literal      = "Record", "{", [ record-lit-field, { ",", record-lit-field
 record-lit-field    = identifier, ":", annotation-value ;
 signed-number       = [ '-' ], number-literal ;
 range-literal       = "Range", signed-number, "..", signed-number ;
+
+(* ========== JSON LITTÉRAUX ============ *)
+json-literal        = "Json", "{", json-object-content, "}"
+                    | "Json", "[", json-array-content, "]"
+                    | "Json", string-literal ;
+json-object-content = json-pair, { ",", json-pair } ;
+json-array-content  = json-value, { ",", json-value } ;
+json-pair           = string-literal, ":", json-value ;
+json-value          = string-literal
+                    | number-literal
+                    | boolean-literal
+                    | "null"
+                    | "{", json-object-content, "}"
+                    | "[", json-array-content, "]" ;
+
+(* ========== GEOGRAPHY LITTÉRAUX ============ *)
+geography-literal    = "Geography", string-literal
+                    | "Geography", "{", json-object-content, "}" ;
 
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;
 number-literal      = digit, { digit } | "0x", hex-digit, { hex-digit } ;
@@ -2203,6 +2278,8 @@ annotationValue
     | mapLiteral
     | recordLiteral
     | rangeLiteral
+    | jsonLiteral
+    | geographyLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -2313,6 +2390,42 @@ recordLitField
 
 rangeLiteral
     : 'Range' signedNumber '..' signedNumber
+    ;
+
+// ========== JSON LITERALS ==========
+jsonLiteral
+    : 'Json' '{' jsonObjectContent '}'
+    | 'Json' '[' jsonArrayContent ']'
+    | 'Json' STRING_LITERAL
+    ;
+
+jsonObjectContent
+    : jsonPair (',' jsonPair)*
+    | // empty
+    ;
+
+jsonArrayContent
+    : jsonValue (',' jsonValue)*
+    | // empty
+    ;
+
+jsonPair
+    : STRING_LITERAL ':' jsonValue
+    ;
+
+jsonValue
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | 'null'
+    | '{' jsonObjectContent '}'
+    | '[' jsonArrayContent ']'
+    ;
+
+// ========== GEOGRAPHY LITERALS ==========
+geographyLiteral
+    : 'Geography' STRING_LITERAL
+    | 'Geography' '{' jsonObjectContent '}'
     ;
 
 signedNumber

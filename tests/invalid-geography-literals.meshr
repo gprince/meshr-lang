@@ -1,0 +1,126 @@
+// Module de test pour les littéraux Geography invalides
+// Ces tests doivent échouer lors du parsing
+
+module test.invalid_geography_literals
+
+// ========== ERREURS DE SYNTAXE GEOGRAPHY ==========
+
+// ❌ Erreur : Geography sans contenu
+@InvalidGeoConfig(
+  empty_geography=Geography
+)
+annotation InvalidGeoConfig is
+  required empty_geography : Geography
+end
+
+// ❌ Erreur : Geography avec contenu invalide
+@InvalidGeoConfig2(
+  invalid_geography=Geography{invalid: syntax}
+)
+annotation InvalidGeoConfig2 is
+  required invalid_geography : Geography
+end
+
+// ❌ Erreur : Geography avec JSON mal formé
+@InvalidGeoConfig3(
+  malformed_geojson=Geography{"type": "Point", "coordinates": [2.3522, 48.8566, "invalid"]}
+)
+annotation InvalidGeoConfig3 is
+  required malformed_geojson : Geography
+end
+
+// ❌ Erreur : Geography avec WKT mal formé
+@InvalidGeoConfig4(
+  malformed_wkt=Geography"POINT(2.3522, 48.8566)"
+)
+annotation InvalidGeoConfig4 is
+  required malformed_wkt : Geography
+end
+
+// ❌ Erreur : Geography avec coordonnées invalides
+@InvalidGeoConfig5(
+  invalid_coordinates=Geography"POINT(invalid 48.8566)"
+)
+annotation InvalidGeoConfig5 is
+  required invalid_coordinates : Geography
+end
+
+// ❌ Erreur : Geography avec type GeoJSON invalide
+@InvalidGeoConfig6(
+  invalid_type=Geography{"type": "InvalidType", "coordinates": [2.3522, 48.8566]}
+)
+annotation InvalidGeoConfig6 is
+  required invalid_type : Geography
+end
+
+// ========== ERREURS DE TYPES GEOGRAPHY ==========
+
+// ❌ Erreur : valeur non-Geography dans littéral Geography
+@InvalidGeoConfig7(
+  non_geography_value=Geography{some_identifier: "value"}
+)
+annotation InvalidGeoConfig7 is
+  required non_geography_value : Geography
+end
+
+// ❌ Erreur : mot-clé réservé utilisé comme valeur
+@InvalidGeoConfig8(
+  reserved_keyword=Geography{"type": Geography}
+)
+annotation InvalidGeoConfig8 is
+  required reserved_keyword : Geography
+end
+
+// ========== ERREURS DE STRUCTURE ==========
+
+// ❌ Erreur : Geography avec contenu invalide
+@InvalidGeoConfig9(
+  invalid_content=Geography{invalid_syntax}
+)
+annotation InvalidGeoConfig9 is
+  required invalid_content : Geography
+end
+
+// ❌ Erreur : Geography avec JSON mal formé
+@InvalidGeoConfig10(
+  malformed_json=Geography{"type": "Point", "coordinates": [2.3522, 48.8566, "unclosed": "string}
+)
+annotation InvalidGeoConfig10 is
+  required malformed_json : Geography
+end
+
+// ========== ERREURS DANS LES ENUMS ==========
+
+// ❌ Erreur : enum avec Geography invalide
+enum InvalidGeoEnum(location: Geography) is (
+  bad_item(location = Geography{invalid: syntax})
+)
+
+// ❌ Erreur : enum avec Geography mal formé
+enum InvalidGeoEnum2(location: Geography) is (
+  bad_item2(location = Geography{"type": "Point", "coordinates": [2.3522, 48.8566, "unclosed": "string})
+)
+
+// ========== ERREURS DANS LES RECORDS ==========
+
+// ❌ Erreur : record avec Geography invalide par défaut
+record InvalidGeoRecord is
+  bad_field : Geography = Geography{invalid: syntax}
+end
+
+// ❌ Erreur : record avec Geography mal formé
+record InvalidGeoRecord2 is
+  bad_field2 : Geography = Geography{"type": "Point", "coordinates": [2.3522, 48.8566, "missing": "comma" "another": "value"}
+end
+
+// ========== ERREURS DANS LES ASPECTS ==========
+
+// ❌ Erreur : aspect avec Geography invalide
+aspect InvalidGeoAspect is
+  bad_config : Geography = Geography{invalid: syntax}
+end
+
+// ❌ Erreur : aspect avec Geography mal formé
+aspect InvalidGeoAspect2 is
+  bad_config2 : Geography = Geography{"type": "Point", "coordinates": [2.3522, 48.8566, "unclosed": "object"}
+end

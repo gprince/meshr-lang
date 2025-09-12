@@ -54,7 +54,9 @@ annotation-value    = string-literal
                     | list-literal
                     | map-literal
                     | record-literal
-                    | range-literal ;
+                    | range-literal
+                    | json-literal
+                    | geography-literal ;
 
 (* ========== TYPES DE BASE ============ *)
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
@@ -147,6 +149,25 @@ record-literal      = "Record", "{", [ record-lit-field, { ",", record-lit-field
 record-lit-field    = identifier, ":", annotation-value ;
 signed-number       = [ '-' ], number-literal ;
 range-literal       = "Range", signed-number, "..", signed-number ;
+
+(* ========== JSON LITERALS ============ *)
+json-literal        = "Json", "{", json-object-content, "}"
+                    | "Json", "[", json-array-content, "]"
+                    | "Json", string-literal ;
+
+json-object-content = json-pair, { ",", json-pair } ;
+json-array-content  = json-value, { ",", json-value } ;
+json-pair           = string-literal, ":", json-value ;
+json-value          = string-literal
+                    | number-literal
+                    | boolean-literal
+                    | "null"
+                    | "{", json-object-content, "}"
+                    | "[", json-array-content, "]" ;
+
+(* ========== GEOGRAPHY LITTÉRAUX ============ *)
+geography-literal    = "Geography", string-literal
+                    | "Geography", "{", json-object-content, "}" ;
 
 (* ========== TERMINAUX (approx) ============ *)
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;

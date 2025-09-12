@@ -20,11 +20,11 @@ test:
 	@status=0; \
 	for file in $(shell find tests -name '*.meshr' ! -name 'invalid-*'); do \
 		echo "Expect valid → $$file"; \
-		PYTHONPATH=. .venv/bin/python tests/parse_module.py $$file || status=1; \
+		PYTHONPATH=. python3 tests/parse_module.py $$file || status=1; \
 	done; \
 	for file in $(shell find tests -name 'invalid-*.meshr'); do \
 		echo "Expect invalid → $$file (should fail)"; \
-		if PYTHONPATH=. .venv/bin/python tests/parse_module.py $$file > /dev/null 2>&1; then \
+		if PYTHONPATH=. python3 tests/parse_module.py $$file > /dev/null 2>&1; then \
 			echo "🚨 Unexpected success: $$file"; \
 			status=1; \
 		else \
@@ -35,7 +35,7 @@ test:
 
 test-stdlib:
 	@echo "Testing standard library modules:"
-	@PYTHONPATH=. .venv/bin/python stdlib/test_stdlib.py
+	@PYTHONPATH=. python3 stdlib/test_stdlib.py
 
 clean:
 	rm -rf $(GEN_DIR)/*.py $(GEN_DIR)/*.tokens $(GEN_DIR)/*.interp

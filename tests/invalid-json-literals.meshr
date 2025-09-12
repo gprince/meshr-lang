@@ -1,0 +1,142 @@
+// Module de test pour les littéraux JSON invalides
+// Ces tests doivent échouer lors du parsing
+
+module test.invalid_json_literals
+
+// ========== ERREURS DE SYNTAXE JSON ==========
+
+// ❌ Erreur : clés JSON sans guillemets
+@InvalidConfig(
+  bad_json=Json{key: "value", another_key: 42}
+)
+annotation InvalidConfig is
+  required bad_json : Json
+end
+
+// ❌ Erreur : virgule finale dans objet JSON
+@InvalidConfig2(
+  trailing_comma=Json{"key": "value", "another": 42,}
+)
+annotation InvalidConfig2 is
+  required trailing_comma : Json
+end
+
+// ❌ Erreur : virgule finale dans array JSON
+@InvalidConfig3(
+  trailing_comma_array=Json["item1", "item2", "item3",]
+)
+annotation InvalidConfig3 is
+  required trailing_comma_array : Json
+end
+
+// ❌ Erreur : JSON mal formé avec accolades non fermées
+@InvalidConfig4(
+  unclosed_brace=Json{"key": "value", "nested": Json{"inner": "value"}
+)
+annotation InvalidConfig4 is
+  required unclosed_brace : Json
+end
+
+// ❌ Erreur : JSON mal formé avec crochets non fermés
+@InvalidConfig5(
+  unclosed_bracket=Json["item1", "item2", Json["nested", "array"]
+)
+annotation InvalidConfig5 is
+  required unclosed_bracket : Json
+end
+
+// ❌ Erreur : deux points manquant dans paire clé-valeur
+@InvalidConfig6(
+  missing_colon=Json{"key" "value"}
+)
+annotation InvalidConfig6 is
+  required missing_colon : Json
+end
+
+// ❌ Erreur : virgule manquante entre éléments
+@InvalidConfig7(
+  missing_comma=Json{"key1": "value1" "key2": "value2"}
+)
+annotation InvalidConfig7 is
+  required missing_comma : Json
+end
+
+// ❌ Erreur : JSON string mal formé
+@InvalidConfig8(
+  malformed_string=Json"{\"key\": \"value\", \"unclosed\": \"string}"
+)
+annotation InvalidConfig8 is
+  required malformed_string : Json
+end
+
+// ========== ERREURS DE TYPES JSON ==========
+
+// ❌ Erreur : valeur non-JSON dans littéral Json
+@InvalidConfig9(
+  non_json_value=Json{some_identifier: "value"}
+)
+annotation InvalidConfig9 is
+  required non_json_value : Json
+end
+
+// ❌ Erreur : mot-clé réservé utilisé comme valeur
+@InvalidConfig10(
+  reserved_keyword=Json{"type": Json}
+)
+annotation InvalidConfig10 is
+  required reserved_keyword : Json
+end
+
+// ========== ERREURS DE STRUCTURE ==========
+
+// ❌ Erreur : Json sans contenu (doit être Json{} ou Json[])
+@InvalidConfig11(
+  empty_json=Json
+)
+annotation InvalidConfig11 is
+  required empty_json : Json
+end
+
+// ❌ Erreur : Json avec contenu invalide
+@InvalidConfig12(
+  invalid_content=Json{invalid_syntax}
+)
+annotation InvalidConfig12 is
+  required invalid_content : Json
+end
+
+// ========== ERREURS DANS LES ENUMS ==========
+
+// ❌ Erreur : enum avec JSON invalide
+enum InvalidEnum(config: Json) is (
+  bad_item(config = Json{invalid: syntax})
+)
+
+// ❌ Erreur : enum avec JSON mal formé
+enum InvalidEnum2(config: Json) is (
+  bad_item2(config = Json{"key": "value", "unclosed": "string})
+)
+
+// ========== ERREURS DANS LES RECORDS ==========
+
+// ❌ Erreur : record avec JSON invalide par défaut
+record InvalidRecord is
+  bad_field : Json = Json{invalid: syntax}
+end
+
+// ❌ Erreur : record avec JSON mal formé
+record InvalidRecord2 is
+  bad_field2 : Json = Json{"key": "value", "missing": "comma" "another": "value"}
+end
+
+// ========== ERREURS DANS LES ASPECTS ==========
+
+// ❌ Erreur : aspect avec JSON invalide
+aspect InvalidAspect is
+  bad_config : Json = Json{invalid: syntax}
+end
+
+// ❌ Erreur : aspect avec JSON mal formé
+aspect InvalidAspect2 is
+  bad_config2 : Json = Json{"key": "value", "unclosed": "object"}
+end
