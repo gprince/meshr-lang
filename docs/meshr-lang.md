@@ -3,7 +3,7 @@
 > **Version :** 0.1.0  
 > **Statut :** En conception active  
 > **Mainteneur :** G. Prince - Architecte Principal
-> **Dernière mise à jour :** 2025-09-12
+> **Dernière mise à jour :** 2025-01-12
 
 ---
 
@@ -60,23 +60,64 @@ La première unité structurante de Meshr est le **module**. Il représente un e
 @version("0.2.0")
 module marketing.analytics
 
-import Customer from marketing.shared         // ✅ forme simple
-import { Customer } from marketing.shared     // ✅ forme équivalente
-import { * } from core.types                  // ✅ importation complète
-import * from core.types                      // ✅ forme équivalente
+// Import simple
+import Customer from marketing.shared
 
-import Customer, Producer from marketing.shared // ❌ interdit : nécessite des accolades
+// Import groupé (recommandé)
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { Version, Author, Documented } from meshr.annotations
+
+// Import wildcard
+import * from meshr.types
 
 // autres déclarations
-
 ```
 
 ### 📚 Sémantique
 
 - **Un fichier `.meshr` = un module unique**.
-- Le `module` définit le **namespace** des artefacts qu’il contient.
+- Le `module` définit le **namespace** des artefacts qu'il contient.
 - Les `import` permettent d'accéder à des symboles publics d'autres modules.
 - Des **annotations peuvent précéder** la déclaration `module` (ex.: `@experimental`, `@version("...")`).
+
+### 🔧 Types d'imports supportés
+
+#### Import simple
+```meshr
+import Customer from marketing.shared
+```
+Importe un seul élément (enum, aspect, trait, etc.) d'un module.
+
+#### Import groupé (recommandé)
+```meshr
+import { DataClassification, WithSecurity } from meshr.security
+```
+Importe plusieurs éléments spécifiques d'un module. C'est la méthode recommandée car elle est explicite et évite les conflits de noms.
+
+#### Import wildcard
+```meshr
+import * from meshr.types
+```
+Importe tous les éléments exportés d'un module. Utilisez avec précaution pour éviter les conflits de noms.
+
+### 📋 Ordre des déclarations
+
+L'ordre correct dans un module Meshr-Lang est :
+
+```meshr
+module mon.module
+
+// 1. Imports (après la déclaration du module)
+import { Item1, Item2 } from autre.module
+
+// 2. Exports (après les imports)
+export { MonItem }
+
+// 3. Déclarations (enums, aspects, traits, entités, etc.)
+enum MonEnum is ("value1", "value2")
+end
+```
 - Les `import` permettent d'accéder à des symboles **explicitement exportés** d'autres modules.
 - Les éléments d’un module **ne sont pas visibles depuis l’extérieur** s’ils ne sont pas précédés du mot-clé `export`.
 - L’import de `{ * }` signifie **importer tous les symboles exportés** du module cible.
@@ -356,10 +397,225 @@ annotation Test2 is end
 
 #### ❌ Tests invalides
 
-(à venir, via fichier `invalid-annotation-decl-test.meshr`)
-- Champ `required` non renseigné
-- Redondance entre champs
-- Mauvais type
+Les tests invalides sont implémentés dans le fichier `invalid-annotation-decl-test.meshr` et couvrent :
+
+- **Erreurs de syntaxe dans les annotations** : Arguments d'annotations mal formés
+- **Champs `required` non renseignés** : Validation des champs obligatoires
+- **Redondance entre champs** : Détection des déclarations en double
+- **Mauvais types** : Validation des types dans les annotations
+- **Syntaxe invalide** : Structures d'annotations mal formées
+
+**Exemple d'erreur détectée :**
+```meshr
+@Target(annotation)  // ❌ Erreur : argument mal formé
+@Retention(model)
+annotation InvalidAnnotation is
+  optional : String = "missingName"
+end
+```
+
+### 🏷️ Annotations Standard (StdLib)
+
+La bibliothèque standard Meshr-Lang fournit un ensemble d'annotations prédéfinies dans le module `meshr.annotations`, incluant les méta-annotations et les annotations communes.
+
+#### 📦 Import des annotations
+
+```meshr
+module mon.module
+
+// Import des annotations standard
+import { 
+  Target, Retention, Repeatable,
+  Experimental, Deprecated, Version, Author, 
+  Scope, Confidentiality, Documented 
+} from meshr.annotations
+
+export { MonEntite }
+```
+
+#### 🔧 Méta-annotations
+
+##### `@Target`
+Spécifie sur quels types d'éléments l'annotation peut être utilisée.
+
+```meshr
+@Target("all")           // Tous les éléments
+@Target("annotation")    // Seulement les annotations
+@Target("entity")        // Seulement les entités
+@Target("module")        // Seulement les modules
+```
+
+**Valeurs possibles :**
+- `"all"` : Tous les éléments
+- `"annotation"` : Annotations
+- `"enum"` : Énumérations
+- `"module"` : Modules
+- `"record"` : Records
+- `"trait"` : Traits
+- `"aspect"` : Aspects
+- `"entity"` : Entités
+- `"type_relation"` : Types de relations
+- `"relation"` : Relations
+
+##### `@Retention`
+Spécifie la durée de vie de l'annotation.
+
+```meshr
+@Retention(compile)  // Supprimée à la compilation
+@Retention(model)    // Conservée dans le modèle
+@Retention(export)   // Exportée avec l'artefact
+```
+
+##### `@Repeatable`
+Indique si l'annotation peut être utilisée plusieurs fois sur le même élément.
+
+```meshr
+@Repeatable(true)   // Peut être répétée
+@Repeatable(false)  // Ne peut pas être répétée
+```
+
+#### 🏷️ Annotations communes
+
+##### `@Experimental`
+Marque un élément comme expérimental.
+
+```meshr
+@Experimental(reason="Feature is experimental and may change")
+```
+
+##### `@Deprecated`
+Marque un élément comme déprécié.
+
+```meshr
+@Deprecated(
+  reason="Use new OrderV2 entity instead",
+  since="2024-01-01",
+  replacement="OrderV2"
+)
+```
+
+##### `@Version`
+Spécifie la version d'un élément.
+
+```meshr
+@Version("1.2.0")
+```
+
+##### `@Author`
+Spécifie l'auteur d'un élément.
+
+```meshr
+@Author(
+  name="Data Team",
+  email="data@company.com",
+  organization="ACME Corp"
+)
+```
+
+##### `@Scope`
+Spécifie la portée d'un élément.
+
+```meshr
+@Scope(level="internal", description="Internal use only")
+```
+
+**Niveaux possibles :**
+- `"public"` : Public
+- `"internal"` : Interne
+- `"private"` : Privé
+
+##### `@Confidentiality`
+Spécifie le niveau de confidentialité.
+
+```meshr
+@Confidentiality(
+  level="confidential",
+  classification="PII",
+  handling_instructions="Encrypt at rest"
+)
+```
+
+**Niveaux possibles :**
+- `"public"` : Public
+- `"internal"` : Interne
+- `"confidential"` : Confidentiel
+- `"restricted"` : Restreint
+
+##### `@Documented`
+Ajoute de la documentation structurée.
+
+```meshr
+@Documented(
+  summary="Customer entity with personal information",
+  description="Core entity for customer data management",
+  examples="See examples/ directory",
+  see_also="CustomerV2 entity"
+)
+```
+
+#### 🎯 Exemples d'utilisation
+
+##### Module annoté
+```meshr
+@Version("1.0.0")
+@Author(name="Data Team", email="data@company.com")
+@Scope(level="internal")
+@Confidentiality(level="confidential")
+@Documented(summary="Customer management module")
+module examples.customer
+```
+
+##### Entité annotée
+```meshr
+@Version("1.2.0")
+@Author(name="Product Team")
+@Documented(summary="Customer entity with personal information")
+@Experimental(reason="New customer model, API may change")
+entity Customer is
+  id : String
+  name : String
+end
+```
+
+##### Annotation personnalisée
+```meshr
+@Target("all")
+@Retention(model)
+@Repeatable(true)
+annotation QualityGate is
+  required level : String
+  optional automated : Boolean = true
+  optional reviewer : String = ""
+end
+
+@QualityGate(level="high", reviewer="senior-dev")
+entity CriticalEntity is
+  id : String
+end
+```
+
+#### 🔗 Intégration avec la stdlib
+
+Les annotations s'intègrent parfaitement avec les autres modules de la stdlib :
+
+```meshr
+import { DataClassification, WithSecurity } from meshr.security
+import { Version, Author, Documented } from meshr.annotations
+
+@Version("1.0.0")
+@Author(name="Security Team")
+@Documented(summary="Secure customer entity")
+entity SecureCustomer with WithSecurity is
+  id : String
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true
+    }
+  }
+end
+```
 
 ---
 
@@ -685,6 +941,132 @@ end
 
 ---
 
+## 🏗️ Entités et Relations
+
+Les **Entités** et **Relations** sont des artefacts déclaratifs pour la modélisation de données dans l'architecture Data-as-a-Product. Elles permettent de définir des structures de données persistantes et leurs interconnexions.
+
+### 🏢 Entités
+
+Une **entité** représente une structure de données persistante avec des champs typés, optionnellement des aspects et des traits.
+
+#### 📐 Syntaxe des Entités
+
+```meshr
+entity <Name> [with <TraitName> (, <TraitName>)*] is
+  <field declarations>
+  [aspects { <AspectInstance>* }]
+end
+```
+
+#### 🔧 Exemples d'Entités
+
+```meshr
+// Entité simple
+entity Customer with WithAudit is
+  CustomerId : String
+  Email : String pattern "^[^@]+@[^@]+$"
+  BirthDate : Date
+  Phone : String length 10..15
+end
+
+// Entité avec aspects
+entity SensitiveData with WithAudit is
+  DataId : String
+  Content : String
+  Classification : String
+  
+  aspects {
+    DataRetention { retention: Interval 5 year, steward: "dpo@example.com" }
+  }
+end
+```
+
+### 🔗 Types de Relations
+
+Un **type de relation** est un modèle réutilisable décrivant les propriétés, contraintes et traits qu'une relation peut hériter.
+
+#### 📐 Syntaxe des Types de Relations
+
+```meshr
+type relation <Name> [with <TraitName> (, <TraitName>)*] is
+  <field declarations>
+  [aspects { <AspectInstance>* }]
+end
+```
+
+#### 🔧 Exemples de Types de Relations
+
+```meshr
+type relation PLACED with WithAudit is
+  since : Date
+  channel : Channel
+  quantity : Integer = 1
+end
+
+type relation FRIENDSHIP with WithAudit is
+  since : Date
+  note : String length 0..280
+  closeness : Integer = 50
+end
+```
+
+### 🔗 Relations
+
+Une **relation** relie deux entités. Elle peut être non typée (définie ad hoc) ou typée (basée sur un type de relation), et peut être unidirectionnelle ou bidirectionnelle.
+
+#### 📐 Syntaxe des Relations
+
+```meshr
+[bidirectional] relation <Name> [of type <RelationType>] [with <TraitName> (, <TraitName>)*] is
+  from <Entity>(<Field>[, <Field>]*)
+  to   <Entity>(<Field>[, <Field>]*)
+  <field declarations>
+  [aspects { <AspectInstance>* }]
+end
+```
+
+#### 🔧 Exemples de Relations
+
+```meshr
+// Relation non typée
+relation CurrentAssignment is
+  from Customer(SalesRepId)
+  to Employee(EmployeeId)
+  
+  since : Date
+  note : String length 0..140
+end
+
+// Relation typée
+relation ProductOrder of type PLACED is
+  from Product(ProductId)
+  to Order(ProductId)
+  
+  discount : Float = 0.0
+  special_instructions : String length 0..200
+end
+
+// Relation bidirectionnelle typée
+bidirectional relation Friendship of type FRIENDSHIP is
+  from Customer(CustomerId)
+  to Customer(CustomerId)
+  
+  mutual_interests : List of String = List["shopping", "technology"]
+end
+```
+
+### 🎯 Caractéristiques des Entités et Relations
+
+- **Composition de traits** : Support de `with` pour injecter des comportements
+- **Aspects** : Instanciation d'aspects via `aspects { }`
+- **Modificateurs** : Support de `sealed` et `export`
+- **Annotations** : Métadonnées attachables via `@Annotation`
+- **Types de relations** : Réutilisation via `of type <RelationType>`
+- **Bidirectionnalité** : Relations symétriques via `bidirectional`
+- **Extrémités** : Définition des clés de jointure via `from`/`to`
+
+---
+
 ## 🧩 Traits
 
 Un trait est un bloc réutilisable de déclarations (champs, métadonnées, contraintes, aspects, politiques, …) injectables dans d’autres artefacts via la clause `with`. Les traits favorisent la factorisation et la composition déclarative, sans comportement impératif.
@@ -695,6 +1077,7 @@ Un trait est un bloc réutilisable de déclarations (champs, métadonnées, cont
 trait <Identifier> [with Base1, Base2] is
   <FieldName> : typeRef [= <valeur>]
   ...
+  [aspects { <AspectInstance>* }]
 end
 ```
 
@@ -724,6 +1107,45 @@ record Person with Contact, Audit is
   Name : String
 end
 ```
+
+### 🎭 Aspects dans les Traits
+
+Les traits peuvent contenir des **instanciations d'aspects** qui seront héritées par tous les artefacts qui utilisent le trait via `with`. Cela permet de factoriser les politiques transversales.
+
+```meshr
+// Définition des aspects
+aspect DataRetention is
+  retention : Interval
+  steward : String
+end
+
+aspect SecurityLevel is
+  level : String = "public"
+  encryption_required : Boolean = false
+end
+
+// Trait avec aspects
+trait WithSecurity is
+  access_level : String
+  permissions : List of String
+  
+  aspects {
+    SecurityLevel { level: "restricted", encryption_required: true },
+    DataRetention { retention: Interval 5 year, steward: "security@example.com" }
+  }
+end
+
+// Utilisation du trait avec ses aspects
+record User with WithSecurity is
+  id : String
+  name : String
+end
+```
+
+**⚡ Héritage des Aspects :**
+- Les aspects définis dans un trait sont **automatiquement appliqués** aux artefacts qui utilisent ce trait
+- Les aspects peuvent être **redéfinis** au niveau de l'artefact consommateur si nécessaire
+- Les règles de **composition des aspects** s'appliquent normalement (intersection, explicitation des conflits)
 
 ### 🧠 Règles de composition (sémantique)
 
@@ -1082,6 +1504,356 @@ product leads_b2c_import {
 - **Décision :** Introduction de quatre types de collections : `List of T`, `Map of K to V`, `Range of T`, et `Record` anonyme, avec des littéraux syntaxiques (`List[...]`, `Map{...}`, `Range a..b`, `Record{...}`).
 - **Pourquoi :** Permet une expressivité maximale pour les métadonnées complexes tout en maintenant la sécurité des types et la lisibilité du code. Les collections peuvent être imbriquées et utilisées dans tous les contextes (annotations, enums, records, traits, aspects).
 
+### 🧩 [2025-09-12] — Entités et Relations pour la modélisation de données
+
+- **Contexte :** Besoin de modéliser des structures de données persistantes et leurs interconnexions dans l'architecture Data-as-a-Product, avec support des relations complexes et de la gouvernance des données.
+- **Décision :** Introduction de trois nouveaux artefacts : `entity` (structures de données persistantes), `type relation` (modèles réutilisables de relations), et `relation` (connexions entre entités avec support bidirectionnel).
+- **Pourquoi :** Permet une modélisation complète du domaine métier avec support des relations complexes, de la gouvernance via les aspects, et de la réutilisabilité via les types de relations. Les entités et relations supportent tous les modificateurs existants (`sealed`, `export`, annotations) et s'intègrent parfaitement avec le système de traits et d'aspects.
+
+---
+
+## 📚 Bibliothèque Standard (StdLib)
+
+La **bibliothèque standard** de Meshr-Lang fournit un ensemble d'artefacts prédéfinis, d'aspects et de types communs pour faciliter le développement d'architectures Data-as-a-Product. Elle est organisée en modules thématiques et est disponible dans le dossier `stdlib/`.
+
+### 🎯 Objectifs
+
+- **Réutilisabilité** : Composants standards pour les cas d'usage courants
+- **Cohérence** : Conventions et patterns établis
+- **Productivité** : Réduction du temps de développement
+- **Qualité** : Composants testés et validés
+
+### 📦 Modules disponibles
+
+#### 🔐 **`meshr.security`**
+```meshr
+// Aspects de sécurité
+aspect DataClassification is
+  level : String // "public", "internal", "confidential", "restricted"
+  encryption_required : Boolean = false
+  access_control : String = "role-based"
+end
+
+aspect GDPRCompliance is
+  data_subject_rights : List of String
+  retention_period : Interval
+  lawful_basis : String
+  dpo_contact : String
+end
+
+// Types de relations de sécurité
+type relation ACCESS_CONTROL is
+  granted_by : String
+  granted_at : Timestamp
+  expires_at : Timestamp
+  permissions : List of String
+end
+```
+
+#### 📊 **`meshr.governance`**
+```meshr
+// Aspects de gouvernance
+aspect DataStewardship is
+  steward : String
+  owner : String
+  business_domain : String
+  last_review : Date
+end
+
+aspect DataQuality is
+  quality_score : Float range 0.0..1.0
+  validation_rules : List of String
+  monitoring_frequency : Interval
+  alert_threshold : Float
+end
+
+// Traits de gouvernance
+trait WithStewardship is
+  steward : String
+  owner : String
+  
+  aspects {
+    DataStewardship { steward: steward, owner: owner, business_domain: "default" }
+  }
+end
+```
+
+#### 🏢 **`meshr.business`**
+```meshr
+// Types métier communs
+enum BusinessDomain is (
+  "finance",
+  "marketing", 
+  "sales",
+  "hr",
+  "operations",
+  "product"
+)
+
+enum DataSensitivity is (
+  "public",
+  "internal", 
+  "confidential",
+  "restricted"
+)
+
+// Traits métier
+trait WithBusinessContext is
+  domain : BusinessDomain
+  sensitivity : DataSensitivity
+  business_owner : String
+end
+```
+
+#### 🔄 **`meshr.lifecycle`**
+```meshr
+// Aspects de cycle de vie
+aspect DataLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String
+  status : String // "draft", "active", "deprecated", "archived"
+  deprecation_date : Date
+end
+
+// Traits de cycle de vie
+trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String = "1.0.0"
+  
+  aspects {
+    DataLifecycle { 
+      created_at: created_at, 
+      updated_at: updated_at, 
+      version: version, 
+      status: "active" 
+    }
+  }
+end
+```
+
+#### 🏷️ **`meshr.annotations`**
+```meshr
+// Méta-annotations
+@Target("annotation")
+@Retention(model)
+annotation Target is
+  required value : AnnotationTarget
+end
+
+@Target("annotation")
+@Retention(model)
+annotation Retention is
+  required value : RetentionPolicy
+end
+
+@Target("annotation")
+@Retention(model)
+annotation Repeatable is
+  optional value : Boolean = true
+end
+
+// Annotations communes
+@Target("all")
+@Retention(model)
+annotation Experimental is
+  optional reason : String = "Feature is experimental and may change"
+end
+
+@Target("all")
+@Retention(model)
+annotation Deprecated is
+  required reason : String
+  optional since : String = ""
+  optional replacement : String = ""
+end
+
+@Target("all")
+@Retention(model)
+annotation Version is
+  required value : String
+end
+
+@Target("all")
+@Retention(model)
+annotation Author is
+  required name : String
+  optional email : String = ""
+  optional organization : String = ""
+end
+
+@Target("all")
+@Retention(model)
+annotation Scope is
+  required level : ScopeLevel
+  optional description : String = ""
+end
+
+@Target("all")
+@Retention(model)
+annotation Confidentiality is
+  required level : ConfidentialityLevel
+  optional classification : String = ""
+  optional handling_instructions : String = ""
+end
+
+@Target("all")
+@Retention(model)
+annotation Documented is
+  required summary : String
+  optional description : String = ""
+  optional examples : String = ""
+  optional see_also : String = ""
+end
+```
+
+#### 📊 **`meshr.types`**
+```meshr
+// Types de base et communs
+enum Status is (
+  "active",
+  "inactive", 
+  "pending",
+  "suspended",
+  "archived"
+)
+
+enum Priority is (
+  "low",
+  "medium",
+  "high",
+  "critical"
+)
+
+aspect ContactInfo is
+  email : String
+  phone : String
+  mobile : String
+  website : String
+end
+
+aspect Address is
+  street : String
+  city : String
+  postal_code : String
+  country : String
+end
+
+trait WithContactInfo is
+  email : String
+  phone : String
+  
+  aspects {
+    ContactInfo {
+      email: email,
+      phone: phone,
+      mobile: "",
+      website: ""
+    }
+  }
+end
+```
+
+#### 📈 **`meshr.analytics`**
+```meshr
+// Types pour l'analytics
+enum MetricType is (
+  "counter",
+  "gauge", 
+  "histogram",
+  "summary"
+)
+
+type relation DATA_LINEAGE is
+  source_system : String
+  transformation : String
+  frequency : Interval
+  last_updated : Timestamp
+end
+
+// Aspects d'analytics
+aspect DataLineage is
+  source_systems : List of String
+  transformations : List of String
+  refresh_frequency : Interval
+  sla : Interval
+end
+```
+
+### 🏗️ Structure actuelle
+
+```
+stdlib/
+├── core/                    # Modules fondamentaux ✅
+│   ├── security.meshr      # Aspects et types de sécurité
+│   ├── governance.meshr    # Gouvernance des données
+│   ├── lifecycle.meshr     # Cycle de vie des données
+│   ├── types.meshr         # Types de base et communs
+│   └── annotations.meshr   # Annotations standard et méta-annotations
+├── examples/               # Exemples d'utilisation ✅
+│   ├── simple-customer.meshr
+│   ├── customer-entity.meshr
+│   ├── simple-imports.meshr
+│   ├── imports-demo.meshr
+│   ├── annotations-usage.meshr
+│   └── meta-annotations.meshr
+├── business/               # Modules métier (à venir)
+│   ├── domains.meshr
+│   ├── entities.meshr
+│   └── processes.meshr
+├── analytics/              # Modules d'analytics (à venir)
+│   ├── metrics.meshr
+│   ├── lineage.meshr
+│   └── quality.meshr
+└── integrations/           # Intégrations réglementaires (à venir)
+    ├── gdpr.meshr
+    ├── sox.meshr
+    └── iso27001.meshr
+```
+
+### 🎯 Cas d'usage
+
+```meshr
+// Exemple d'utilisation de la stdlib
+import { DataClassification, GDPRCompliance, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle } from meshr.lifecycle
+import { Version, Author, Documented, Confidentiality } from meshr.annotations
+
+@Version("1.0.0")
+@Author(name="Data Team", email="data@company.com")
+@Documented(summary="Customer entity with full governance")
+@Confidentiality(level="confidential", classification="PII")
+entity Customer with WithSecurity, WithStewardship, WithLifecycle is
+  customer_id : String
+  email : String
+  personal_data : String
+  
+  aspects {
+    DataClassification { 
+      level: "confidential", 
+      encryption_required: true 
+    },
+    GDPRCompliance {
+      data_subject_rights: List["access", "rectification", "erasure"],
+      retention_period: Interval 7 year,
+      lawful_basis: "consent",
+      dpo_contact: "dpo@company.com"
+    }
+  }
+end
+```
+
+### 📋 Roadmap
+
+- [x] **Phase 1** : Modules `security` et `governance` ✅
+- [x] **Phase 2** : Modules `lifecycle`, `types` et `annotations` ✅
+- [x] **Phase 3** : Exemples d'utilisation et documentation ✅
+- [ ] **Phase 4** : Modules `business` et `analytics`
+- [ ] **Phase 5** : Intégrations réglementaires
+- [ ] **Phase 6** : Outils de validation et génération avancés
+
 ---
 
 ## 🚧 À venir
@@ -1101,7 +1873,7 @@ product leads_b2c_import {
 ```ebnf
 (* ==============================
    Meshr-Lang — Grammaire EBNF (alignée ANTLR)
-   Mise à jour: 2025-09-10
+   Mise à jour: 2025-09-12
    ============================== *)
 
 compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
@@ -1117,10 +1889,10 @@ import-item         = identifier ;
 export-decl         = "export", ( export-items | exportable-decl ) ;
 export-items        = "{", identifier, { ",", identifier }, "}" ;
 
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl ;
-exportable-decl     = enum-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
 
-enum-decl           = { annotation }, "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
+enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
 enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
 enum-attribute      = identifier, ":", ( qualified-name | base-type ), [ "=", annotation-value ] ;
 enum-values         = enum-value, { ",", enum-value } ;
@@ -1177,9 +1949,10 @@ record-decl         = "record", identifier, [ with-clause ], "is", record-field,
 record-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 
 (* ========== TRAIT DECLARATION ============ *)
-trait-decl          = "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, "end" ;
+trait-decl          = [ "sealed" ], "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, [ trait-aspects ], "end" ;
 trait-field         = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 with-clause         = "with", qualified-name, { ",", qualified-name } ;
+trait-aspects       = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
 
 (* ========== ASPECT DECLARATION ============ *)
 aspect-decl         = { annotation }, [ "abstract" ], "aspect", identifier, [ aspect-inheritance ], "is", aspect-field, { aspect-field }, "end" ;
@@ -1187,6 +1960,30 @@ aspect-inheritance  = extends-clause, [ with-clause ]
                     | with-clause, [ extends-clause ] ;
 extends-clause      = "extends", qualified-name ;
 aspect-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+
+(* ========== ENTITY ============= *)
+entity-decl         = { annotation }, [ "sealed" ], "entity", identifier, [ with-clause ], "is", entity-field, { entity-field }, [ entity-aspects ], "end" ;
+entity-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+entity-aspects      = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== TYPE RELATION ============= *)
+type-relation-decl  = { annotation }, [ "sealed" ], "type", "relation", identifier, [ with-clause ], "is", type-relation-field, { type-relation-field }, [ type-relation-aspects ], "end" ;
+type-relation-field = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+type-relation-aspects = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== RELATION ============= *)
+relation-decl       = { annotation }, [ "sealed" ], [ "bidirectional" ], "relation", identifier, [ relation-type ], [ with-clause ], "is", relation-endpoints, relation-field-list, [ relation-aspects ], "end" ;
+relation-type       = "of", "type", qualified-name ;
+relation-endpoints  = "from", relation-endpoint, "to", relation-endpoint ;
+relation-endpoint   = qualified-name, "(", identifier, { ",", identifier }, ")" ;
+relation-field-list = relation-field, { relation-field } ;
+relation-field      = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+relation-aspects    = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== ASPECT INSTANCES ============ *)
+aspect-instance     = identifier, "{", [ aspect-instance-field-list ], "}" ;
+aspect-instance-field-list = aspect-instance-field, { ",", aspect-instance-field } ;
+aspect-instance-field = identifier, ":", annotation-value ;
 
 (* ========== COLLECTION/COMPOSITE LITTÉRAUX ============ *)
 list-literal        = "List", "[", [ annotation-value, { ",", annotation-value } ], "]" ;
@@ -1544,3 +2341,5 @@ BOOLEAN_LITERAL
     : 'true' | 'false'
     ;
 ```
+
+> **📝 Note de mise à jour :** L'Annexe B (grammaire ANTLR) nécessite une mise à jour pour inclure les nouvelles déclarations `entity`, `type relation`, `relation`, les aspects dans les traits, et le modificateur `sealed`. La grammaire complète est disponible dans le fichier `grammar/MeshrModule.g4`.

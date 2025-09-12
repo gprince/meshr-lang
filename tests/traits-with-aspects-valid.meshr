@@ -1,0 +1,95 @@
+// Module de test pour les traits avec aspects
+module demo.traits_with_aspects
+
+// ========== ASPECTS POUR LES TRAITS ==========
+aspect DataRetention is
+  retention : Interval
+  steward : String
+end
+
+aspect SecurityLevel is
+  level : String = "public"
+  encryption_required : Boolean = false
+end
+
+aspect AuditTrail is
+  created_by : String
+  last_modified_by : String
+end
+
+// ========== TRAITS AVEC ASPECTS ==========
+
+// Trait simple avec un aspect
+trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+  
+  aspects {
+    AuditTrail { created_by: "system", last_modified_by: "system" }
+  }
+end
+
+// Trait avec plusieurs aspects
+trait WithSecurity is
+  access_level : String
+  permissions : List of String
+  
+  aspects {
+    SecurityLevel { level: "restricted", encryption_required: true }
+  }
+end
+
+// Trait avec composition et aspects
+trait WithLifecycle with WithAudit is
+  version : String
+  status : String
+  
+  aspects {
+    DataRetention { retention: Interval 3 year, steward: "lifecycle@example.com" }
+  }
+end
+
+// Trait sealed avec aspects
+sealed trait SensitiveData is
+  classification : String
+  data_type : String
+  
+  aspects {
+    SecurityLevel { level: "confidential", encryption_required: true },
+    DataRetention { retention: Interval 7 year, steward: "dpo@example.com" },
+    AuditTrail { created_by: "admin", last_modified_by: "admin" }
+  }
+end
+
+// ========== RECORDS UTILISANT LES TRAITS ==========
+
+record User with WithAudit, WithSecurity is
+  id : String
+  name : String
+  email : String
+end
+
+record Product with WithLifecycle is
+  product_id : String
+  name : String
+  price : Float
+end
+
+// ========== ENTITÉS UTILISANT LES TRAITS ==========
+
+entity Customer with WithAudit is
+  CustomerId : String
+  Email : String
+  Phone : String
+  
+  aspects {
+    DataRetention { retention: Interval 2 year, steward: "customer@example.com" }
+  }
+end
+
+entity Employee with WithSecurity, WithLifecycle is
+  EmployeeId : String
+  FirstName : String
+  LastName : String
+  Department : String
+end

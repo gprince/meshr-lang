@@ -1,0 +1,114 @@
+// ==============================
+// Meshr-Lang StdLib - Security Module
+// ==============================
+// Module de sécurité pour la classification des données,
+// la conformité GDPR et le contrôle d'accès
+
+module meshr.security
+
+export { 
+  DataClassificationLevel, 
+  AccessControlType, 
+  DataClassification, 
+  GDPRCompliance, 
+  SecurityControls, 
+  WithSecurity, 
+  WithGDPR, 
+  ACCESS_CONTROL, 
+  DATA_SHARING 
+}
+
+// ========== ENUMS ==========
+
+enum DataClassificationLevel is (
+  "public",
+  "internal", 
+  "confidential",
+  "restricted"
+)
+
+enum AccessControlType is (
+  "role-based",
+  "attribute-based",
+  "policy-based",
+  "discretionary"
+)
+
+// ========== ASPECTS ==========
+
+aspect DataClassification is
+  level : DataClassificationLevel
+  encryption_required : Boolean = false
+  access_control : AccessControlType = "role-based"
+  data_retention : Interval
+  steward : String
+end
+
+aspect GDPRCompliance is
+  data_subject_rights : List of String
+  retention_period : Interval
+  lawful_basis : String
+  dpo_contact : String
+  consent_required : Boolean = true
+  anonymization_required : Boolean = false
+end
+
+aspect SecurityControls is
+  encryption_at_rest : Boolean = false
+  encryption_in_transit : Boolean = true
+  access_logging : Boolean = true
+  audit_frequency : Interval
+  security_review_date : Date
+end
+
+// ========== TRAITS ==========
+
+trait WithSecurity is
+  classification : DataClassificationLevel
+  encryption_required : Boolean = false
+  
+  aspects {
+    DataClassification { 
+      level: classification, 
+      encryption_required: encryption_required,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "security@company.com"
+    }
+  }
+end
+
+trait WithGDPR is
+  dpo_contact : String
+  retention_period : Interval
+  
+  aspects {
+    GDPRCompliance {
+      data_subject_rights: List["access", "rectification", "erasure", "portability"],
+      retention_period: retention_period,
+      lawful_basis: "consent",
+      dpo_contact: dpo_contact,
+      consent_required: true,
+      anonymization_required: false
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+type relation ACCESS_CONTROL is
+  granted_by : String
+  granted_at : Timestamp
+  expires_at : Timestamp
+  permissions : List of String
+  justification : String
+end
+
+type relation DATA_SHARING is
+  shared_with : String
+  shared_at : Timestamp
+  purpose : String
+  retention_period : Interval
+  consent_obtained : Boolean
+end
+

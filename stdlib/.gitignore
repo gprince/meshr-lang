@@ -1,0 +1,31 @@
+# Meshr-Lang StdLib - Git Ignore
+
+# Fichiers temporaires
+*.tmp
+*.temp
+*~
+
+# Fichiers de compilation
+*.pyc
+__pycache__/
+*.pyo
+
+# Fichiers de documentation générés
+*.pdf
+*.html
+
+# Fichiers de test temporaires
+test_*.meshr
+temp_*.meshr
+
+# Fichiers de configuration locaux
+.env
+.env.local
+
+# Fichiers de logs
+*.log
+logs/
+
+# Fichiers de backup
+*.bak
+*.backup

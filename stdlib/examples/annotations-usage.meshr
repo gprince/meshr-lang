@@ -1,0 +1,68 @@
+// ==============================
+// Exemple d'utilisation des annotations standard
+// ==============================
+// Démonstration de l'utilisation des annotations de la stdlib
+
+// ========== MODULE ANNOTÉ ==========
+
+@Version("1.0.0")
+@Author(name="Data Team", email="data@company.com", organization="ACME Corp")
+@Scope(level="internal", description="Customer management module")
+@Confidentiality(level="confidential", classification="PII", handling_instructions="Encrypt at rest")
+@Documented(
+  summary="Customer management entities",
+  description="Core entities for customer data management",
+  examples="See examples/ directory"
+)
+module examples.annotations_usage
+
+// Import des annotations standard
+import { 
+  Experimental, 
+  Deprecated, 
+  Version, 
+  Author, 
+  Scope, 
+  Confidentiality, 
+  Documented 
+} from meshr.annotations
+
+export { Customer, Product, Order }
+
+// ========== ENTITÉS ANNOTÉES ==========
+
+@Version("1.2.0")
+@Author(name="Product Team")
+@Documented(summary="Customer entity with personal information")
+entity Customer is
+  customer_id : String
+  email : String
+  first_name : String
+  last_name : String
+end
+
+@Experimental(reason="New product model, API may change")
+@Version("0.9.0")
+@Author(name="Product Team", email="product@company.com")
+@Documented(summary="Product catalog entity")
+entity Product is
+  product_id : String
+  name : String
+  description : String
+  price : Float
+end
+
+@Deprecated(
+  reason="Use new OrderV2 entity instead",
+  since="2024-01-01",
+  replacement="OrderV2"
+)
+@Version("0.8.0")
+@Author(name="Legacy Team")
+@Documented(summary="Legacy order entity")
+entity Order is
+  order_id : String
+  customer_id : String
+  product_id : String
+  quantity : Integer
+end

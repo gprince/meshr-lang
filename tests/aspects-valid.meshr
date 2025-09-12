@@ -1,4 +1,4 @@
-module demo.aspects
+module demo.metadata
 
 // ========== TRAIT pour la composition ==========
 trait WithLifecycle is

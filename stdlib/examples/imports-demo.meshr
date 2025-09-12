@@ -1,0 +1,82 @@
+// ==============================
+// Démonstration des imports dans Meshr-Lang
+// ==============================
+// Exemple montrant différents types d'imports et leur utilisation
+
+module examples.imports_demo
+
+// ========== DIFFÉRENTS TYPES D'IMPORTS ==========
+
+// Import groupé (recommandé)
+import { DataClassification, WithSecurity } from meshr.security
+import { DataStewardship, WithStewardship } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+// Import wildcard (importe tout)
+import * from meshr.types
+
+export { Company, Employee, CompanyEmployee }
+
+// ========== ENTITÉS UTILISANT LES IMPORTS ==========
+
+entity Company with WithSecurity, WithStewardship, WithLifecycle is
+  company_id : String
+  name : String
+  industry : String
+  size : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "hr@company.com"
+    },
+    DataStewardship {
+      steward: "hr.team@company.com",
+      owner: "executive.team@company.com",
+      business_domain: "human_resources",
+      last_review: "2024-01-01",
+      next_review: "2024-12-31",
+      contact_email: "hr.team@company.com"
+    }
+  }
+end
+
+entity Employee with WithSecurity, WithContactInfo is
+  employee_id : String
+  first_name : String
+  last_name : String
+  position : String
+  department : String
+  status : Status
+  priority : Priority
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "hr@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation CompanyEmployee is
+  from Company(company_id)
+  to Employee(employee_id)
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "hr@company.com"
+    }
+  }
+end

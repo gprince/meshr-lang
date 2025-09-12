@@ -1,0 +1,113 @@
+// ==============================
+// Meshr-Lang StdLib - Lifecycle Module
+// ==============================
+// Module de cycle de vie pour la gestion des versions,
+// statuts et transitions des données
+
+module meshr.lifecycle
+
+export { 
+  DataStatus, 
+  LifecycleStage, 
+  DataLifecycle, 
+  VersionControl, 
+  WithLifecycle, 
+  WithVersioning, 
+  VERSION_TRANSITION, 
+  STATUS_CHANGE 
+}
+
+// ========== ENUMS ==========
+
+enum DataStatus is (
+  "draft",
+  "active",
+  "deprecated",
+  "archived",
+  "deleted"
+)
+
+enum LifecycleStage is (
+  "development",
+  "testing",
+  "production",
+  "maintenance",
+  "retirement"
+)
+
+// ========== ASPECTS ==========
+
+aspect DataLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String
+  status : DataStatus
+  deprecation_date : Date
+  archive_date : Date
+  lifecycle_stage : LifecycleStage
+end
+
+aspect VersionControl is
+  version : String
+  previous_version : String
+  version_notes : String
+  released_by : String
+  release_date : Timestamp
+  breaking_changes : Boolean = false
+end
+
+// ========== TRAITS ==========
+
+trait WithLifecycle is
+  created_at : Timestamp
+  updated_at : Timestamp
+  version : String = "1.0.0"
+  status : DataStatus = "active"
+  
+  aspects {
+    DataLifecycle { 
+      created_at: created_at, 
+      updated_at: updated_at, 
+      version: version, 
+      status: status,
+      deprecation_date: "2099-12-31",
+      archive_date: "2099-12-31",
+      lifecycle_stage: "production"
+    }
+  }
+end
+
+trait WithVersioning is
+  version : String
+  version_notes : String
+  
+  aspects {
+    VersionControl {
+      version: version,
+      previous_version: "0.0.0",
+      version_notes: version_notes,
+      released_by: "system",
+      release_date: "2024-01-01T00:00:00Z",
+      breaking_changes: false
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+type relation VERSION_TRANSITION is
+  from_version : String
+  to_version : String
+  transition_date : Timestamp
+  transition_reason : String
+  approved_by : String
+end
+
+type relation STATUS_CHANGE is
+  from_status : DataStatus
+  to_status : DataStatus
+  changed_at : Timestamp
+  changed_by : String
+  reason : String
+end
+

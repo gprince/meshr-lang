@@ -1,0 +1,41 @@
+// ==============================
+// Exemple d'utilisation des méta-annotations
+// ==============================
+// Démonstration des méta-annotations (@Target, @Retention, @Repeatable)
+
+module examples.meta_annotations
+
+// Import des méta-annotations
+import { Target, Retention, Repeatable } from meshr.annotations
+
+export { CustomAnnotation, RepeatableAnnotation }
+
+// ========== ANNOTATION PERSONNALISÉE ==========
+
+@Target("all")
+@Retention(model)
+annotation CustomAnnotation is
+  required name : String
+  optional value : String = "default"
+  optional active : Boolean = true
+end
+
+// ========== ANNOTATION RÉPÉTABLE ==========
+
+@Target("all")
+@Retention(model)
+@Repeatable(true)
+annotation RepeatableAnnotation is
+  required tag : String
+  optional priority : Integer = 1
+end
+
+// ========== EXEMPLE D'UTILISATION ==========
+
+@CustomAnnotation(name="TestEntity", value="example", active=true)
+@RepeatableAnnotation(tag="important", priority=5)
+@RepeatableAnnotation(tag="reviewed")
+entity TestEntity is
+  id : String
+  name : String
+end

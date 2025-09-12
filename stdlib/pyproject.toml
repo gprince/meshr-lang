@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "meshr-lang-stdlib"
+version = "0.1.0"
+description = "Bibliothèque standard pour Meshr-Lang"
+authors = [
+    {name = "Meshr-Lang Team", email = "team@meshr-lang.org"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.8"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries",
+    "Topic :: Software Development :: Code Generators",
+]
+
+[project.urls]
+Homepage = "https://github.com/meshr-lang/meshr-lang"
+Repository = "https://github.com/meshr-lang/meshr-lang"
+Documentation = "https://meshr-lang.org/docs"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["meshr*"]
+
+[tool.setuptools.package-data]
+"*" = ["*.meshr"]
+
+# Configuration pour les tests
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+
+# Configuration pour le linting
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.isort]
+profile = "black"
+line_length = 88

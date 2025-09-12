@@ -1,6 +1,6 @@
 (* ==============================
    Meshr-Lang — Grammaire EBNF (alignée ANTLR)
-   Mise à jour: 2025-09-10
+   Mise à jour: 2025-09-12
    ============================== *)
 
 (* ==============================
@@ -25,8 +25,8 @@ export-items        = "{", identifier, { ",", identifier }, "}" ;
 (* ==============================
    Déclarations de haut niveau
    ============================== *)
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl ;
-exportable-decl     = enum-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
 
 (* ========== ENUM ============= *)
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
@@ -105,9 +105,10 @@ record-decl         = [ "sealed" ], "record", identifier, [ with-clause ], "is",
 record-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 
 (* ========== TRAIT DECLARATION ============ *)
-trait-decl          = [ "sealed" ], "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, "end" ;
+trait-decl          = [ "sealed" ], "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, [ trait-aspects ], "end" ;
 trait-field         = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
 with-clause         = "with", qualified-name, { ",", qualified-name } ;
+trait-aspects       = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
 
 (* ========== ASPECT DECLARATION ============ *)
 aspect-decl         = { annotation }, [ "sealed" ], [ "abstract" ], "aspect", identifier, [ aspect-inheritance ], "is", aspect-field, { aspect-field }, "end" ;
@@ -115,6 +116,28 @@ aspect-inheritance  = extends-clause, [ with-clause ]
                     | with-clause, [ extends-clause ] ;
 extends-clause      = "extends", qualified-name ;
 aspect-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+
+(* ========== ENTITY ============= *)
+entity-decl         = { annotation }, [ "sealed" ], "entity", identifier, [ with-clause ], "is", entity-field, { entity-field }, [ entity-aspects ], "end" ;
+entity-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+entity-aspects      = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== TYPE RELATION ============= *)
+type-relation-decl  = { annotation }, [ "sealed" ], "type", "relation", identifier, [ with-clause ], "is", type-relation-field, { type-relation-field }, [ type-relation-aspects ], "end" ;
+type-relation-field = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+type-relation-aspects = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== RELATION ============= *)
+relation-decl       = { annotation }, [ "sealed" ], [ "bidirectional" ], "relation", identifier, [ relation-type ], [ with-clause ], "is", relation-endpoints, [ relation-field, { relation-field } ], [ relation-aspects ], "end" ;
+relation-type       = "of", "type", identifier ;
+relation-endpoints  = "from", relation-endpoint, "to", relation-endpoint ;
+relation-endpoint   = identifier, "(", identifier, { ",", identifier }, ")" ;
+relation-field      = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+relation-aspects    = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== ASPECT INSTANCES ============= *)
+aspect-instance     = identifier, "{", [ aspect-instance-field, { ",", aspect-instance-field } ], "}" ;
+aspect-instance-field = identifier, ":", annotation-value ;
 
 (* ========== COLLECTION/COMPOSITE LITTÉRAUX ============ *)
 list-literal        = "List", "[", [ annotation-value, { ",", annotation-value } ], "]" ;

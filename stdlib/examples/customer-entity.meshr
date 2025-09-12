@@ -1,0 +1,70 @@
+// ==============================
+// Exemple d'utilisation de la StdLib
+// ==============================
+// Démonstration de l'utilisation des modules de la bibliothèque standard
+// pour créer une entité Customer avec gouvernance complète
+
+module examples.customer
+
+// Import des composants de la stdlib
+import { DataClassification, GDPRCompliance, WithSecurity, WithGDPR } from meshr.security
+import { DataStewardship, WithStewardship, WithQuality } from meshr.governance
+import { WithLifecycle, WithVersioning } from meshr.lifecycle
+
+export { Customer, CustomerAccess }
+
+// ========== ENTITÉ CUSTOMER ==========
+
+entity Customer with WithSecurity, WithGDPR, WithStewardship, WithQuality, WithLifecycle, WithVersioning is
+  customer_id : String
+  email : String
+  first_name : String
+  last_name : String
+  phone : String
+  birth_date : Date
+  address : String
+  
+  aspects {
+    DataClassification { 
+      level: "confidential", 
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "privacy@company.com"
+    },
+    GDPRCompliance {
+      data_subject_rights: List["access", "rectification", "erasure", "portability"],
+      retention_period: Interval 7 year,
+      lawful_basis: "consent",
+      dpo_contact: "dpo@company.com",
+      consent_required: true,
+      anonymization_required: true
+    },
+    DataStewardship {
+      steward: "data.steward@company.com",
+      owner: "marketing.team@company.com",
+      business_domain: "marketing",
+      last_review: "2024-01-01",
+      next_review: "2024-12-31",
+      contact_email: "data.steward@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation CustomerAccess is
+  from Customer(customer_id)
+  to Employee(employee_id)
+  
+  aspects {
+    DataClassification {
+      level: "restricted",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "security@company.com"
+    }
+  }
+end
+

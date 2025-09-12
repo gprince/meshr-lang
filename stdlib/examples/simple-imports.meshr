@@ -1,0 +1,33 @@
+// ==============================
+// Exemple d'imports simples
+// ==============================
+// Démonstration d'imports simples et groupés
+
+module examples.simple_imports
+
+// Import simple
+import Status from meshr.types
+
+// Import groupé
+import { DataClassification, WithSecurity } from meshr.security
+
+export { Product }
+
+// ========== ENTITÉ UTILISANT LES IMPORTS ==========
+
+entity Product with WithSecurity is
+  product_id : String
+  name : String
+  description : String
+  status : Status
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "product@company.com"
+    }
+  }
+end

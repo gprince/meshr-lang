@@ -1,0 +1,159 @@
+// Module de test pour les entités et relations
+module demo.entities_relations
+
+// ========== TRAITS POUR LA COMPOSITION ==========
+trait WithAudit is
+  created_at : Timestamp
+  updated_at : Timestamp
+end
+
+trait WithLifecycle is
+  version : String
+  status : String
+end
+
+// ========== ENUMS POUR LES RELATIONS ==========
+enum Channel is ("online", "store", "phone", "email")
+
+// ========== ENTITÉS ==========
+entity Customer with WithAudit is
+  CustomerId : String
+  Email : String pattern "^[^@]+@[^@]+$"
+  BirthDate : Date
+  Phone : String length 10..15
+end
+
+entity Product with WithAudit, WithLifecycle is
+  ProductId : String
+  Name : String length 1..200
+  Price : Float
+  Description : String length 0..1000
+end
+
+entity Employee is
+  EmployeeId : String
+  FirstName : String
+  LastName : String
+  Department : String
+  Salary : Integer
+end
+
+entity Order is
+  OrderId : String
+  OrderDate : Date
+  TotalAmount : Float
+  Status : String
+end
+
+// ========== TYPES DE RELATIONS ==========
+type relation PLACED with WithAudit is
+  since : Date
+  channel : Channel
+  quantity : Integer = 1
+end
+
+type relation FRIENDSHIP with WithAudit is
+  since : Date
+  note : String length 0..280
+  closeness : Integer = 50
+end
+
+type relation ASSIGNMENT is
+  since : Date
+  role : String
+  priority : String = "normal"
+end
+
+// ========== RELATIONS NON TYPÉES ==========
+relation CurrentAssignment is
+  from Customer(SalesRepId)
+  to Employee(EmployeeId)
+  
+  since : Date
+  note : String length 0..140
+end
+
+relation CustomerOrder is
+  from Customer(CustomerId)
+  to Order(CustomerId)
+  
+  coupon_code : String length 0..30
+  source : String length 0..50
+end
+
+// ========== RELATIONS TYPÉES ==========
+relation ProductOrder of type PLACED is
+  from Product(ProductId)
+  to Order(ProductId)
+  
+  discount : Float = 0.0
+  special_instructions : String length 0..200
+end
+
+relation CustomerProduct of type PLACED is
+  from Customer(CustomerId)
+  to Product(ProductId)
+  
+  rating : Integer
+  review : String length 0..500
+end
+
+// ========== RELATIONS BIDIRECTIONNELLES ==========
+bidirectional relation Friendship of type FRIENDSHIP is
+  from Customer(CustomerId)
+  to Customer(CustomerId)
+  
+  mutual_interests : List of String = List["shopping", "technology"]
+end
+
+bidirectional relation Collaboration is
+  from Employee(EmployeeId)
+  to Employee(EmployeeId)
+  
+  project_code : String length 1..20
+  start_date : Date
+  end_date : Date
+end
+
+// ========== RELATIONS AVEC ASPECTS ==========
+relation EmployeeAssignment of type ASSIGNMENT is
+  from Employee(EmployeeId)
+  to Customer(CustomerId)
+  
+  aspects {
+    DataRetention { retention: Interval 7 year, steward: "hr@example.com" }
+  }
+end
+
+// ========== ENTITÉS AVEC ASPECTS ==========
+entity SensitiveData with WithAudit is
+  DataId : String
+  Content : String
+  Classification : String
+  
+  aspects {
+    DataRetention { retention: Interval 5 year, steward: "dpo@example.com" }
+  }
+end
+
+// ========== RELATIONS COMPLEXES ==========
+relation TeamMembership is
+  from Employee(EmployeeId)
+  to Employee(TeamLeadId)
+  
+  role : String
+  start_date : Date
+  end_date : Date
+  responsibilities : List of String
+  performance_score : Float
+end
+
+// ========== RELATIONS AVEC COLLECTIONS ==========
+relation CustomerPreferences is
+  from Customer(CustomerId)
+  to Product(CategoryId)
+  
+  preferences : Map of String to String = Map{"color": "blue", "size": "medium"}
+  purchase_history : List of String
+  budget_range : Range of Integer = Range 100..1000
+end

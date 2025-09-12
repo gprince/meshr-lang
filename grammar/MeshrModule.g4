@@ -53,12 +53,24 @@ topLevelDecl
     | traitDecl
     | annotatedAspectDecl
     | sealedAspectDecl
+    | annotatedEntityDecl
+    | sealedEntityDecl
+    | annotatedTypeRelationDecl
+    | sealedTypeRelationDecl
+    | annotatedRelationDecl
+    | sealedRelationDecl
     ;
 
 // ========== ENUM =============
 exportableDecl
     : enumDecl
     | sealedEnumDecl
+    | entityDecl
+    | sealedEntityDecl
+    | typeRelationDecl
+    | sealedTypeRelationDecl
+    | relationDecl
+    | sealedRelationDecl
     ;
 
 annotatedEnumDecl
@@ -67,6 +79,15 @@ annotatedEnumDecl
 
 sealedEnumDecl
     : SEALED enumDecl
+    ;
+
+// ========== ENTITY =============
+annotatedEntityDecl
+    : annotation* entityDecl
+    ;
+
+sealedEntityDecl
+    : SEALED entityDecl
     ;
 
 enumDecl
@@ -99,6 +120,101 @@ enumValueArgList
 
 enumValueArg
     : IDENTIFIER '=' annotationValue
+    ;
+
+// ========== ENTITY DECLARATION ============
+entityDecl
+    : ENTITY IDENTIFIER withClause? 'is' entityFieldList entityAspects? 'end'
+    ;
+
+entityFieldList
+    : entityField+
+    ;
+
+entityField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+entityAspects
+    : ASPECTS '{' aspectInstanceList '}'
+    ;
+
+aspectInstanceList
+    : aspectInstance (',' aspectInstance)*
+    ;
+
+aspectInstance
+    : IDENTIFIER '{' aspectInstanceFieldList? '}'
+    ;
+
+aspectInstanceFieldList
+    : aspectInstanceField (',' aspectInstanceField)*
+    ;
+
+aspectInstanceField
+    : IDENTIFIER ':' annotationValue
+    ;
+
+// ========== TYPE RELATION DECLARATION ============
+annotatedTypeRelationDecl
+    : annotation* typeRelationDecl
+    ;
+
+sealedTypeRelationDecl
+    : SEALED typeRelationDecl
+    ;
+
+typeRelationDecl
+    : TYPE RELATION IDENTIFIER withClause? 'is' typeRelationFieldList typeRelationAspects? 'end'
+    ;
+
+typeRelationFieldList
+    : typeRelationField+
+    ;
+
+typeRelationField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+typeRelationAspects
+    : ASPECTS '{' aspectInstanceList '}'
+    ;
+
+// ========== RELATION DECLARATION ============
+annotatedRelationDecl
+    : annotation* relationDecl
+    ;
+
+sealedRelationDecl
+    : SEALED relationDecl
+    ;
+
+relationDecl
+    : BIDIRECTIONAL? RELATION IDENTIFIER relationType? withClause? 'is' relationEndpoints relationFieldList? relationAspects? 'end'
+    ;
+
+relationType
+    : 'of' TYPE IDENTIFIER
+    ;
+
+relationEndpoints
+    : FROM relationEndpoint TO relationEndpoint
+    ;
+
+relationEndpoint
+    : IDENTIFIER '(' IDENTIFIER (',' IDENTIFIER)* ')'
+    ;
+
+relationFieldList
+    : relationField+
+    ;
+
+relationField
+    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    ;
+
+relationAspects
+    : ASPECTS '{' aspectInstanceList '}'
     ;
 
 // ========== ANNOTATION DECLARATION ============
@@ -257,7 +373,7 @@ recordField
 
 // ========== TRAIT DECLARATION ==========
 traitDecl
-    : 'trait' IDENTIFIER withClause? 'is' traitFieldList 'end'
+    : 'trait' IDENTIFIER withClause? 'is' traitFieldList traitAspects? 'end'
     ;
 
 sealedTraitDecl
@@ -270,6 +386,10 @@ traitFieldList
 
 traitField
     : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    ;
+
+traitAspects
+    : ASPECTS '{' aspectInstanceList '}'
     ;
 
 withClause
@@ -346,6 +466,13 @@ STRING_LITERAL: '"' (ESC | ~["\\\r\n])* '"';
 
 // Keywords
 SEALED: 'sealed';
+ENTITY: 'entity';
+TYPE: 'type';
+RELATION: 'relation';
+BIDIRECTIONAL: 'bidirectional';
+FROM: 'from';
+TO: 'to';
+ASPECTS: 'aspects';
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;
 

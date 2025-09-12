@@ -1,5 +1,5 @@
 // Module de test de déclaration des annotations
-module aspects.core.annotations
+module metadata.core.annotations
 
 export { RetentionPolicy, AnnotationTarget, Target, Retention, Repeatable }
 

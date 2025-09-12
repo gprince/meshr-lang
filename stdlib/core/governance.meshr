@@ -1,0 +1,118 @@
+// ==============================
+// Meshr-Lang StdLib - Governance Module
+// ==============================
+// Module de gouvernance pour la stewardship des données,
+// la qualité et la conformité
+
+module meshr.governance
+
+export { 
+  DataQualityLevel, 
+  StewardshipRole, 
+  DataStewardship, 
+  DataQuality, 
+  DataLineage, 
+  WithStewardship, 
+  WithQuality, 
+  DATA_OWNERSHIP, 
+  QUALITY_REVIEW 
+}
+
+// ========== ENUMS ==========
+
+enum DataQualityLevel is (
+  "excellent",
+  "good",
+  "fair", 
+  "poor",
+  "unknown"
+)
+
+enum StewardshipRole is (
+  "data_owner",
+  "data_steward",
+  "data_custodian",
+  "data_consumer"
+)
+
+// ========== ASPECTS ==========
+
+aspect DataStewardship is
+  steward : String
+  owner : String
+  business_domain : String
+  last_review : Date
+  next_review : Date
+  contact_email : String
+end
+
+aspect DataQuality is
+  quality_score : Float
+  validation_rules : List of String
+  monitoring_frequency : Interval
+  alert_threshold : Float
+  last_validation : Timestamp
+  quality_issues : List of String
+end
+
+aspect DataLineage is
+  source_systems : List of String
+  transformations : List of String
+  refresh_frequency : Interval
+  sla : Interval
+  last_updated : Timestamp
+  lineage_quality : DataQualityLevel
+end
+
+// ========== TRAITS ==========
+
+trait WithStewardship is
+  steward : String
+  owner : String
+  business_domain : String
+  
+  aspects {
+    DataStewardship { 
+      steward: steward, 
+      owner: owner, 
+      business_domain: business_domain,
+      last_review: "2024-01-01",
+      next_review: "2024-12-31",
+      contact_email: "steward@company.com"
+    }
+  }
+end
+
+trait WithQuality is
+  quality_score : Float
+  monitoring_frequency : Interval
+  
+  aspects {
+    DataQuality {
+      quality_score: quality_score,
+      validation_rules: List["completeness", "accuracy", "consistency"],
+      monitoring_frequency: monitoring_frequency,
+      alert_threshold: 0.8,
+      last_validation: "2024-01-01T00:00:00Z",
+      quality_issues: List[]
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+type relation DATA_OWNERSHIP is
+  assigned_at : Timestamp
+  role : StewardshipRole
+  responsibilities : List of String
+  review_frequency : Interval
+end
+
+type relation QUALITY_REVIEW is
+  reviewed_by : String
+  reviewed_at : Timestamp
+  quality_score : Float
+  issues_found : List of String
+  remediation_plan : String
+end
+

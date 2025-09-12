@@ -1,0 +1,63 @@
+// ==============================
+// Meshr-Lang StdLib - Types Module
+// ==============================
+// Module de types de base et communs pour la stdlib
+
+module meshr.types
+
+export { 
+  Status, 
+  Priority, 
+  ContactInfo, 
+  Address, 
+  WithContactInfo 
+}
+
+// ========== ENUMS ==========
+
+enum Status is (
+  "active",
+  "inactive", 
+  "pending",
+  "suspended",
+  "archived"
+)
+
+enum Priority is (
+  "low",
+  "medium",
+  "high",
+  "critical"
+)
+
+// ========== ASPECTS ==========
+
+aspect ContactInfo is
+  email : String
+  phone : String
+  mobile : String
+  website : String
+end
+
+aspect Address is
+  street : String
+  city : String
+  postal_code : String
+  country : String
+end
+
+// ========== TRAITS ==========
+
+trait WithContactInfo is
+  email : String
+  phone : String
+  
+  aspects {
+    ContactInfo {
+      email: email,
+      phone: phone,
+      mobile: "",
+      website: ""
+    }
+  }
+end

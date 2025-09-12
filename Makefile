@@ -4,7 +4,7 @@ ANTLR_JAR = grammar/antlr-4.13.2-complete.jar
 GRAMMAR_FILE = grammar/MeshrModule.g4
 GEN_DIR = grammar/generated
 
-.PHONY: all clean grammar test
+.PHONY: all clean grammar test test-stdlib
 
 all: 
 	$(MAKE) grammar
@@ -32,6 +32,10 @@ test:
 		fi; \
 	done; \
 	exit $$status
+
+test-stdlib:
+	@echo "Testing standard library modules:"
+	@PYTHONPATH=. .venv/bin/python stdlib/test_stdlib.py
 
 clean:
 	rm -rf $(GEN_DIR)/*.py $(GEN_DIR)/*.tokens $(GEN_DIR)/*.interp

@@ -1,0 +1,129 @@
+// Module de test pour les erreurs d'entités et relations
+module demo.invalid_entities_relations
+
+// ========== ERREURS DE SYNTAXE ENTITY ==========
+
+// Erreur: mot-clé manquant
+entity InvalidEntity1 is
+  id : String
+end
+
+// Erreur: 'is' manquant
+entity InvalidEntity2
+  id : String
+end
+
+// Erreur: 'end' manquant
+entity InvalidEntity3 is
+  id : String
+
+// Erreur: champ sans type
+entity InvalidEntity4 is
+  id
+end
+
+// Erreur: type invalide
+entity InvalidEntity5 is
+  id : InvalidType
+end
+
+// ========== ERREURS DE SYNTAXE TYPE RELATION ==========
+
+// Erreur: 'type' manquant
+relation InvalidTypeRelation1 is
+  field : String
+end
+
+// Erreur: 'relation' manquant
+type InvalidTypeRelation2 is
+  field : String
+end
+
+// ========== ERREURS DE SYNTAXE RELATION ==========
+
+// Erreur: 'from' manquant
+relation InvalidRelation1 is
+  to Customer(Id)
+end
+
+// Erreur: 'to' manquant
+relation InvalidRelation2 is
+  from Customer(Id)
+end
+
+// Erreur: entité manquante dans 'from'
+relation InvalidRelation3 is
+  from (Id)
+  to Customer(Id)
+end
+
+// Erreur: entité manquante dans 'to'
+relation InvalidRelation4 is
+  from Customer(Id)
+  to (Id)
+end
+
+// Erreur: champ manquant dans 'from'
+relation InvalidRelation5 is
+  from Customer()
+  to Product(Id)
+end
+
+// Erreur: champ manquant dans 'to'
+relation InvalidRelation6 is
+  from Customer(Id)
+  to Product()
+end
+
+// Erreur: type de relation invalide
+relation InvalidRelation7 of type InvalidType is
+  from Customer(Id)
+  to Product(Id)
+end
+
+// ========== ERREURS DE MODIFICATEURS ==========
+
+// Erreur: 'sealed' sur annotation (interdit)
+sealed annotation InvalidSealedAnnotation is
+  required name : String
+end
+
+// Erreur: 'export' mal placé
+entity export InvalidExportEntity is
+  id : String
+end
+
+// ========== ERREURS D'ASPECTS ==========
+
+// Erreur: aspect invalide
+entity InvalidAspectEntity is
+  id : String
+  
+  aspects {
+    InvalidAspect { invalid_field: "value" }
+  }
+end
+
+// ========== ERREURS DE COLLECTIONS ==========
+
+// Erreur: collection mal formée
+entity InvalidCollectionEntity is
+  tags : List String  // 'of' manquant
+end
+
+// Erreur: map mal formée
+entity InvalidMapEntity is
+  config : Map String Integer  // 'of' et 'to' manquants
+end
+
+// ========== ERREURS DE CONTRAINTES ==========
+
+// Erreur: contrainte invalide
+entity InvalidConstraintEntity is
+  email : String pattern "invalid[regex"  // regex invalide
+end
+
+// Erreur: range invalide
+entity InvalidRangeEntity is
+  age : Integer range 100..50  // range inversé
+end
