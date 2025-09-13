@@ -35,7 +35,11 @@ function activate(context) {
             command: getServerCommand(),
             args: getServerArgs(),
             options: {
-                cwd: getServerCwd()
+                cwd: getServerCwd(),
+                env: {
+                    ...process.env,
+                    PYTHONPATH: getServerCwd()
+                }
             },
             transport: node_1.TransportKind.stdio
         },
@@ -43,7 +47,11 @@ function activate(context) {
             command: getServerCommand(),
             args: getServerArgs(),
             options: {
-                cwd: getServerCwd()
+                cwd: getServerCwd(),
+                env: {
+                    ...process.env,
+                    PYTHONPATH: getServerCwd()
+                }
             },
             transport: node_1.TransportKind.stdio
         }
@@ -85,11 +93,11 @@ function deactivate() {
 exports.deactivate = deactivate;
 function getServerCommand() {
     const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get('path', 'python');
+    return config.get('path', '~/.pyenv/versions/3.12.0/bin/python3');
 }
 function getServerArgs() {
     const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get('args', ['-m', 'lsp.server.main']);
+    return config.get('args', ['lsp/server/main.py']);
 }
 function getServerCwd() {
     const config = vscode.workspace.getConfiguration('meshr-lang.server');

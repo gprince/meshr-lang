@@ -87,7 +87,7 @@ lsp-test:
 lsp-package:
 	@echo "Packaging LSP extension..."
 	@cd lsp/client && npm run compile
-	@cd lsp/client && vsce package
+	@cd lsp/client && vsce package --allow-missing-repository --no-dependencies
 	@echo "✅ LSP extension packaged"
 
 lsp-install-extension:

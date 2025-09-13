@@ -268,6 +268,7 @@ baseType
     | 'Timestamp'
     | 'Bytes'
     | 'Json'
+    | 'Sql'
     | 'Interval'
     | 'Range'
     ;
@@ -326,6 +327,11 @@ annotationValue
     | jsonLiteral
     | geographyLiteral
     | bytesLiteral
+    | datetimeLiteral
+    | dateLiteral
+    | timeLiteral
+    | timestampLiteral
+    | sqlLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -508,6 +514,28 @@ bytesArrayContent
 
 bytesValue
     : signedNumber
+    ;
+
+// ========== TEMPORAL LITERALS ==========
+datetimeLiteral
+    : 'Datetime' STRING_LITERAL
+    ;
+
+dateLiteral
+    : 'Date' STRING_LITERAL
+    ;
+
+timeLiteral
+    : 'Time' STRING_LITERAL
+    ;
+
+timestampLiteral
+    : 'Timestamp' STRING_LITERAL
+    ;
+
+// ========== SQL LITERALS ==========
+sqlLiteral
+    : 'Sql' STRING_LITERAL
     ;
 
 // ========== TERMINALS ============

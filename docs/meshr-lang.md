@@ -434,7 +434,7 @@ end
   - `required` : la valeur doit obligatoirement être fournie à l’usage, **aucune valeur par défaut autorisée**.
   - `optional` : la valeur est optionnelle, et peut être associée à une valeur par défaut.
 - Si une annotation typée est utilisée sans renseigner un champ `optional`, alors la valeur par défaut s’applique.
-- Les types autorisés incluent les **types de base** (`String`, `Boolean`, `Integer`, `Float`, `Double`, `Date`, `Datetime`, `Time`, `Timestamp`, `Geography`, `Bytes`, `Json`, `Interval`, `Range`) et les **noms qualifiés** (enums, types importés).
+- Les types autorisés incluent les **types de base** (`String`, `Boolean`, `Integer`, `Float`, `Double`, `Date`, `Datetime`, `Time`, `Timestamp`, `Geography`, `Bytes`, `Json`, `Sql`, `Interval`, `Range`) et les **noms qualifiés** (enums, types importés).
 - Le mot-clé `end` est requis pour clore la déclaration.
 
 #### 🧠 Règle sémantique `required` vs `optional`
@@ -452,11 +452,12 @@ Les types suivants peuvent être utilisés dans les déclarations d’annotation
 - `String` : chaînes de caractères délimitées par des guillemets
 - `Integer` : nombre entier (ex: `42`)
 - `Float` : nombre décimal (ex: `3.14`)
-- `Double` : précision étendue (équivalent sémantique à `Float` pour l’instant)
+- `Double` : précision étendue (équivalent sémantique à `Float` pour l'instant)
 - `Date`, `Datetime`, `Time`, `Timestamp` : types temporels
 - `Geography` : localisation géographique (future extension)
 - `Bytes` : données binaires
 - `Json` : valeurs encodées en JSON (future extension)
+- `Sql` : requêtes SQL (ex: `Sql"SELECT * FROM users"`)
 - `Interval` : intervalle sur un type temporel (ex: `Interval 2 hour`)
 - `Range` : intervalle contigu entre deux valeurs ordonnées (ex: `Range 1..10`)
 
@@ -959,6 +960,11 @@ end
 - **Json**: `Json{"key": "value"}`, `Json[1,2,3]`, `Json"{\"raw\": \"json\"}"`
 - **Geography**: `Geography"POINT(2.3522 48.8566)"`, `Geography{"type":"Point","coordinates":[2.3522,48.8566]}`
 - **Bytes**: `Bytes"0xdeadbeef"`, `Bytes[255, 0, 255]`, `Bytes{"verified": false, "algorithm": "sha256"}`
+- **Datetime**: `Datetime"2021-01-01T00:00:00Z"`
+- **Date**: `Date"2021-01-01"`
+- **Time**: `Time"00:00:00"`
+- **Timestamp**: `Timestamp"2021-01-01T00:00:00Z"`
+- **Sql**: `Sql"SELECT * FROM users"`
 
 Exemple d'usage dans une `enum`:
 
@@ -2944,11 +2950,11 @@ annotation          = "@", identifier, [ "(", [ annotation-args ], ")" ] ;
 annotation-args     = annotation-arg, { ",", annotation-arg } ;
 annotation-arg      = annotation-arg-pair | annotation-value ;
 annotation-arg-pair = identifier, "=", annotation-value ;
-annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal ;
+annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal | datetime-literal | date-literal | time-literal | timestamp-literal | sql-literal ;
 
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
                     | "Date" | "Datetime" | "Time" | "Timestamp"
-                    | "Geography" | "Bytes" | "Json"
+                    | "Geography" | "Bytes" | "Json" | "Sql"
                     | "Interval" | "Range" ;
 
 (* Type String avec contraintes optionnelles *)
@@ -3335,6 +3341,7 @@ baseType
     | 'Timestamp'
     | 'Bytes'
     | 'Json'
+    | 'Sql'
     | 'Interval'
     | 'Range'
     ;
@@ -3393,6 +3400,11 @@ annotationValue
     | jsonLiteral
     | geographyLiteral
     | bytesLiteral
+    | datetimeLiteral
+    | dateLiteral
+    | timeLiteral
+    | timestampLiteral
+    | sqlLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -3577,6 +3589,28 @@ bytesValue
     : signedNumber
     ;
 
+// ========== TEMPORAL LITERALS ==========
+datetimeLiteral
+    : 'Datetime' STRING_LITERAL
+    ;
+
+dateLiteral
+    : 'Date' STRING_LITERAL
+    ;
+
+timeLiteral
+    : 'Time' STRING_LITERAL
+    ;
+
+timestampLiteral
+    : 'Timestamp' STRING_LITERAL
+    ;
+
+// ========== SQL LITERALS ==========
+sqlLiteral
+    : 'Sql' STRING_LITERAL
+    ;
+
 // ========== TERMINALS ============
 fragment ESC
     : '\\' ["\\/bfnrt]
@@ -3611,3 +3645,317 @@ NEWLINE: ('\r'? '\n')+ -> skip ;
 COMMENT: '//' ~[\r\n]* -> skip ;
 MULTILINE_COMMENT: '/*' .*? '*/' -> skip ;
 ```
+
+---
+
+## 📚 **Annexe C : Guide complet des littéraux**
+
+Cette annexe présente tous les types de littéraux supportés par Meshr-lang avec des exemples concrets et pratiques.
+
+### 🔤 **Littéraux primitifs**
+
+#### **Chaînes de caractères**
+```meshr
+string_literal : String = "Hello World"
+empty_string : String = ""
+quoted_string : String = "Il a dit \"Bonjour\""
+```
+
+#### **Nombres entiers**
+```meshr
+decimal_literal : Integer = 42
+hex_literal : Integer = 0xFF0000
+octal_literal : Integer = 0o755
+binary_literal : Integer = 0b1010
+negative_literal : Integer = -100
+```
+
+#### **Nombres décimaux**
+```meshr
+float_literal : Float = 3.14
+scientific_literal : Float = 1.23e-4
+double_literal : Double = 3.14159265359
+```
+
+#### **Booléens**
+```meshr
+true_literal : Boolean = true
+false_literal : Boolean = false
+```
+
+### 📦 **Littéraux composites**
+
+#### **Listes**
+```meshr
+string_list : List of String = List["item1", "item2", "item3"]
+number_list : List of Integer = List[1, 2, 3, 4, 5]
+mixed_list : List of String = List["alpha", "beta", "gamma"]
+empty_list : List of String = List[]
+```
+
+#### **Maps (Dictionnaires)**
+```meshr
+simple_map : Map of String to Integer = Map{"key1": 1, "key2": 2}
+nested_map : Map of String to String = Map{"user": "admin", "role": "superuser"}
+empty_map : Map of String to Integer = Map{}
+```
+
+#### **Records anonymes**
+```meshr
+user_record : Record = Record{name: "Alice", age: 42, active: true}
+config_record : Record = Record{host: "localhost", port: 8080, ssl: true}
+```
+
+#### **Ranges (Intervalles)**
+```meshr
+integer_range : Range of Integer = Range 1..100
+negative_range : Range of Integer = Range -50..50
+float_range : Range of Float = Range 0.0..1.0
+```
+
+### 🌍 **Littéraux spécialisés**
+
+#### **Géographie**
+```meshr
+// Format WKT (Well-Known Text)
+point_wkt : Geography = Geography"POINT(2.3522 48.8566)"
+polygon_wkt : Geography = Geography"POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))"
+linestring_wkt : Geography = Geography"LINESTRING(0 0, 1 1, 2 2)"
+
+// Format GeoJSON
+point_geojson : Geography = Geography{"type":"Point","coordinates":[2.3522,48.8566]}
+polygon_geojson : Geography = Geography{"type":"Polygon","coordinates":[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}
+```
+
+#### **JSON**
+```meshr
+// Objet JSON
+json_object : Json = Json{"name": "test", "value": 123, "active": true}
+json_array : Json = Json[1, 2, 3, "hello", true]
+json_nested : Json = Json{"user": {"name": "Alice", "preferences": {"theme": "dark"}}}
+
+// JSON en chaîne brute
+json_string : Json = Json"{\"name\": \"test\", \"value\": 123}"
+```
+
+#### **Bytes (Données binaires)**
+```meshr
+// Tableau d'octets
+byte_array : Bytes = Bytes[0, 1, 2, 3, 255]
+hex_bytes : Bytes = Bytes[0xFF, 0x00, 0xFF, 0x00]
+
+// Chaîne hexadécimale
+hex_string : Bytes = Bytes"deadbeef"
+base64_string : Bytes = Bytes"SGVsbG8gV29ybGQ="
+
+// Objet JSON avec métadonnées
+json_bytes : Bytes = Bytes{"data": "U29tZSBkYXRh", "encoding": "base64", "size": 20}
+```
+
+### ⏰ **Littéraux temporels**
+
+#### **Date et heure**
+```meshr
+// Date seule (format ISO 8601)
+date_literal : Date = Date"2021-01-01"
+date_with_timezone : Date = Date"2024-12-31"
+
+// Heure seule
+time_literal : Time = Time"00:00:00"
+time_with_millis : Time = Time"14:30:25.123"
+time_with_timezone : Time = Time"14:30:25Z"
+
+// Date et heure complète
+datetime_literal : Datetime = Datetime"2021-01-01T00:00:00Z"
+datetime_with_millis : Datetime = Datetime"2024-12-31T23:59:59.999Z"
+datetime_local : Datetime = Datetime"2024-03-15T14:30:25"
+
+// Timestamp (équivalent à Datetime)
+timestamp_literal : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+timestamp_millis : Timestamp = Timestamp"2024-01-01T00:00:00.123Z"
+```
+
+#### **Intervalles temporels**
+```meshr
+// Intervalles simples
+year_interval : Interval = Interval 1 year
+month_interval : Interval = Interval 6 months
+day_interval : Interval = Interval 30 days
+hour_interval : Interval = Interval 2 hours
+minute_interval : Interval = Interval 45 minutes
+second_interval : Interval = Interval 30 seconds
+
+// Intervalles négatifs
+negative_interval : Interval = Interval -1 day
+past_interval : Interval = Interval -2 hours
+
+// Intervalles complexes
+complex_interval : Interval = Interval 1 year 6 months 15 days
+```
+
+### 🗄️ **Littéraux SQL**
+
+```meshr
+// Requêtes simples
+select_query : Sql = Sql"SELECT * FROM users WHERE active = true"
+insert_query : Sql = Sql"INSERT INTO logs (message, timestamp) VALUES (?, ?)"
+update_query : Sql = Sql"UPDATE products SET price = ? WHERE id = ?"
+delete_query : Sql = Sql"DELETE FROM table WHERE id = ?"
+
+// Requêtes complexes
+join_query : Sql = Sql"SELECT u.id, u.name, p.title FROM users u JOIN products p ON u.id = p.owner_id"
+subquery : Sql = Sql"SELECT * FROM (SELECT id, name FROM users WHERE created_at > '2024-01-01') AS recent_users"
+cte_query : Sql = Sql"WITH RECURSIVE category_tree AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c JOIN category_tree ct ON c.parent_id = ct.id) SELECT * FROM category_tree"
+
+// Requêtes avec fonctions
+aggregate_query : Sql = Sql"SELECT COUNT(*), AVG(price), MAX(created_at) FROM products WHERE category = ?"
+window_function : Sql = Sql"SELECT id, name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price) as rank FROM products"
+case_statement : Sql = Sql"SELECT id, name, CASE WHEN price > 100 THEN 'expensive' WHEN price > 50 THEN 'moderate' ELSE 'cheap' END as price_category FROM products"
+
+// DDL (Data Definition Language)
+create_table : Sql = Sql"CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255))"
+create_index : Sql = Sql"CREATE INDEX idx_users_email ON users(email)"
+create_view : Sql = Sql"CREATE VIEW active_users AS SELECT * FROM users WHERE active = true"
+```
+
+### 🎯 **Exemples d'usage dans les annotations**
+
+```meshr
+@ApiConfig(
+    endpoint="https://api.example.com",
+    headers=Json{"Content-Type": "application/json"},
+    timeout=Interval 30 seconds,
+    retry_count=3
+)
+annotation ApiConfig is
+    required endpoint : String
+    optional headers : Json = Json{"Content-Type": "application/json"}
+    optional timeout : Interval = Interval 30 seconds
+    optional retry_count : Integer = 3
+end
+
+@LocationConfig(
+    office=Geography"POINT(2.3522 48.8566)",
+    coverage_area=Geography"POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))",
+    business_hours=Time"09:00:00" to Time"17:00:00"
+)
+annotation LocationConfig is
+    required office : Geography
+    optional coverage_area : Geography = Geography"POINT(0.0 0.0)"
+    optional business_hours : Range of Time = Range Time"09:00:00"..Time"17:00:00"
+end
+
+@AuditConfig(
+    created=Datetime"2024-01-01T00:00:00Z",
+    retention=Interval 7 years,
+    encryption_key=Bytes"deadbeef",
+    query=Sql"SELECT * FROM audit_logs WHERE created_at >= ?"
+)
+annotation AuditConfig is
+    required created : Datetime
+    optional retention : Interval = Interval 1 year
+    optional encryption_key : Bytes = Bytes""
+    optional query : Sql = Sql"SELECT * FROM audit_logs"
+end
+```
+
+### 🔧 **Exemples d'usage dans les enums**
+
+```meshr
+enum EventType(name: String, start_time: Datetime, duration: Time) is (
+    conference(name = "Tech Conference", start_time = Datetime"2024-03-15T09:00:00Z", duration = Time"08:00:00"),
+    workshop(name = "Workshop", start_time = Datetime"2024-03-18T14:00:00Z", duration = Time"04:00:00"),
+    meeting(name = "Team Meeting", start_time = Datetime"2024-03-20T10:30:00Z", duration = Time"01:30:00")
+)
+
+enum QueryType(name: String, template: Sql, timeout: Integer) is (
+    select(name = "SELECT", template = Sql"SELECT * FROM table WHERE condition = ?", timeout = 30),
+    insert(name = "INSERT", template = Sql"INSERT INTO table (columns) VALUES (values)", timeout = 60),
+    update(name = "UPDATE", template = Sql"UPDATE table SET column = ? WHERE id = ?", timeout = 45)
+)
+```
+
+### 📋 **Exemples d'usage dans les records**
+
+```meshr
+record Event is
+    title : String
+    start_datetime : Datetime = Datetime"2021-01-01T00:00:00Z"
+    end_date : Date = Date"2021-01-01"
+    duration : Time = Time"01:00:00"
+    location : Geography = Geography"POINT(0.0 0.0)"
+    metadata : Json = Json{"type": "default"}
+    binary_data : Bytes = Bytes[0, 0, 0, 0]
+    created_timestamp : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+record DatabaseQuery is
+    query_id : String
+    sql_statement : Sql = Sql"SELECT 1"
+    description : String = "Default query"
+    timeout_seconds : Integer = 30
+    parameters : List of String = List[]
+    result_format : Json = Json{"format": "json"}
+end
+```
+
+### 🎨 **Exemples d'usage dans les aspects**
+
+```meshr
+aspect TimeTracking is
+    start_time : Datetime = Datetime"2021-01-01T00:00:00Z"
+    end_time : Datetime = Datetime"2021-01-01T23:59:59Z"
+    duration : Time = Time"00:00:00"
+    created_timestamp : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+    timezone : String = "UTC"
+end
+
+aspect DataProtection is
+    encryption_key : Bytes = Bytes""
+    access_control : Json = Json{"level": "public", "encryption": false}
+    audit_trail : Json = Json{"enabled": true, "retention_days": 365}
+    retention_period : Interval = Interval 7 years
+    last_accessed : Datetime = Datetime"2021-01-01T00:00:00Z"
+end
+```
+
+### 🏗️ **Exemples d'usage dans les entités**
+
+```meshr
+entity Meeting is
+    MeetingId : String
+    StartTime : Datetime
+    EndTime : Datetime = Datetime"2021-01-01T23:59:59Z"
+    Duration : Time = Time"01:00:00"
+    Location : Geography = Geography"POINT(0.0 0.0)"
+    Attendees : List of String = List[]
+    Metadata : Json = Json{"type": "meeting"}
+    
+    aspects {
+        TimeTracking {
+            start_time: Datetime"2024-03-15T09:00:00Z",
+            end_time: Datetime"2024-03-15T17:00:00Z",
+            duration: Time"08:00:00",
+            created_timestamp: Timestamp"2024-01-01T00:00:00Z"
+        },
+        DataProtection {
+            encryption_key: Bytes"",
+            access_control: Json{"level": "private", "encryption": true},
+            audit_trail: Json{"enabled": true, "retention_days": 2555},
+            retention_period: Interval 5 years,
+            last_accessed: Datetime"2024-03-15T14:30:25Z"
+        }
+    }
+end
+```
+
+### 💡 **Conseils d'utilisation**
+
+1. **Format des dates** : Utilisez toujours le format ISO 8601 (`YYYY-MM-DDTHH:mm:ssZ`)
+2. **Géographie** : Préférez le format WKT pour les géométries simples, GeoJSON pour les structures complexes
+3. **SQL** : Les requêtes peuvent contenir des paramètres avec `?` pour la sécurité
+4. **Bytes** : Utilisez les tableaux d'octets pour les données binaires, les chaînes hex/base64 pour l'encodage
+5. **Intervalles** : Les intervalles temporels supportent les unités : `year`, `month`, `day`, `hour`, `minute`, `second`
+6. **JSON** : Utilisez la syntaxe objet `{}` pour les structures, la syntaxe chaîne `""` pour le JSON brut
+
+Cette annexe couvre tous les littéraux supportés par Meshr-lang avec des exemples pratiques et des cas d'usage réels.

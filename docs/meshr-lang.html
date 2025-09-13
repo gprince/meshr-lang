@@ -22,9 +22,342 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#meshr-lang-documentation-du-langage"
+id="toc-meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
+du langage</a>
+<ul>
+<li><a href="#table-des-matières" id="toc-table-des-matières">📑 Table
+des matières</a>
+<ul>
+<li><a href="#introduction" id="toc-introduction">🎯
+Introduction</a></li>
+<li><a href="#syntaxe-et-concepts-de-base"
+id="toc-syntaxe-et-concepts-de-base">🔤 Syntaxe et concepts de
+base</a></li>
+<li><a href="#organisation-du-code" id="toc-organisation-du-code">📦
+Organisation du code</a></li>
+<li><a href="#métadonnées-et-annotations"
+id="toc-métadonnées-et-annotations">🏷️ Métadonnées et
+annotations</a></li>
+<li><a href="#types-de-données" id="toc-types-de-données">🔢 Types de
+données</a></li>
+<li><a href="#contrôles-avancés" id="toc-contrôles-avancés">🔒 Contrôles
+avancés</a></li>
+<li><a href="#ressources-et-bonnes-pratiques"
+id="toc-ressources-et-bonnes-pratiques">📚 Ressources et bonnes
+pratiques</a></li>
+<li><a href="#annexes" id="toc-annexes">📖 Annexes</a></li>
+</ul></li>
+<li><a href="#objectif-du-langage" id="toc-objectif-du-langage">🧭
+Objectif du langage</a>
+<ul>
+<li><a href="#vision-et-philosophie" id="toc-vision-et-philosophie">🎯
+Vision et philosophie</a></li>
+<li><a href="#objectifs-principaux" id="toc-objectifs-principaux">🚀
+Objectifs principaux</a></li>
+<li><a href="#avantages-clés" id="toc-avantages-clés">🌟 Avantages
+clés</a></li>
+</ul></li>
+<li><a href="#syntaxe-de-base" id="toc-syntaxe-de-base">🔤 Syntaxe de
+base</a>
+<ul>
+<li><a href="#structure-des-fichiers" id="toc-structure-des-fichiers">📄
+Structure des fichiers</a></li>
+<li><a href="#style-déclaratif" id="toc-style-déclaratif">🎨 Style
+déclaratif</a></li>
+<li><a href="#commentaires" id="toc-commentaires">💬
+Commentaires</a></li>
+<li><a href="#types-de-valeurs-primitives"
+id="toc-types-de-valeurs-primitives">🔢 Types de valeurs
+primitives</a></li>
+<li><a href="#structure-dun-module" id="toc-structure-dun-module">🏗️
+Structure d’un module</a></li>
+</ul></li>
+<li><a href="#déclaration-des-modules-et-imports"
+id="toc-déclaration-des-modules-et-imports">📦 Déclaration des modules
+et imports</a>
+<ul>
+<li><a href="#concept-et-objectifs" id="toc-concept-et-objectifs">🎯
+Concept et objectifs</a></li>
+<li><a href="#architecture-modulaire" id="toc-architecture-modulaire">🏗️
+Architecture modulaire</a></li>
+<li><a href="#syntaxe" id="toc-syntaxe">📐 Syntaxe</a></li>
+<li><a href="#sémantique" id="toc-sémantique">📚 Sémantique</a></li>
+<li><a href="#types-dimports-supportés"
+id="toc-types-dimports-supportés">🔧 Types d’imports supportés</a></li>
+<li><a href="#ordre-des-déclarations" id="toc-ordre-des-déclarations">📋
+Ordre des déclarations</a></li>
+<li><a href="#export-des-déclarations"
+id="toc-export-des-déclarations">📤 Export des déclarations</a></li>
+<li><a href="#convention-darborescence"
+id="toc-convention-darborescence">📁 Convention d’arborescence</a></li>
+</ul></li>
+<li><a href="#annotations" id="toc-annotations">🏷️ Annotations</a>
+<ul>
+<li><a href="#syntaxe-1" id="toc-syntaxe-1">📐 Syntaxe</a></li>
+<li><a href="#règles" id="toc-règles">🧠 Règles</a></li>
+<li><a href="#annotations-avec-arguments-typés"
+id="toc-annotations-avec-arguments-typés">🧩 [2025-09-10] — Annotations
+avec arguments typés</a></li>
+<li><a href="#déclaration-des-types-dannotations"
+id="toc-déclaration-des-types-dannotations">✍️ Déclaration des types
+d’annotations</a></li>
+<li><a href="#types-de-base-autorisés-pour-les-annotations"
+id="toc-types-de-base-autorisés-pour-les-annotations">🔤 Types de base
+autorisés pour les annotations</a></li>
+<li><a href="#contraintes-sur-les-types-string"
+id="toc-contraintes-sur-les-types-string">🎯 Contraintes sur les types
+String</a></li>
+<li><a href="#annotations-standard-stdlib"
+id="toc-annotations-standard-stdlib">🏷️ Annotations Standard
+(StdLib)</a></li>
+</ul></li>
+<li><a href="#énumérations" id="toc-énumérations">🔢 Énumérations</a>
+<ul>
+<li><a href="#concept-et-objectifs-1" id="toc-concept-et-objectifs-1">🎯
+Concept et objectifs</a></li>
+<li><a href="#types-dénumérations" id="toc-types-dénumérations">🏗️ Types
+d’énumérations</a></li>
+<li><a href="#syntaxe-simple-inline" id="toc-syntaxe-simple-inline">📐
+Syntaxe simple (inline)</a></li>
+<li><a href="#export-groupé" id="toc-export-groupé">📤 Export
+groupé</a></li>
+<li><a href="#règles-1" id="toc-règles-1">🧠 Règles</a></li>
+<li><a href="#enums-avec-attributs-typés"
+id="toc-enums-avec-attributs-typés">🧩 [2025-09-10] — Enums avec
+attributs typés</a></li>
+<li><a href="#syntaxe-enrichie" id="toc-syntaxe-enrichie">🧬 Syntaxe
+enrichie</a></li>
+<li><a href="#règles-2" id="toc-règles-2">🔎 Règles</a></li>
+<li><a href="#intervalles-interval" id="toc-intervalles-interval">⏱️
+Intervalles (Interval)</a></li>
+<li><a href="#types-composites-list-map-range-record"
+id="toc-types-composites-list-map-range-record">🧩 Types composites:
+List, Map, Range, Record</a></li>
+</ul></li>
+<li><a href="#records-et-collections" id="toc-records-et-collections">📋
+Records et Collections</a>
+<ul>
+<li><a href="#syntaxe-des-records" id="toc-syntaxe-des-records">📐
+Syntaxe des Records</a></li>
+<li><a href="#types-de-collections" id="toc-types-de-collections">🧩
+Types de Collections</a></li>
+<li><a href="#collections-imbriquées" id="toc-collections-imbriquées">🔗
+Collections imbriquées</a></li>
+<li><a href="#usage-dans-tous-les-contextes"
+id="toc-usage-dans-tous-les-contextes">🎯 Usage dans tous les
+contextes</a></li>
+<li><a href="#règles-sémantiques-1" id="toc-règles-sémantiques-1">🧠
+Règles sémantiques</a></li>
+</ul></li>
+<li><a href="#entités-et-relations" id="toc-entités-et-relations">🏗️
+Entités et Relations</a>
+<ul>
+<li><a href="#entités" id="toc-entités">🏢 Entités</a></li>
+<li><a href="#types-de-relations" id="toc-types-de-relations">🔗 Types
+de Relations</a></li>
+<li><a href="#relations" id="toc-relations">🔗 Relations</a></li>
+<li><a href="#caractéristiques-des-entités-et-relations"
+id="toc-caractéristiques-des-entités-et-relations">🎯 Caractéristiques
+des Entités et Relations</a></li>
+</ul></li>
+<li><a href="#traits" id="toc-traits">🧩 Traits</a>
+<ul>
+<li><a href="#concept-et-rôle-1" id="toc-concept-et-rôle-1">🎯 Concept
+et rôle</a></li>
+<li><a href="#caractéristiques-des-traits"
+id="toc-caractéristiques-des-traits">🏗️ Caractéristiques des
+traits</a></li>
+<li><a href="#différence-avec-les-aspects"
+id="toc-différence-avec-les-aspects">🔄 Différence avec les
+aspects</a></li>
+<li><a href="#syntaxe-3" id="toc-syntaxe-3">📐 Syntaxe</a></li>
+<li><a href="#injection-via-with" id="toc-injection-via-with">🔗
+Injection via <code>with</code></a></li>
+<li><a href="#aspects-dans-les-traits"
+id="toc-aspects-dans-les-traits">🎭 Aspects dans les Traits</a></li>
+<li><a href="#règles-de-composition-sémantique"
+id="toc-règles-de-composition-sémantique">🧠 Règles de composition
+(sémantique)</a></li>
+<li><a href="#module-unité-namespace-et-fichier-unique"
+id="toc-module-unité-namespace-et-fichier-unique">🧩 [2025-09-09] —
+Module = unité, namespace et fichier unique</a></li>
+</ul></li>
+<li><a href="#aspects" id="toc-aspects">🎭 Aspects</a>
+<ul>
+<li><a href="#concept-et-rôle-2" id="toc-concept-et-rôle-2">🎯 Concept
+et rôle</a></li>
+<li><a href="#caractéristiques-des-aspects"
+id="toc-caractéristiques-des-aspects">🏗️ Caractéristiques des
+aspects</a></li>
+<li><a href="#syntaxe-de-base-1" id="toc-syntaxe-de-base-1">🔧 Syntaxe
+de base</a></li>
+<li><a href="#héritage-et-composition"
+id="toc-héritage-et-composition">🏗️ Héritage et composition</a></li>
+<li><a href="#types-daspects" id="toc-types-daspects">🎯 Types
+d’Aspects</a></li>
+<li><a href="#champs-et-contraintes" id="toc-champs-et-contraintes">📝
+Champs et contraintes</a></li>
+<li><a href="#annotations-sur-les-aspects"
+id="toc-annotations-sur-les-aspects">🏷️ Annotations sur les
+Aspects</a></li>
+<li><a href="#règles-de-composition" id="toc-règles-de-composition">🧠
+Règles de composition</a></li>
+<li><a href="#instanciation-future" id="toc-instanciation-future">🔮
+Instanciation (future)</a></li>
+</ul></li>
+<li><a href="#modificateur-sealed" id="toc-modificateur-sealed">🔒
+Modificateur <code>sealed</code></a>
+<ul>
+<li><a href="#syntaxe-4" id="toc-syntaxe-4">📐 Syntaxe</a></li>
+<li><a href="#règles-dhéritage-et-dextension"
+id="toc-règles-dhéritage-et-dextension">🔒 Règles d’héritage et
+d’extension</a></li>
+<li><a href="#exemples-valides" id="toc-exemples-valides">📝 Exemples
+valides</a></li>
+<li><a href="#exemples-invalides" id="toc-exemples-invalides">❌
+Exemples invalides</a></li>
+<li><a href="#règles-sémantiques-2" id="toc-règles-sémantiques-2">🧠
+Règles sémantiques</a></li>
+</ul></li>
+<li><a href="#artefacts-définissables"
+id="toc-artefacts-définissables">🧱 Artefacts définissables</a>
+<ul>
+<li><a href="#domain" id="toc-domain">1. <code>domain</code></a></li>
+<li><a href="#product" id="toc-product">2. <code>product</code></a></li>
+<li><a href="#contract" id="toc-contract">3.
+<code>contract</code></a></li>
+<li><a href="#aspect-1" id="toc-aspect-1">4.
+<code>aspect</code></a></li>
+<li><a href="#team" id="toc-team">5. <code>team</code></a></li>
+<li><a href="#policy" id="toc-policy">6. <code>policy</code></a></li>
+</ul></li>
+<li><a href="#décisions-de-conception"
+id="toc-décisions-de-conception">📘 Décisions de conception</a>
+<ul>
+<li><a href="#syntaxe-déclarative-avec-blocs"
+id="toc-syntaxe-déclarative-avec-blocs">🧩 [2025-09-09] — Syntaxe
+déclarative avec blocs <code>{}</code></a></li>
+<li><a href="#visibilité-par-export-explicite"
+id="toc-visibilité-par-export-explicite">🧩 [2025-09-10] — Visibilité
+par export explicite</a></li>
+<li><a href="#deux-formes-dexport-inline-ou-groupé"
+id="toc-deux-formes-dexport-inline-ou-groupé">🧩 [2025-09-10] — Deux
+formes d’export : inline ou groupé</a></li>
+<li><a href="#modificateur-sealed-pour-contrôler-lextensibilité"
+id="toc-modificateur-sealed-pour-contrôler-lextensibilité">🧩
+[2025-09-12] — Modificateur <code>sealed</code> pour contrôler
+l’extensibilité</a></li>
+<li><a href="#types-de-collections-typés-et-littéraux"
+id="toc-types-de-collections-typés-et-littéraux">🧩 [2025-09-12] — Types
+de collections typés et littéraux</a></li>
+<li><a href="#entités-et-relations-pour-la-modélisation-de-données"
+id="toc-entités-et-relations-pour-la-modélisation-de-données">🧩
+[2025-09-12] — Entités et Relations pour la modélisation de
+données</a></li>
+</ul></li>
+<li><a href="#bibliothèque-standard-stdlib"
+id="toc-bibliothèque-standard-stdlib">📚 Bibliothèque Standard
+(StdLib)</a>
+<ul>
+<li><a href="#objectifs" id="toc-objectifs">🎯 Objectifs</a></li>
+<li><a href="#modules-disponibles" id="toc-modules-disponibles">📦
+Modules disponibles</a></li>
+<li><a href="#structure-actuelle" id="toc-structure-actuelle">🏗️
+Structure actuelle</a></li>
+<li><a href="#cas-dusage" id="toc-cas-dusage">🎯 Cas d’usage</a></li>
+<li><a href="#roadmap" id="toc-roadmap">📋 Roadmap</a></li>
+</ul></li>
+<li><a href="#à-venir" id="toc-à-venir">🚧 À venir</a></li>
+<li><a href="#exemples-pratiques-et-cas-dusage"
+id="toc-exemples-pratiques-et-cas-dusage">🚀 Exemples pratiques et cas
+d’usage</a>
+<ul>
+<li><a href="#cas-dusage-1-e-commerce-et-gestion-des-commandes"
+id="toc-cas-dusage-1-e-commerce-et-gestion-des-commandes">🛒 Cas d’usage
+1 : E-commerce et gestion des commandes</a></li>
+<li><a href="#cas-dusage-2-architecture-data-mesh---domaine-rh"
+id="toc-cas-dusage-2-architecture-data-mesh---domaine-rh">🏢 Cas d’usage
+2 : Architecture Data Mesh - Domaine RH</a></li>
+<li><a href="#cas-dusage-3-secteur-financier---gestion-des-comptes"
+id="toc-cas-dusage-3-secteur-financier---gestion-des-comptes">🏦 Cas
+d’usage 3 : Secteur financier - Gestion des comptes</a></li>
+<li><a
+href="#cas-dusage-4-intégration-technique---apis-et-microservices"
+id="toc-cas-dusage-4-intégration-technique---apis-et-microservices">🔧
+Cas d’usage 4 : Intégration technique - APIs et microservices</a></li>
+</ul></li>
+<li><a href="#bonnes-pratiques-et-conventions"
+id="toc-bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
+conventions</a>
+<ul>
+<li><a href="#conventions-de-nommage" id="toc-conventions-de-nommage">📝
+Conventions de nommage</a></li>
+<li><a href="#organisation-des-modules"
+id="toc-organisation-des-modules">🏗️ Organisation des modules</a></li>
+<li><a href="#utilisation-des-traits-et-aspects"
+id="toc-utilisation-des-traits-et-aspects">🔧 Utilisation des traits et
+aspects</a></li>
+<li><a href="#documentation-et-commentaires"
+id="toc-documentation-et-commentaires">📋 Documentation et
+commentaires</a></li>
+<li><a href="#gestion-des-erreurs-et-validation"
+id="toc-gestion-des-erreurs-et-validation">🚨 Gestion des erreurs et
+validation</a></li>
+<li><a href="#sécurité-et-conformité" id="toc-sécurité-et-conformité">🔒
+Sécurité et conformité</a></li>
+<li><a href="#tests-et-validation" id="toc-tests-et-validation">🧪 Tests
+et validation</a></li>
+</ul></li>
+<li><a href="#annexes-1" id="toc-annexes-1">Annexes</a>
+<ul>
+<li><a href="#annexe-a-grammaire-ebnf-référence"
+id="toc-annexe-a-grammaire-ebnf-référence">Annexe A — Grammaire EBNF
+(référence)</a></li>
+<li><a href="#annexe-b-grammaire-antlr-référence-python-target"
+id="toc-annexe-b-grammaire-antlr-référence-python-target">Annexe B —
+Grammaire ANTLR (référence, Python target)</a></li>
+</ul></li>
+<li><a href="#annexe-a-guide-complet-des-littéraux"
+id="toc-annexe-a-guide-complet-des-littéraux">📚 <strong>Annexe A :
+Guide complet des littéraux</strong></a>
+<ul>
+<li><a href="#littéraux-primitifs" id="toc-littéraux-primitifs">🔤
+<strong>Littéraux primitifs</strong></a></li>
+<li><a href="#littéraux-composites" id="toc-littéraux-composites">📦
+<strong>Littéraux composites</strong></a></li>
+<li><a href="#littéraux-spécialisés" id="toc-littéraux-spécialisés">🌍
+<strong>Littéraux spécialisés</strong></a></li>
+<li><a href="#littéraux-temporels" id="toc-littéraux-temporels">⏰
+<strong>Littéraux temporels</strong></a></li>
+<li><a href="#littéraux-sql" id="toc-littéraux-sql">🗄️ <strong>Littéraux
+SQL</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-annotations"
+id="toc-exemples-dusage-dans-les-annotations">🎯 <strong>Exemples
+d’usage dans les annotations</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-enums"
+id="toc-exemples-dusage-dans-les-enums">🔧 <strong>Exemples d’usage dans
+les enums</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-records"
+id="toc-exemples-dusage-dans-les-records">📋 <strong>Exemples d’usage
+dans les records</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-aspects"
+id="toc-exemples-dusage-dans-les-aspects">🎨 <strong>Exemples d’usage
+dans les aspects</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-entités"
+id="toc-exemples-dusage-dans-les-entités">🏗️ <strong>Exemples d’usage
+dans les entités</strong></a></li>
+<li><a href="#conseils-dutilisation" id="toc-conseils-dutilisation">💡
+<strong>Conseils d’utilisation</strong></a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
 <h1 id="meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
 du langage</h1>
 <div data-align="center">
@@ -600,8 +933,8 @@ associée à une valeur par défaut.</li>
 <code>Float</code>, <code>Double</code>, <code>Date</code>,
 <code>Datetime</code>, <code>Time</code>, <code>Timestamp</code>,
 <code>Geography</code>, <code>Bytes</code>, <code>Json</code>,
-<code>Interval</code>, <code>Range</code>) et les <strong>noms
-qualifiés</strong> (enums, types importés).</li>
+<code>Sql</code>, <code>Interval</code>, <code>Range</code>) et les
+<strong>noms qualifiés</strong> (enums, types importés).</li>
 <li>Le mot-clé <code>end</code> est requis pour clore la
 déclaration.</li>
 </ul>
@@ -638,6 +971,8 @@ guillemets</li>
 extension)</li>
 <li><code>Bytes</code> : données binaires</li>
 <li><code>Json</code> : valeurs encodées en JSON (future extension)</li>
+<li><code>Sql</code> : requêtes SQL (ex:
+<code>Sql"SELECT * FROM users"</code>)</li>
 <li><code>Interval</code> : intervalle sur un type temporel (ex:
 <code>Interval 2 hour</code>)</li>
 <li><code>Range</code> : intervalle contigu entre deux valeurs ordonnées
@@ -1104,6 +1439,13 @@ d’<code>enum</code></h4>
 <li><strong>Bytes</strong>: <code>Bytes"0xdeadbeef"</code>,
 <code>Bytes[255, 0, 255]</code>,
 <code>Bytes{"verified": false, "algorithm": "sha256"}</code></li>
+<li><strong>Datetime</strong>:
+<code>Datetime"2021-01-01T00:00:00Z"</code></li>
+<li><strong>Date</strong>: <code>Date"2021-01-01"</code></li>
+<li><strong>Time</strong>: <code>Time"00:00:00"</code></li>
+<li><strong>Timestamp</strong>:
+<code>Timestamp"2021-01-01T00:00:00Z"</code></li>
+<li><strong>Sql</strong>: <code>Sql"SELECT * FROM users"</code></li>
 </ul>
 <p>Exemple d’usage dans une <code>enum</code>:</p>
 <pre class="meshr"><code>enum Product(status: String, owners: List of String, address: Address, limits: Range of Integer) is (
@@ -3153,11 +3495,11 @@ annotation          = &quot;@&quot;, identifier, [ &quot;(&quot;, [ annotation-a
 annotation-args     = annotation-arg, { &quot;,&quot;, annotation-arg } ;
 annotation-arg      = annotation-arg-pair | annotation-value ;
 annotation-arg-pair = identifier, &quot;=&quot;, annotation-value ;
-annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal ;
+annotation-value    = string-literal | number-literal | boolean-literal | qualified-name | interval-literal | json-literal | geography-literal | bytes-literal | datetime-literal | date-literal | time-literal | timestamp-literal | sql-literal ;
 
 base-type           = &quot;Boolean&quot; | string-type | &quot;Integer&quot; | &quot;Float&quot; | &quot;Double&quot;
                     | &quot;Date&quot; | &quot;Datetime&quot; | &quot;Time&quot; | &quot;Timestamp&quot;
-                    | &quot;Geography&quot; | &quot;Bytes&quot; | &quot;Json&quot;
+                    | &quot;Geography&quot; | &quot;Bytes&quot; | &quot;Json&quot; | &quot;Sql&quot;
                     | &quot;Interval&quot; | &quot;Range&quot; ;
 
 (* Type String avec contraintes optionnelles *)
@@ -3541,6 +3883,7 @@ baseType
     | &#39;Timestamp&#39;
     | &#39;Bytes&#39;
     | &#39;Json&#39;
+    | &#39;Sql&#39;
     | &#39;Interval&#39;
     | &#39;Range&#39;
     ;
@@ -3599,6 +3942,11 @@ annotationValue
     | jsonLiteral
     | geographyLiteral
     | bytesLiteral
+    | datetimeLiteral
+    | dateLiteral
+    | timeLiteral
+    | timestampLiteral
+    | sqlLiteral
     ;
 
 // ========== INTERVAL LITERALS ============
@@ -3783,6 +4131,28 @@ bytesValue
     : signedNumber
     ;
 
+// ========== TEMPORAL LITERALS ==========
+datetimeLiteral
+    : &#39;Datetime&#39; STRING_LITERAL
+    ;
+
+dateLiteral
+    : &#39;Date&#39; STRING_LITERAL
+    ;
+
+timeLiteral
+    : &#39;Time&#39; STRING_LITERAL
+    ;
+
+timestampLiteral
+    : &#39;Timestamp&#39; STRING_LITERAL
+    ;
+
+// ========== SQL LITERALS ==========
+sqlLiteral
+    : &#39;Sql&#39; STRING_LITERAL
+    ;
+
 // ========== TERMINALS ============
 fragment ESC
     : &#39;\\&#39; [&quot;\\/bfnrt]
@@ -3816,5 +4186,272 @@ WS: [ \t\r\n]+ -&gt; skip ;
 NEWLINE: (&#39;\r&#39;? &#39;\n&#39;)+ -&gt; skip ;
 COMMENT: &#39;//&#39; ~[\r\n]* -&gt; skip ;
 MULTILINE_COMMENT: &#39;/*&#39; .*? &#39;*/&#39; -&gt; skip ;</code></pre>
+<hr />
+<h2 id="annexe-a-guide-complet-des-littéraux">📚 <strong>Annexe A :
+Guide complet des littéraux</strong></h2>
+<p>Cette annexe présente tous les types de littéraux supportés par
+Meshr-lang avec des exemples concrets et pratiques.</p>
+<h3 id="littéraux-primitifs">🔤 <strong>Littéraux
+primitifs</strong></h3>
+<h4 id="chaînes-de-caractères-1"><strong>Chaînes de
+caractères</strong></h4>
+<pre class="meshr"><code>string_literal : String = &quot;Hello World&quot;
+empty_string : String = &quot;&quot;
+quoted_string : String = &quot;Il a dit \&quot;Bonjour\&quot;&quot;</code></pre>
+<h4 id="nombres-entiers"><strong>Nombres entiers</strong></h4>
+<pre class="meshr"><code>decimal_literal : Integer = 42
+hex_literal : Integer = 0xFF0000
+octal_literal : Integer = 0o755
+binary_literal : Integer = 0b1010
+negative_literal : Integer = -100</code></pre>
+<h4 id="nombres-décimaux"><strong>Nombres décimaux</strong></h4>
+<pre class="meshr"><code>float_literal : Float = 3.14
+scientific_literal : Float = 1.23e-4
+double_literal : Double = 3.14159265359</code></pre>
+<h4 id="booléens"><strong>Booléens</strong></h4>
+<pre class="meshr"><code>true_literal : Boolean = true
+false_literal : Boolean = false</code></pre>
+<h3 id="littéraux-composites">📦 <strong>Littéraux
+composites</strong></h3>
+<h4 id="listes"><strong>Listes</strong></h4>
+<pre class="meshr"><code>string_list : List of String = List[&quot;item1&quot;, &quot;item2&quot;, &quot;item3&quot;]
+number_list : List of Integer = List[1, 2, 3, 4, 5]
+mixed_list : List of String = List[&quot;alpha&quot;, &quot;beta&quot;, &quot;gamma&quot;]
+empty_list : List of String = List[]</code></pre>
+<h4 id="maps-dictionnaires"><strong>Maps (Dictionnaires)</strong></h4>
+<pre class="meshr"><code>simple_map : Map of String to Integer = Map{&quot;key1&quot;: 1, &quot;key2&quot;: 2}
+nested_map : Map of String to String = Map{&quot;user&quot;: &quot;admin&quot;, &quot;role&quot;: &quot;superuser&quot;}
+empty_map : Map of String to Integer = Map{}</code></pre>
+<h4 id="records-anonymes"><strong>Records anonymes</strong></h4>
+<pre class="meshr"><code>user_record : Record = Record{name: &quot;Alice&quot;, age: 42, active: true}
+config_record : Record = Record{host: &quot;localhost&quot;, port: 8080, ssl: true}</code></pre>
+<h4 id="ranges-intervalles"><strong>Ranges (Intervalles)</strong></h4>
+<pre class="meshr"><code>integer_range : Range of Integer = Range 1..100
+negative_range : Range of Integer = Range -50..50
+float_range : Range of Float = Range 0.0..1.0</code></pre>
+<h3 id="littéraux-spécialisés">🌍 <strong>Littéraux
+spécialisés</strong></h3>
+<h4 id="géographie"><strong>Géographie</strong></h4>
+<pre class="meshr"><code>// Format WKT (Well-Known Text)
+point_wkt : Geography = Geography&quot;POINT(2.3522 48.8566)&quot;
+polygon_wkt : Geography = Geography&quot;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))&quot;
+linestring_wkt : Geography = Geography&quot;LINESTRING(0 0, 1 1, 2 2)&quot;
+
+// Format GeoJSON
+point_geojson : Geography = Geography{&quot;type&quot;:&quot;Point&quot;,&quot;coordinates&quot;:[2.3522,48.8566]}
+polygon_geojson : Geography = Geography{&quot;type&quot;:&quot;Polygon&quot;,&quot;coordinates&quot;:[[[0,0],[1,0],[1,1],[0,1],[0,0]]]}</code></pre>
+<h4 id="json"><strong>JSON</strong></h4>
+<pre class="meshr"><code>// Objet JSON
+json_object : Json = Json{&quot;name&quot;: &quot;test&quot;, &quot;value&quot;: 123, &quot;active&quot;: true}
+json_array : Json = Json[1, 2, 3, &quot;hello&quot;, true]
+json_nested : Json = Json{&quot;user&quot;: {&quot;name&quot;: &quot;Alice&quot;, &quot;preferences&quot;: {&quot;theme&quot;: &quot;dark&quot;}}}
+
+// JSON en chaîne brute
+json_string : Json = Json&quot;{\&quot;name\&quot;: \&quot;test\&quot;, \&quot;value\&quot;: 123}&quot;</code></pre>
+<h4 id="bytes-données-binaires"><strong>Bytes (Données
+binaires)</strong></h4>
+<pre class="meshr"><code>// Tableau d&#39;octets
+byte_array : Bytes = Bytes[0, 1, 2, 3, 255]
+hex_bytes : Bytes = Bytes[0xFF, 0x00, 0xFF, 0x00]
+
+// Chaîne hexadécimale
+hex_string : Bytes = Bytes&quot;deadbeef&quot;
+base64_string : Bytes = Bytes&quot;SGVsbG8gV29ybGQ=&quot;
+
+// Objet JSON avec métadonnées
+json_bytes : Bytes = Bytes{&quot;data&quot;: &quot;U29tZSBkYXRh&quot;, &quot;encoding&quot;: &quot;base64&quot;, &quot;size&quot;: 20}</code></pre>
+<h3 id="littéraux-temporels">⏰ <strong>Littéraux
+temporels</strong></h3>
+<h4 id="date-et-heure"><strong>Date et heure</strong></h4>
+<pre class="meshr"><code>// Date seule (format ISO 8601)
+date_literal : Date = Date&quot;2021-01-01&quot;
+date_with_timezone : Date = Date&quot;2024-12-31&quot;
+
+// Heure seule
+time_literal : Time = Time&quot;00:00:00&quot;
+time_with_millis : Time = Time&quot;14:30:25.123&quot;
+time_with_timezone : Time = Time&quot;14:30:25Z&quot;
+
+// Date et heure complète
+datetime_literal : Datetime = Datetime&quot;2021-01-01T00:00:00Z&quot;
+datetime_with_millis : Datetime = Datetime&quot;2024-12-31T23:59:59.999Z&quot;
+datetime_local : Datetime = Datetime&quot;2024-03-15T14:30:25&quot;
+
+// Timestamp (équivalent à Datetime)
+timestamp_literal : Timestamp = Timestamp&quot;2021-01-01T00:00:00Z&quot;
+timestamp_millis : Timestamp = Timestamp&quot;2024-01-01T00:00:00.123Z&quot;</code></pre>
+<h4 id="intervalles-temporels-1"><strong>Intervalles
+temporels</strong></h4>
+<pre class="meshr"><code>// Intervalles simples
+year_interval : Interval = Interval 1 year
+month_interval : Interval = Interval 6 months
+day_interval : Interval = Interval 30 days
+hour_interval : Interval = Interval 2 hours
+minute_interval : Interval = Interval 45 minutes
+second_interval : Interval = Interval 30 seconds
+
+// Intervalles négatifs
+negative_interval : Interval = Interval -1 day
+past_interval : Interval = Interval -2 hours
+
+// Intervalles complexes
+complex_interval : Interval = Interval 1 year 6 months 15 days</code></pre>
+<h3 id="littéraux-sql">🗄️ <strong>Littéraux SQL</strong></h3>
+<pre class="meshr"><code>// Requêtes simples
+select_query : Sql = Sql&quot;SELECT * FROM users WHERE active = true&quot;
+insert_query : Sql = Sql&quot;INSERT INTO logs (message, timestamp) VALUES (?, ?)&quot;
+update_query : Sql = Sql&quot;UPDATE products SET price = ? WHERE id = ?&quot;
+delete_query : Sql = Sql&quot;DELETE FROM table WHERE id = ?&quot;
+
+// Requêtes complexes
+join_query : Sql = Sql&quot;SELECT u.id, u.name, p.title FROM users u JOIN products p ON u.id = p.owner_id&quot;
+subquery : Sql = Sql&quot;SELECT * FROM (SELECT id, name FROM users WHERE created_at &gt; &#39;2024-01-01&#39;) AS recent_users&quot;
+cte_query : Sql = Sql&quot;WITH RECURSIVE category_tree AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c JOIN category_tree ct ON c.parent_id = ct.id) SELECT * FROM category_tree&quot;
+
+// Requêtes avec fonctions
+aggregate_query : Sql = Sql&quot;SELECT COUNT(*), AVG(price), MAX(created_at) FROM products WHERE category = ?&quot;
+window_function : Sql = Sql&quot;SELECT id, name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price) as rank FROM products&quot;
+case_statement : Sql = Sql&quot;SELECT id, name, CASE WHEN price &gt; 100 THEN &#39;expensive&#39; WHEN price &gt; 50 THEN &#39;moderate&#39; ELSE &#39;cheap&#39; END as price_category FROM products&quot;
+
+// DDL (Data Definition Language)
+create_table : Sql = Sql&quot;CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255))&quot;
+create_index : Sql = Sql&quot;CREATE INDEX idx_users_email ON users(email)&quot;
+create_view : Sql = Sql&quot;CREATE VIEW active_users AS SELECT * FROM users WHERE active = true&quot;</code></pre>
+<h3 id="exemples-dusage-dans-les-annotations">🎯 <strong>Exemples
+d’usage dans les annotations</strong></h3>
+<pre class="meshr"><code>@ApiConfig(
+    endpoint=&quot;https://api.example.com&quot;,
+    headers=Json{&quot;Content-Type&quot;: &quot;application/json&quot;},
+    timeout=Interval 30 seconds,
+    retry_count=3
+)
+annotation ApiConfig is
+    required endpoint : String
+    optional headers : Json = Json{&quot;Content-Type&quot;: &quot;application/json&quot;}
+    optional timeout : Interval = Interval 30 seconds
+    optional retry_count : Integer = 3
+end
+
+@LocationConfig(
+    office=Geography&quot;POINT(2.3522 48.8566)&quot;,
+    coverage_area=Geography&quot;POLYGON((2.3522 48.8566, 2.3523 48.8567, 2.3524 48.8568, 2.3522 48.8566))&quot;,
+    business_hours=Time&quot;09:00:00&quot; to Time&quot;17:00:00&quot;
+)
+annotation LocationConfig is
+    required office : Geography
+    optional coverage_area : Geography = Geography&quot;POINT(0.0 0.0)&quot;
+    optional business_hours : Range of Time = Range Time&quot;09:00:00&quot;..Time&quot;17:00:00&quot;
+end
+
+@AuditConfig(
+    created=Datetime&quot;2024-01-01T00:00:00Z&quot;,
+    retention=Interval 7 years,
+    encryption_key=Bytes&quot;deadbeef&quot;,
+    query=Sql&quot;SELECT * FROM audit_logs WHERE created_at &gt;= ?&quot;
+)
+annotation AuditConfig is
+    required created : Datetime
+    optional retention : Interval = Interval 1 year
+    optional encryption_key : Bytes = Bytes&quot;&quot;
+    optional query : Sql = Sql&quot;SELECT * FROM audit_logs&quot;
+end</code></pre>
+<h3 id="exemples-dusage-dans-les-enums">🔧 <strong>Exemples d’usage dans
+les enums</strong></h3>
+<pre class="meshr"><code>enum EventType(name: String, start_time: Datetime, duration: Time) is (
+    conference(name = &quot;Tech Conference&quot;, start_time = Datetime&quot;2024-03-15T09:00:00Z&quot;, duration = Time&quot;08:00:00&quot;),
+    workshop(name = &quot;Workshop&quot;, start_time = Datetime&quot;2024-03-18T14:00:00Z&quot;, duration = Time&quot;04:00:00&quot;),
+    meeting(name = &quot;Team Meeting&quot;, start_time = Datetime&quot;2024-03-20T10:30:00Z&quot;, duration = Time&quot;01:30:00&quot;)
+)
+
+enum QueryType(name: String, template: Sql, timeout: Integer) is (
+    select(name = &quot;SELECT&quot;, template = Sql&quot;SELECT * FROM table WHERE condition = ?&quot;, timeout = 30),
+    insert(name = &quot;INSERT&quot;, template = Sql&quot;INSERT INTO table (columns) VALUES (values)&quot;, timeout = 60),
+    update(name = &quot;UPDATE&quot;, template = Sql&quot;UPDATE table SET column = ? WHERE id = ?&quot;, timeout = 45)
+)</code></pre>
+<h3 id="exemples-dusage-dans-les-records">📋 <strong>Exemples d’usage
+dans les records</strong></h3>
+<pre class="meshr"><code>record Event is
+    title : String
+    start_datetime : Datetime = Datetime&quot;2021-01-01T00:00:00Z&quot;
+    end_date : Date = Date&quot;2021-01-01&quot;
+    duration : Time = Time&quot;01:00:00&quot;
+    location : Geography = Geography&quot;POINT(0.0 0.0)&quot;
+    metadata : Json = Json{&quot;type&quot;: &quot;default&quot;}
+    binary_data : Bytes = Bytes[0, 0, 0, 0]
+    created_timestamp : Timestamp = Timestamp&quot;2021-01-01T00:00:00Z&quot;
+end
+
+record DatabaseQuery is
+    query_id : String
+    sql_statement : Sql = Sql&quot;SELECT 1&quot;
+    description : String = &quot;Default query&quot;
+    timeout_seconds : Integer = 30
+    parameters : List of String = List[]
+    result_format : Json = Json{&quot;format&quot;: &quot;json&quot;}
+end</code></pre>
+<h3 id="exemples-dusage-dans-les-aspects">🎨 <strong>Exemples d’usage
+dans les aspects</strong></h3>
+<pre class="meshr"><code>aspect TimeTracking is
+    start_time : Datetime = Datetime&quot;2021-01-01T00:00:00Z&quot;
+    end_time : Datetime = Datetime&quot;2021-01-01T23:59:59Z&quot;
+    duration : Time = Time&quot;00:00:00&quot;
+    created_timestamp : Timestamp = Timestamp&quot;2021-01-01T00:00:00Z&quot;
+    timezone : String = &quot;UTC&quot;
+end
+
+aspect DataProtection is
+    encryption_key : Bytes = Bytes&quot;&quot;
+    access_control : Json = Json{&quot;level&quot;: &quot;public&quot;, &quot;encryption&quot;: false}
+    audit_trail : Json = Json{&quot;enabled&quot;: true, &quot;retention_days&quot;: 365}
+    retention_period : Interval = Interval 7 years
+    last_accessed : Datetime = Datetime&quot;2021-01-01T00:00:00Z&quot;
+end</code></pre>
+<h3 id="exemples-dusage-dans-les-entités">🏗️ <strong>Exemples d’usage
+dans les entités</strong></h3>
+<pre class="meshr"><code>entity Meeting is
+    MeetingId : String
+    StartTime : Datetime
+    EndTime : Datetime = Datetime&quot;2021-01-01T23:59:59Z&quot;
+    Duration : Time = Time&quot;01:00:00&quot;
+    Location : Geography = Geography&quot;POINT(0.0 0.0)&quot;
+    Attendees : List of String = List[]
+    Metadata : Json = Json{&quot;type&quot;: &quot;meeting&quot;}
+    
+    aspects {
+        TimeTracking {
+            start_time: Datetime&quot;2024-03-15T09:00:00Z&quot;,
+            end_time: Datetime&quot;2024-03-15T17:00:00Z&quot;,
+            duration: Time&quot;08:00:00&quot;,
+            created_timestamp: Timestamp&quot;2024-01-01T00:00:00Z&quot;
+        },
+        DataProtection {
+            encryption_key: Bytes&quot;&quot;,
+            access_control: Json{&quot;level&quot;: &quot;private&quot;, &quot;encryption&quot;: true},
+            audit_trail: Json{&quot;enabled&quot;: true, &quot;retention_days&quot;: 2555},
+            retention_period: Interval 5 years,
+            last_accessed: Datetime&quot;2024-03-15T14:30:25Z&quot;
+        }
+    }
+end</code></pre>
+<h3 id="conseils-dutilisation">💡 <strong>Conseils
+d’utilisation</strong></h3>
+<ol type="1">
+<li><strong>Format des dates</strong> : Utilisez toujours le format ISO
+8601 (<code>YYYY-MM-DDTHH:mm:ssZ</code>)</li>
+<li><strong>Géographie</strong> : Préférez le format WKT pour les
+géométries simples, GeoJSON pour les structures complexes</li>
+<li><strong>SQL</strong> : Les requêtes peuvent contenir des paramètres
+avec <code>?</code> pour la sécurité</li>
+<li><strong>Bytes</strong> : Utilisez les tableaux d’octets pour les
+données binaires, les chaînes hex/base64 pour l’encodage</li>
+<li><strong>Intervalles</strong> : Les intervalles temporels supportent
+les unités : <code>year</code>, <code>month</code>, <code>day</code>,
+<code>hour</code>, <code>minute</code>, <code>second</code></li>
+<li><strong>JSON</strong> : Utilisez la syntaxe objet <code>{}</code>
+pour les structures, la syntaxe chaîne <code>""</code> pour le JSON
+brut</li>
+</ol>
+<p>Cette annexe couvre tous les littéraux supportés par Meshr-lang avec
+des exemples pratiques et des cas d’usage réels.</p>
 </body>
 </html>

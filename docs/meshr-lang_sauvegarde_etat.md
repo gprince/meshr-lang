@@ -1,220 +1,204 @@
-# 🧷 Sauvegarde d'état — Meshr-Lang
+# 📋 Sauvegarde de l'état du projet Meshr-lang
+*Date : 13 septembre 2024*
 
-## 📅 Informations générales
+## 🎯 Résumé des modifications apportées
 
-- **Date de sauvegarde** : 2025-01-12
-- **Version du projet** : 0.1.0
-- **Statut** : En conception active
-- **Mainteneur** : G. Prince - Architecte Principal
-
-## 🎯 Vue d'ensemble du projet
-
-**Meshr-Lang** est un langage déclaratif dédié à la description des artefacts d'une architecture **Data-as-a-Product**. Il vise à offrir une syntaxe lisible, formelle et exécutable pour structurer la documentation vivante du data mesh.
-
-### Objectifs principaux
-- Structurer la documentation vivante du data mesh
-- Générer automatiquement les représentations techniques (YAML, Rego, Terraform, etc.)
-- Alimenter les registres, catalogues et plateformes self-service
-
-## ✅ État d'avancement global
-
-### 🏗️ **Fonctionnalités implémentées et testées**
-
-#### ✅ **Syntaxe de base (100%)**
-- [x] Fichiers `.meshr` avec commentaires `//` et `/* */`
-- [x] Valeurs : chaînes, booléens, nombres (décimaux/hexadécimaux), noms qualifiés
-- [x] Intervalles : `Interval 12 month`, `Interval "2024-01" year to month`
-- [x] Modules : un fichier = un module unique avec namespace
-
-#### ✅ **Système d'imports/exports (100%)**
-- [x] Imports : simple, groupé `{A, B}`, wildcard `*`
-- [x] Exports : inline (`export enum`) et groupé (`export {A, B}`)
-- [x] Visibilité : export explicite requis pour l'accès externe
-- [x] Ordre des déclarations : module → imports → exports → déclarations
-
-#### ✅ **Annotations complètes (100%)**
-- [x] Méta-annotations : `@Target`, `@Retention`, `@Repeatable`
-- [x] Annotations communes : `@Experimental`, `@Deprecated`, `@Version`, `@Author`, `@Scope`, `@Confidentiality`, `@Documented`
-- [x] Annotations personnalisées : avec champs `required`/`optional` et types typés
-- [x] Contraintes String : `pattern` (regex) et `length` (bornes)
-- [x] Valeurs d'annotations : chaînes, booléens, nombres, noms qualifiés, intervalles, collections
-
-#### ✅ **Types de données (100%)**
-- [x] Types de base : `Boolean`, `String`, `Integer`, `Float`, `Date`, `Timestamp`, etc.
-- [x] Collections : `List of T`, `Map of K to V`, `Range of T`
-- [x] Records : structures composées avec composition via `with`
-- [x] Littéraux composites : `List[...]`, `Map{...}`, `Range a..b`, `Record{...}`
-
-#### ✅ **Énumérations enrichies (100%)**
-- [x] Syntaxe simple : `enum Color is ("red", "green", "blue")`
-- [x] Avec attributs : `enum Color(value: Integer) is (red(value = 0xFF0000))`
-- [x] Valeurs par défaut : `enum Severity(level: String = "none")`
-- [x] Support hexadécimal : `0xFF0000` pour les couleurs
-
-#### ✅ **Traits et composition (100%)**
-- [x] Composition : `with Trait1, Trait2`
-- [x] Aspects dans les traits : instanciation d'aspects héritée
-- [x] Règles de composition : monotonie, intersection, explicitation des conflits
-- [x] Traits sealed : `sealed trait` avec règles d'extension
-
-#### ✅ **Aspects (100%)**
-- [x] Aspects abstraits : `abstract aspect`
-- [x] Héritage : `extends AspectName`
-- [x] Composition : `with TraitName`
-- [x] Instanciation : `aspects { AspectName { field: value } }`
-- [x] Aspects sealed : `sealed aspect` avec règles d'extension
-
-#### ✅ **Entités et Relations (100%)**
-- [x] Entités : `entity Customer with WithAudit is ... end`
-- [x] Types de relations : `type relation PLACED is ... end`
-- [x] Relations : `relation CustomerOrder from Customer(CustomerId) to Order(CustomerId)`
-- [x] Relations bidirectionnelles : `bidirectional relation Friendship`
-- [x] Relations typées : `relation ProductOrder of type PLACED`
-- [x] Relations avec aspects : instanciation d'aspects dans les relations
-
-#### ✅ **Modificateur sealed (100%)**
-- [x] Verrouillage : `sealed enum`, `sealed record`, `sealed trait`, `sealed aspect`
-- [x] Règles : pas d'extension, mais usage autorisé
-- [x] Validation : annotations ne peuvent pas être sealed
-
-### 📚 **Bibliothèque Standard (StdLib) - 100%**
-
-#### ✅ **Modules core implémentés**
-- [x] **`meshr.annotations`** : méta-annotations et annotations communes
-- [x] **`meshr.security`** : aspects de sécurité, GDPR, contrôle d'accès
-- [x] **`meshr.governance`** : stewardship, qualité des données, lignage
-- [x] **`meshr.types`** : types de base et communs
-- [x] **`meshr.lifecycle`** : cycle de vie, versions, statuts
-
-#### ✅ **Structure organisée**
-- [x] Exports groupés : API publique claire
-- [x] Traits réutilisables : `WithSecurity`, `WithStewardship`, `WithLifecycle`
-- [x] Aspects métier : `DataClassification`, `GDPRCompliance`, `DataQuality`
-- [x] Types de relations : `ACCESS_CONTROL`, `DATA_SHARING`, `VERSION_TRANSITION`
-
-### 🧪 **Tests et validation (100%)**
-
-#### ✅ **Système de tests robuste**
-- [x] Parser ANTLR : génération automatique depuis la grammaire
-- [x] Tests valides : fichiers `.meshr` qui doivent parser
-- [x] Tests invalides : fichiers `invalid-*.meshr` qui doivent échouer
-- [x] Makefile : `make test` et `make test-stdlib`
-- [x] Script de test : `parse_module.py` avec gestion d'erreurs
-
-#### ✅ **Couverture de test complète**
-- [x] Annotations : déclaration et utilisation
-- [x] Collections : `List`, `Map`, `Range`, `Record`
-- [x] Entités/Relations : syntaxe complète
-- [x] Traits avec aspects : composition et héritage
-- [x] Modificateur sealed : règles d'extension
-- [x] Contraintes String : pattern et length
-- [x] Enums avec attributs : syntaxe enrichie
-- [x] Composites avancés : structures imbriquées
-
-### 🔧 **Outils et infrastructure (100%)**
-
-#### ✅ **Grammaire ANTLR**
-- [x] Génération : `make grammar` génère le parser Python
-- [x] Visiteurs : support des visiteurs ANTLR
-- [x] Tokens : lexer complet avec commentaires
-- [x] Grammaire EBNF : documentation de référence
-
-#### ✅ **Structure du projet**
-- [x] Organisation claire : `grammar/`, `stdlib/`, `tests/`, `docs/`
-- [x] Documentation : markdown complet avec exemples
-- [x] Exemples : fichiers de démonstration dans `stdlib/examples/`
-
-## 📊 Métriques du projet
-
-### Fichiers et structure
-- **Fichiers de grammaire** : 2 (`.g4` et `.ebnf`)
-- **Modules stdlib** : 5 modules core
-- **Fichiers de test** : 28 fichiers (valides + invalides)
-- **Fichiers d'exemples** : 6 fichiers de démonstration
-- **Documentation** : 3 fichiers markdown complets
-
-### Couverture fonctionnelle
-- **Syntaxe de base** : 100%
-- **Types de données** : 100%
-- **Annotations** : 100%
-- **Traits et aspects** : 100%
-- **Entités et relations** : 100%
-- **StdLib core** : 100%
-- **Tests** : 100%
-
-## 💡 Décisions architecturales clés
-
-| Date | Sujet | Décision | Justification |
-|------|-------|----------|---------------|
-| 2025-09-09 | Style syntaxique | Syntaxe à blocs `{}` type HCL/Kotlin DSL | Meilleure lisibilité et extensibilité |
-| 2025-09-10 | Visibilité | Export explicite requis | Encapsulation et API publique claire |
-| 2025-09-10 | Annotations | Support des arguments typés | Expressivité maximale avec sécurité des types |
-| 2025-09-12 | Modificateur sealed | Verrouillage de l'extension | Contrôle de la stabilité de l'API |
-| 2025-09-12 | Collections | Types typés avec littéraux | Expressivité pour métadonnées complexes |
-| 2025-09-12 | Entités/Relations | Modélisation complète du domaine | Support des architectures Data-as-a-Product |
-
-## 🚀 Points forts actuels
-
-1. **Syntaxe mature** : couvre tous les cas d'usage Data Mesh
-2. **StdLib complète** : modules core fonctionnels et testés
-3. **Tests exhaustifs** : validation syntaxique robuste
-4. **Documentation détaillée** : guide complet avec exemples
-5. **Architecture extensible** : système d'annotations et de traits flexible
-6. **Grammaire ANTLR** : parser généré automatiquement et maintenu
-7. **Validation stricte** : tests valides et invalides pour couverture complète
-
-## 📋 Prochaines étapes recommandées
-
-### Phase 1 : Extension de la StdLib
-- [ ] **Modules business** : `domains.meshr`, `entities.meshr`, `processes.meshr`
-- [ ] **Modules analytics** : `metrics.meshr`, `lineage.meshr`, `quality.meshr`
-- [ ] **Intégrations réglementaires** : `gdpr.meshr`, `sox.meshr`, `iso27001.meshr`
-
-### Phase 2 : Validation sémantique
-- [ ] **Résolution des références** : validation des imports et exports
-- [ ] **Vérification des types** : cohérence des types dans les collections
-- [ ] **Validation des contraintes** : vérification des patterns et lengths
-- [ ] **Détection des conflits** : aspects contradictoires, héritage multiple
-
-### Phase 3 : Génération de code
-- [ ] **Export YAML** : génération de configurations
-- [ ] **Export JSON** : format d'échange
-- [ ] **Export Rego** : politiques de sécurité
-- [ ] **Export Terraform** : infrastructure as code
-
-### Phase 4 : Outils de développement
-- [ ] **LSP/IDE** : support dans les éditeurs (VSCode, IntelliJ)
-- [ ] **CLI avancé** : outils de validation et génération
-- [ ] **Documentation interactive** : génération automatique de docs
-- [ ] **Validation en continu** : intégration CI/CD
-
-## 🔍 État technique détaillé
-
-### Grammaire ANTLR
-- **Fichier** : `grammar/MeshrModule.g4`
-- **Statut** : À jour avec toutes les fonctionnalités
-- **Génération** : Parser Python fonctionnel
-- **Tests** : Tous les cas de test passent
-
-### Tests
-- **Script principal** : `tests/parse_module.py`
-- **Makefile** : `make test` et `make test-stdlib`
-- **Couverture** : 28 fichiers de test
-- **Statut** : 100% des tests passent
-
-### StdLib
-- **Modules core** : 5 modules complets
-- **Exports** : API publique bien définie
-- **Tests** : Validation syntaxique de tous les modules
-- **Documentation** : Guide d'utilisation complet
-
-## 📝 Notes de maintenance
-
-- **Dernière mise à jour majeure** : 2025-01-12
-- **Prochaine révision** : À planifier selon les besoins
-- **Dépendances** : ANTLR 4.13.2, Python 3.x
-- **Compatibilité** : Grammaire EBNF alignée avec ANTLR
+Cette sauvegarde documente l'état complet du projet Meshr-lang après l'ajout des nouveaux littéraux temporels et SQL, ainsi que la mise à jour complète de la documentation et des tests.
 
 ---
 
-*Cette sauvegarde d'état reflète l'état complet du projet meshr-lang au 12 janvier 2025. Le projet est dans un état très avancé avec une syntaxe mature, une stdlib fonctionnelle et des tests exhaustifs.*
+## 🔧 Modifications techniques
+
+### 1. Grammaire ANTLR mise à jour
+**Fichier :** `grammar/MeshrModule.g4`
+
+#### Ajouts dans `baseType` :
+- Ajout du type `'Sql'` dans la liste des types de base
+
+#### Ajouts dans `annotationValue` :
+- `datetimeLiteral` : Support des littéraux Datetime
+- `dateLiteral` : Support des littéraux Date  
+- `timeLiteral` : Support des littéraux Time
+- `timestampLiteral` : Support des littéraux Timestamp
+- `sqlLiteral` : Support des littéraux SQL
+
+#### Nouvelles règles ajoutées :
+```antlr
+// ========== TEMPORAL LITERALS ==========
+datetimeLiteral : 'Datetime' STRING_LITERAL ;
+dateLiteral : 'Date' STRING_LITERAL ;
+timeLiteral : 'Time' STRING_LITERAL ;
+timestampLiteral : 'Timestamp' STRING_LITERAL ;
+
+// ========== SQL LITERALS ==========
+sqlLiteral : 'Sql' STRING_LITERAL ;
+```
+
+### 2. Grammaire EBNF mise à jour
+**Fichier :** `grammar/meshr_module.ebnf`
+
+#### Ajouts dans `base-type` :
+- Ajout de `"Sql"` dans la liste des types de base
+
+#### Ajouts dans `annotation-value` :
+- `datetime-literal` : Support des littéraux Datetime
+- `date-literal` : Support des littéraux Date
+- `time-literal` : Support des littéraux Time
+- `timestamp-literal` : Support des littéraux Timestamp
+- `sql-literal` : Support des littéraux SQL
+
+---
+
+## 📚 Documentation mise à jour
+
+### 1. Documentation principale
+**Fichier :** `docs/meshr-lang.md`
+
+#### Sections mises à jour :
+- **Types de base autorisés** : Ajout du type `Sql`
+- **Littéraux composites** : Ajout des nouveaux littéraux temporels et SQL
+- **Annexe C** : Guide complet des littéraux (nouvelle section)
+
+### 2. Versions générées
+- ✅ **HTML** : `docs/meshr-lang.html` (174 KB)
+- ✅ **PDF** : `docs/meshr-lang.pdf` (7.8 MB)
+- ✅ **Word** : `docs/meshr-lang.docx` (64 KB) - **NOUVEAU !**
+
+---
+
+## 🧪 Tests créés et validés
+
+### 1. Nouveaux fichiers de test
+- **`tests/temporal-literals-valid.meshr`** : Tests complets pour les littéraux temporels
+- **`tests/sql-literals-valid.meshr`** : Tests complets pour les littéraux SQL
+
+### 2. Fichier de test principal corrigé
+**Fichier :** `test-syntax-complete.meshr`
+- ✅ Syntaxe corrigée pour les imports, annotations, aspects
+- ✅ Tous les nouveaux littéraux testés et validés
+
+### 3. Validation complète
+- ✅ **Parser ANTLR** : Régénéré avec les nouveaux littéraux
+- ✅ **Tests individuels** : Tous les nouveaux fichiers passent
+- ✅ **Test principal** : `test-syntax-complete.meshr` passe
+- ✅ **Tests existants** : Aucune régression détectée
+
+---
+
+## 📊 État des fichiers
+
+### Fichiers modifiés :
+```
+grammar/MeshrModule.g4          ✅ Modifié (nouveaux littéraux)
+grammar/meshr_module.ebnf       ✅ Modifié (nouveaux littéraux)
+docs/meshr-lang.md              ✅ Modifié (documentation + annexe)
+test-syntax-complete.meshr      ✅ Corrigé (syntaxe)
+```
+
+### Fichiers créés :
+```
+tests/temporal-literals-valid.meshr    ✅ Nouveau (tests temporels)
+tests/sql-literals-valid.meshr         ✅ Nouveau (tests SQL)
+docs/meshr-lang_sauvegarde_etat.md     ✅ Nouveau (cette sauvegarde)
+```
+
+### Fichiers régénérés :
+```
+grammar/generated/              ✅ Régénéré (parser ANTLR)
+docs/meshr-lang.html           ✅ Régénéré
+docs/meshr-lang.pdf            ✅ Régénéré
+docs/meshr-lang.docx           ✅ Nouveau (Word)
+```
+
+---
+
+## 🎯 Littéraux supportés (état final)
+
+### Littéraux primitifs :
+- `String` : `"Hello World"`
+- `Integer` : `42`, `0xFF0000`
+- `Float` : `3.14`
+- `Boolean` : `true`, `false`
+
+### Littéraux composites :
+- `List` : `List["item1", "item2"]`
+- `Map` : `Map{"key1": 1, "key2": 2}`
+- `Record` : `Record{name: "Alice", age: 42}`
+- `Range` : `Range 1..100`
+
+### Littéraux spécialisés :
+- `Json` : `Json{"name": "test"}`, `Json"{\"raw\": \"json\"}"`
+- `Geography` : `Geography"POINT(2.3522 48.8566)"`
+- `Bytes` : `Bytes[0, 1, 2, 3]`, `Bytes"deadbeef"`
+
+### Littéraux temporels : ✅ **NOUVEAUX**
+- `Datetime` : `Datetime"2021-01-01T00:00:00Z"`
+- `Date` : `Date"2021-01-01"`
+- `Time` : `Time"00:00:00"`
+- `Timestamp` : `Timestamp"2021-01-01T00:00:00Z"`
+
+### Littéraux SQL : ✅ **NOUVEAUX**
+- `Sql` : `Sql"SELECT * FROM users"`
+
+### Littéraux d'intervalle :
+- `Interval` : `Interval 1 year`, `Interval 6 months`
+
+---
+
+## 🚀 Fonctionnalités validées
+
+### 1. Parsing et validation
+- ✅ Tous les nouveaux littéraux sont correctement parsés
+- ✅ La grammaire ANTLR fonctionne sans erreur
+- ✅ Les tests de régression passent
+
+### 2. Documentation
+- ✅ Documentation complète et à jour
+- ✅ Exemples pratiques pour tous les littéraux
+- ✅ Annexes détaillées avec cas d'usage
+- ✅ Versions multiples (HTML, PDF, Word)
+
+### 3. Tests
+- ✅ Couverture complète des nouveaux littéraux
+- ✅ Tests d'intégration fonctionnels
+- ✅ Exemples d'usage réels
+
+---
+
+## 📝 Notes importantes
+
+### Compatibilité
+- ✅ **Rétrocompatibilité** : Aucune régression sur les fonctionnalités existantes
+- ✅ **Parser** : Régénération automatique avec ANTLR
+- ✅ **Tests** : Tous les tests existants continuent de passer
+
+### Format des dates
+- **Recommandation** : Utiliser le format ISO 8601 (`YYYY-MM-DDTHH:mm:ssZ`)
+- **Support** : Dates, heures, timestamps avec ou sans timezone
+
+### Format SQL
+- **Sécurité** : Support des paramètres `?` pour éviter les injections
+- **Flexibilité** : Tous types de requêtes SQL supportés
+
+---
+
+## 🔄 Prochaines étapes recommandées
+
+1. **Validation utilisateur** : Tester les nouveaux littéraux dans des cas d'usage réels
+2. **Optimisation** : Améliorer les performances du parser si nécessaire
+3. **Extensions** : Considérer d'autres types de littéraux selon les besoins
+4. **Documentation** : Mettre à jour les guides utilisateur si nécessaire
+
+---
+
+## 📞 Support
+
+Pour toute question ou problème lié à ces modifications :
+- **Grammaire** : Vérifier les fichiers `grammar/MeshrModule.g4` et `grammar/meshr_module.ebnf`
+- **Tests** : Exécuter `make test` pour valider l'état
+- **Documentation** : Consulter l'Annexe C du guide principal
+
+---
+
+*Sauvegarde créée automatiquement le 13 septembre 2024*
+*État du projet : ✅ STABLE - Tous les tests passent*

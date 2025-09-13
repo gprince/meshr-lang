@@ -18,6 +18,11 @@
     "data-mesh",
     "domain-driven-design"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/meshr-lang/meshr-lang.git"
+  },
+  "license": "MIT",
   "activationEvents": [
     "onLanguage:meshr"
   ],

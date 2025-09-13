@@ -1,47 +1,61 @@
 // Test de l'extension Meshr-Lang
 // Ce fichier devrait avoir la coloration syntaxique et l'autocomplétion
 
-module com.example.test;
-
-import core.types;
+@Version("1.0.0")
+@Documented(summary="Test file for Meshr-Lang extension")
+module com.example.test
 
 // Test d'autocomplétion - tapez '@' et vous devriez voir des suggestions
-@Documented
-entity TestEntity {
-    String name;
-    Number age;
-    Boolean active;
-    List of String tags;
-}
+@Documented(summary="Test entity for extension validation")
+entity TestEntity is
+    name : String length 1..100
+    age : Integer
+    active : Boolean
+    tags : List of String
+    created_at : String
+end
 
 // Test d'énumération
-enum Status {
-    ACTIVE,
-    INACTIVE,
-    PENDING
-}
+enum Status is ("ACTIVE", "INACTIVE", "PENDING")
+enum Priority is ("LOW", "MEDIUM", "HIGH", "CRITICAL")
 
 // Test de trait
-trait Timestamped {
-    String createdAt;
-    String updatedAt;
-}
+trait Timestamped is
+    created_at : String
+    updated_at : String
+end
 
 // Test d'aspect
-aspect AuditInfo {
-    String createdBy;
-    String lastModifiedBy;
-}
+aspect AuditInfo is
+    created_by : String
+    last_modified_by : String
+    version : Integer
+end
 
 // Test de relation
-relation UserToOrder {
-    User user;
-    Order order;
-    String createdAt;
-}
+relation UserToOrder is
+    from User(user_id)
+    to Order(order_id)
+    created_at : String
+end
 
-type relation PLACED with WithAudit is
-  since : Date
-  channel : Channel
-  quantity : Integer = 1
+// Test avec aspects
+entity Product with Timestamped is
+    product_id : String
+    name : String length 1..200
+    price : Float
+    
+    aspects {
+        AuditInfo {
+            created_by: "system",
+            last_modified_by: "admin",
+            version: 1
+        }
+    }
+end
+
+// Test de relation simple
+relation UserPlacesOrder is
+    from User(user_id)
+    to Order(user_id)
 end

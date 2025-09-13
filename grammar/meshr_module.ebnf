@@ -57,12 +57,17 @@ annotation-value    = string-literal
                     | range-literal
                     | json-literal
                     | geography-literal
-                    | bytes-literal ;
+                    | bytes-literal
+                    | datetime-literal
+                    | date-literal
+                    | time-literal
+                    | timestamp-literal
+                    | sql-literal ;
 
 (* ========== TYPES DE BASE ============ *)
 base-type           = "Boolean" | string-type | "Integer" | "Float" | "Double"
                     | "Date" | "Datetime" | "Time" | "Timestamp"
-                    | "Geography" | "Bytes" | "Json"
+                    | "Geography" | "Bytes" | "Json" | "Sql"
                     | "Interval" | "Range" ;
 
 (* Type String avec contraintes optionnelles *)
@@ -180,6 +185,15 @@ bytes-value          = number-literal
                     | "0x", hex-number ;
 
 hex-number           = hex-digit, { hex-digit } ;
+
+(* ========== TEMPORAL LITTÉRAUX ============ *)
+datetime-literal     = "Datetime", string-literal ;
+date-literal         = "Date", string-literal ;
+time-literal         = "Time", string-literal ;
+timestamp-literal    = "Timestamp", string-literal ;
+
+(* ========== SQL LITTÉRAUX ============ *)
+sql-literal          = "Sql", string-literal ;
 
 (* ========== TERMINAUX (approx) ============ *)
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;

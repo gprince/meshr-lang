@@ -1,0 +1,166 @@
+// Module de test pour les littéraux SQL valides
+module test.sql_literals
+
+// ========== ANNOTATIONS AVEC LITTÉRAUX SQL ==========
+
+@QueryConfig(
+  select_query=Sql"SELECT * FROM users WHERE active = true",
+  insert_query=Sql"INSERT INTO logs (message, timestamp) VALUES (?, ?)",
+  update_query=Sql"UPDATE products SET price = ? WHERE id = ?"
+)
+annotation QueryConfig is
+  required select_query : Sql
+  optional insert_query : Sql = Sql"INSERT INTO table (column) VALUES (?)"
+  optional update_query : Sql = Sql"UPDATE table SET column = ? WHERE id = ?"
+end
+
+@DatabaseConfig(
+  schema_query=Sql"CREATE TABLE users (id INT PRIMARY KEY, name VARCHAR(255), email VARCHAR(255))",
+  index_query=Sql"CREATE INDEX idx_users_email ON users(email)",
+  view_query=Sql"CREATE VIEW active_users AS SELECT * FROM users WHERE active = true"
+)
+annotation DatabaseConfig is
+  required schema_query : Sql
+  optional index_query : Sql = Sql"CREATE INDEX idx_default ON table(column)"
+  optional view_query : Sql = Sql"CREATE VIEW default_view AS SELECT * FROM table"
+end
+
+// ========== ENUMS AVEC LITTÉRAUX SQL ==========
+
+enum QueryType(name: String, template: Sql, description: String) is (
+  select(name = "SELECT", template = Sql"SELECT * FROM table WHERE condition = ?", description = "Select query"),
+  insert(name = "INSERT", template = Sql"INSERT INTO table (columns) VALUES (values)", description = "Insert query"),
+  update(name = "UPDATE", template = Sql"UPDATE table SET column = ? WHERE id = ?", description = "Update query"),
+  delete(name = "DELETE", template = Sql"DELETE FROM table WHERE id = ?", description = "Delete query")
+)
+
+enum DatabaseOperation(operation: String, sql: Sql, timeout: Integer) is (
+  read(operation = "READ", sql = Sql"SELECT * FROM table", timeout = 30),
+  write(operation = "WRITE", sql = Sql"INSERT INTO table VALUES (?)", timeout = 60),
+  update(operation = "UPDATE", sql = Sql"UPDATE table SET column = ?", timeout = 45),
+  delete(operation = "DELETE", sql = Sql"DELETE FROM table WHERE id = ?", timeout = 30)
+)
+
+// ========== RECORDS AVEC LITTÉRAUX SQL ==========
+
+record DatabaseQuery is
+  query_id : String
+  sql_statement : Sql = Sql"SELECT 1"
+  description : String = "Default query"
+  timeout_seconds : Integer = 30
+end
+
+record StoredProcedure is
+  procedure_name : String
+  definition : Sql = Sql"CREATE PROCEDURE default_proc() BEGIN SELECT 1; END"
+  parameters : String = "none"
+  return_type : String = "void"
+end
+
+// ========== TRAITS AVEC LITTÉRAUX SQL ==========
+
+trait WithQueries is
+  default_select : Sql = Sql"SELECT * FROM table"
+  default_insert : Sql = Sql"INSERT INTO table (column) VALUES (?)"
+  default_update : Sql = Sql"UPDATE table SET column = ? WHERE id = ?"
+end
+
+trait WithSchema is
+  create_table : Sql = Sql"CREATE TABLE table (id INT PRIMARY KEY)"
+  drop_table : Sql = Sql"DROP TABLE IF EXISTS table"
+  alter_table : Sql = Sql"ALTER TABLE table ADD COLUMN column VARCHAR(255)"
+end
+
+// ========== ASPECTS AVEC LITTÉRAUX SQL ==========
+
+aspect QueryOptimization is
+  optimized_query : Sql = Sql"SELECT * FROM table WHERE indexed_column = ?"
+  explain_query : Sql = Sql"EXPLAIN SELECT * FROM table"
+  analyze_query : Sql = Sql"ANALYZE TABLE table"
+end
+
+aspect DataMigration is
+  migration_up : Sql = Sql"ALTER TABLE table ADD COLUMN new_column VARCHAR(255)"
+  migration_down : Sql = Sql"ALTER TABLE table DROP COLUMN new_column"
+  rollback_query : Sql = Sql"ROLLBACK"
+end
+
+// ========== ENTITÉS AVEC LITTÉRAUX SQL ==========
+
+entity UserQuery with WithQueries is
+  QueryId : String
+  CustomQuery : Sql
+  Description : String = "User-defined query"
+  
+  aspects {
+    QueryOptimization {
+      optimized_query: Sql"SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
+      explain_query: Sql"EXPLAIN SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
+      analyze_query: Sql"ANALYZE TABLE users"
+    }
+  }
+end
+
+entity DatabaseSchema with WithSchema is
+  SchemaId : String
+  TableDefinition : Sql
+  IndexDefinition : Sql = Sql"CREATE INDEX idx_default ON table(column)"
+  
+  aspects {
+    DataMigration {
+      migration_up: Sql"CREATE TABLE new_table (id INT PRIMARY KEY, name VARCHAR(255))",
+      migration_down: Sql"DROP TABLE new_table",
+      rollback_query: Sql"ROLLBACK"
+    }
+  }
+end
+
+// ========== LITTÉRAUX SQL COMPLEXES ==========
+
+@ComplexSqlConfig(
+  complex_select=Sql"SELECT u.id, u.name, p.title, o.total FROM users u JOIN orders o ON u.id = o.user_id JOIN products p ON o.product_id = p.id WHERE u.active = true AND o.status = 'completed'",
+  subquery=Sql"SELECT * FROM (SELECT id, name FROM users WHERE created_at > '2024-01-01') AS recent_users",
+  cte_query=Sql"WITH RECURSIVE category_tree AS (SELECT id, name, parent_id FROM categories WHERE parent_id IS NULL UNION ALL SELECT c.id, c.name, c.parent_id FROM categories c JOIN category_tree ct ON c.parent_id = ct.id) SELECT * FROM category_tree"
+)
+annotation ComplexSqlConfig is
+  required complex_select : Sql
+  optional subquery : Sql = Sql"SELECT * FROM (SELECT * FROM table) AS subquery"
+  optional cte_query : Sql = Sql"WITH cte AS (SELECT * FROM table) SELECT * FROM cte"
+end
+
+// ========== LITTÉRAUX SQL AVEC FONCTIONS ==========
+
+@FunctionConfig(
+  aggregate_query=Sql"SELECT COUNT(*), AVG(price), MAX(created_at) FROM products WHERE category = ?",
+  window_function=Sql"SELECT id, name, ROW_NUMBER() OVER (PARTITION BY category ORDER BY price) as rank FROM products",
+  case_statement=Sql"SELECT id, name, CASE WHEN price > 100 THEN 'expensive' WHEN price > 50 THEN 'moderate' ELSE 'cheap' END as price_category FROM products"
+)
+annotation FunctionConfig is
+  required aggregate_query : Sql
+  optional window_function : Sql = Sql"SELECT *, ROW_NUMBER() OVER (ORDER BY id) FROM table"
+  optional case_statement : Sql = Sql"SELECT *, CASE WHEN condition THEN 'value1' ELSE 'value2' END FROM table"
+end
+
+// ========== EXEMPLES D'USAGE RÉEL ==========
+
+@ReportQuery(
+  sales_report=Sql"SELECT DATE(created_at) as date, COUNT(*) as orders, SUM(total) as revenue FROM orders WHERE created_at >= ? AND created_at <= ? GROUP BY DATE(created_at) ORDER BY date",
+  user_activity=Sql"SELECT u.id, u.name, COUNT(o.id) as order_count, MAX(o.created_at) as last_order FROM users u LEFT JOIN orders o ON u.id = o.user_id GROUP BY u.id, u.name HAVING COUNT(o.id) > 0",
+  inventory_check=Sql"SELECT p.id, p.name, p.stock_quantity, CASE WHEN p.stock_quantity < 10 THEN 'LOW' WHEN p.stock_quantity < 50 THEN 'MEDIUM' ELSE 'HIGH' END as stock_level FROM products p WHERE p.active = true"
+)
+annotation ReportQuery is
+  required sales_report : Sql
+  optional user_activity : Sql = Sql"SELECT * FROM users WHERE active = true"
+  optional inventory_check : Sql = Sql"SELECT * FROM products WHERE stock_quantity > 0"
+end
+
+@SecurityQuery(
+  user_permissions=Sql"SELECT u.id, u.name, r.name as role, p.name as permission FROM users u JOIN user_roles ur ON u.id = ur.user_id JOIN roles r ON ur.role_id = r.id JOIN role_permissions rp ON r.id = rp.role_id JOIN permissions p ON rp.permission_id = p.id WHERE u.active = true",
+  audit_log=Sql"SELECT al.id, al.user_id, al.action, al.table_name, al.record_id, al.timestamp FROM audit_logs al WHERE al.timestamp >= ? AND al.timestamp <= ? ORDER BY al.timestamp DESC",
+  data_access=Sql"SELECT da.user_id, da.resource_type, da.resource_id, da.access_level, da.granted_at FROM data_access da WHERE da.user_id = ? AND da.access_level IN ('READ', 'WRITE')"
+)
+annotation SecurityQuery is
+  required user_permissions : Sql
+  optional audit_log : Sql = Sql"SELECT * FROM audit_logs ORDER BY timestamp DESC LIMIT 100"
+  optional data_access : Sql = Sql"SELECT * FROM data_access WHERE user_id = ?"
+end

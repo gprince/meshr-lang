@@ -1,0 +1,166 @@
+// Module de test pour les littéraux temporels valides
+module test.temporal_literals
+
+// ========== ANNOTATIONS AVEC LITTÉRAUX TEMPORELS ==========
+
+@TimeConfig(
+  created=Datetime"2021-01-01T00:00:00Z",
+  updated=Datetime"2021-12-31T23:59:59Z",
+  scheduled=Date"2022-01-01",
+  duration=Time"02:30:45"
+)
+annotation TimeConfig is
+  required created : Datetime
+  optional updated : Datetime = Datetime"2021-01-01T00:00:00Z"
+  optional scheduled : Date = Date"2021-01-01"
+  optional duration : Time = Time"00:00:00"
+end
+
+@TimestampConfig(
+  event_time=Timestamp"2021-01-01T00:00:00Z",
+  expiry=Timestamp"2025-12-31T23:59:59Z",
+  last_modified=Timestamp"2023-06-15T14:30:25Z"
+)
+annotation TimestampConfig is
+  required event_time : Timestamp
+  optional expiry : Timestamp = Timestamp"2025-01-01T00:00:00Z"
+  optional last_modified : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+// ========== ENUMS AVEC LITTÉRAUX TEMPORELS ==========
+
+enum EventType(name: String, start_time: Datetime, end_date: Date, duration: Time) is (
+  conference(name = "Tech Conference", start_time = Datetime"2024-03-15T09:00:00Z", end_date = Date"2024-03-17", duration = Time"08:00:00"),
+  workshop(name = "Workshop", start_time = Datetime"2024-03-18T14:00:00Z", end_date = Date"2024-03-18", duration = Time"04:00:00"),
+  meeting(name = "Team Meeting", start_time = Datetime"2024-03-20T10:30:00Z", end_date = Date"2024-03-20", duration = Time"01:30:00")
+)
+
+enum ScheduleStatus(status: String, created: Timestamp, updated: Timestamp) is (
+  pending(status = "pending", created = Timestamp"2024-01-01T00:00:00Z", updated = Timestamp"2024-01-01T00:00:00Z"),
+  active(status = "active", created = Timestamp"2024-01-01T00:00:00Z", updated = Timestamp"2024-01-15T12:00:00Z"),
+  completed(status = "completed", created = Timestamp"2024-01-01T00:00:00Z", updated = Timestamp"2024-01-31T23:59:59Z")
+)
+
+// ========== RECORDS AVEC LITTÉRAUX TEMPORELS ==========
+
+record Event is
+  title : String
+  start_datetime : Datetime = Datetime"2021-01-01T00:00:00Z"
+  end_date : Date = Date"2021-01-01"
+  duration : Time = Time"01:00:00"
+  created_timestamp : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+record Schedule is
+  schedule_id : String
+  start_time : Datetime
+  end_time : Datetime = Datetime"2021-12-31T23:59:59Z"
+  created_at : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+  updated_at : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+// ========== TRAITS AVEC LITTÉRAUX TEMPORELS ==========
+
+trait WithTimestamps is
+  created_at : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+  updated_at : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+trait WithSchedule is
+  start_datetime : Datetime = Datetime"2021-01-01T00:00:00Z"
+  end_date : Date = Date"2021-01-01"
+  duration : Time = Time"01:00:00"
+end
+
+// ========== ASPECTS AVEC LITTÉRAUX TEMPORELS ==========
+
+aspect TimeTracking is
+  start_time : Datetime = Datetime"2021-01-01T00:00:00Z"
+  end_time : Datetime = Datetime"2021-01-01T23:59:59Z"
+  duration : Time = Time"00:00:00"
+  created_timestamp : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+aspect ScheduleConstraints is
+  earliest_start : Datetime = Datetime"2021-01-01T00:00:00Z"
+  latest_end : Datetime = Datetime"2025-12-31T23:59:59Z"
+  max_duration : Time = Time"24:00:00"
+  created_date : Date = Date"2021-01-01"
+end
+
+// ========== ENTITÉS AVEC LITTÉRAUX TEMPORELS ==========
+
+entity Meeting with WithTimestamps is
+  MeetingId : String
+  StartTime : Datetime
+  EndTime : Datetime = Datetime"2021-01-01T23:59:59Z"
+  Duration : Time = Time"01:00:00"
+  
+  aspects {
+    TimeTracking {
+      start_time: Datetime"2024-03-15T09:00:00Z",
+      end_time: Datetime"2024-03-15T17:00:00Z",
+      duration: Time"08:00:00",
+      created_timestamp: Timestamp"2024-01-01T00:00:00Z"
+    }
+  }
+end
+
+entity Project with WithSchedule is
+  ProjectId : String
+  StartDate : Date
+  Deadline : Date = Date"2025-12-31"
+  EstimatedDuration : Time = Time"40:00:00"
+  
+  aspects {
+    ScheduleConstraints {
+      earliest_start: Datetime"2024-01-01T00:00:00Z",
+      latest_end: Datetime"2025-12-31T23:59:59Z",
+      max_duration: Time"8760:00:00",
+      created_date: Date"2024-01-01"
+    }
+  }
+end
+
+// ========== LITTÉRAUX TEMPORELS COMPLEXES ==========
+
+@ComplexTimeConfig(
+  multi_datetime=Datetime"2024-01-01T00:00:00Z",
+  iso_datetime=Datetime"2024-12-31T23:59:59.999Z",
+  date_only=Date"2024-06-15",
+  time_only=Time"14:30:25",
+  timestamp_millis=Timestamp"2024-01-01T00:00:00.123Z"
+)
+annotation ComplexTimeConfig is
+  required multi_datetime : Datetime
+  optional iso_datetime : Datetime = Datetime"2021-01-01T00:00:00Z"
+  optional date_only : Date = Date"2021-01-01"
+  optional time_only : Time = Time"00:00:00"
+  optional timestamp_millis : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+end
+
+// ========== EXEMPLES D'USAGE RÉEL ==========
+
+@LogEntry(
+  timestamp=Timestamp"2024-03-15T14:30:25.123Z",
+  event_date=Date"2024-03-15",
+  processing_time=Time"00:00:01.500"
+)
+annotation LogEntry is
+  required timestamp : Timestamp
+  optional event_date : Date = Date"2024-01-01"
+  optional processing_time : Time = Time"00:00:00"
+end
+
+@AuditTrail(
+  created=Datetime"2024-01-01T00:00:00Z",
+  last_accessed=Datetime"2024-03-15T14:30:25Z",
+  expiry_date=Date"2025-12-31",
+  session_duration=Time"02:15:30"
+)
+annotation AuditTrail is
+  required created : Datetime
+  optional last_accessed : Datetime = Datetime"2024-01-01T00:00:00Z"
+  optional expiry_date : Date = Date"2025-01-01"
+  optional session_duration : Time = Time"00:00:00"
+end

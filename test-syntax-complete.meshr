@@ -1,0 +1,165 @@
+// Test complet de la coloration syntaxique Meshr-Lang
+// Tous les mots-clés et types devraient être colorés
+
+@Version("1.0.0")
+@Documented(summary="Test complet de syntaxe")
+module test.syntax_complete
+
+import DataClassification from meshr.security
+import WithSecurity from meshr.governance
+
+// ========== ANNOTATIONS ==========
+@TestAnnotation(
+    required_field="value",
+    optional_field=42
+)
+annotation TestAnnotation is
+    required required_field : String
+    optional optional_field : Integer = 0
+    optional default_field : Boolean = true
+end
+
+// ========== RECORDS ==========
+record UserInfo is
+    name : String
+    age : Integer
+    active : Boolean
+end
+
+// ========== ENUMS ==========
+enum Status is ("ACTIVE", "INACTIVE", "PENDING")
+enum Priority(code: Integer, level: String) is (
+    LOW(code = 1, level = "low"),
+    HIGH(code = 3, level = "high")
+)
+
+// ========== TRAITS ==========
+trait Timestamped is
+    created_at : String
+    updated_at : String
+end
+
+trait WithMetadata is
+    metadata : Map of String to String
+    tags : List of String
+end
+
+// ========== ASPECTS ==========
+aspect AuditInfo is
+    created_by : String
+    last_modified_by : String
+    version : Integer
+end
+
+aspect SecurityInfo is
+    encryption_required : Boolean
+    access_level : String
+end
+
+aspect WithAudit is
+    created_at : Timestamp
+    updated_at : Timestamp
+end
+
+// ========== ENTITIES ==========
+entity User is
+    user_id : String
+    email : String
+    profile : UserInfo
+    
+    aspects {
+        AuditInfo {
+            created_by: "system",
+            last_modified_by: "admin",
+            version: 1
+        },
+        SecurityInfo {
+            encryption_required: true,
+            access_level: "user"
+        }
+    }
+end
+
+entity Product with WithMetadata is
+    product_id : String
+    name : String length 1..200
+    price : Float
+    category : String
+end
+
+// ========== RELATIONS ==========
+relation UserOwnsProduct is
+    from User(user_id)
+    to Product(owner_id)
+end
+
+type relation CATEGORY with WithAudit is
+    category_id : String
+    name : String
+end
+
+type relation PRODUCT with WithAudit is
+    product_id : String
+    name : String
+end
+
+bidirectional relation ProductBelongsToCategory of type CATEGORY with WithAudit is
+    from Product(category_id)
+    to Category(category_id)
+
+    aspects {
+        AuditInfo {
+            created_by: "system",
+            last_modified_by: "admin",
+            version: 1
+        }
+    }
+end
+
+// ========== TYPES COMPOSITES ==========
+entity ComplexEntity is
+    simple_string : String
+    constrained_string : String length 1..100
+    number_field : Integer
+    float_field : Float
+    boolean_field : Boolean
+    list_field : List of String
+    map_field : Map of String to Integer
+    range_field : Range of Integer
+    record_field : UserInfo
+    bytes_field : Bytes
+    json_field : Json
+    geography_field : Geography
+    interval_field : Interval
+
+    aspects {
+        AuditInfo {
+            created_by: "system",
+            last_modified_by: "admin",
+            version: 1
+        }
+    }
+end
+
+// ========== LITTÉRAUX ==========
+entity LiteralsTest is
+    string_literal : String = "Hello \n World"
+    number_literal : Integer = 42
+    number_literal_hex : Integer = 0xFF0000
+    float_literal : Float = 3.14
+    boolean_literal : Boolean = true
+    list_literal : List of String = List["item1", "item2"]
+    map_literal : Map of String to Integer = Map{"key1": 1, "key2": 2}
+    range_literal : Range of Integer = Range 1..100
+    bytes_literal : Bytes = Bytes[0, 1, 2, 3]
+    json_literal : Json = Json{"name": "test", "value": 123}
+    geography_literal : Geography = Geography"POINT(2.3522 48.8566)"
+    interval_literal : Interval = Interval 1 year
+    json_literal_string : Json = Json"{\"name\": \"test\", \"value\": 123}"
+    sql_literal : Sql = Sql"SELECT * FROM users"
+    datetime_literal : Datetime = Datetime"2021-01-01T00:00:00Z"
+    date_literal : Date = Date"2021-01-01"
+    time_literal : Time = Time"00:00:00"
+    timestamp_literal : Timestamp = Timestamp"2021-01-01T00:00:00Z"
+    interval_literal_json : Interval = Interval 1 year
+end

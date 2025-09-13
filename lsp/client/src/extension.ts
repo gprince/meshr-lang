@@ -17,7 +17,11 @@ export function activate(context: vscode.ExtensionContext) {
             command: getServerCommand(),
             args: getServerArgs(),
             options: {
-                cwd: getServerCwd()
+                cwd: getServerCwd(),
+                env: {
+                    ...process.env,
+                    PYTHONPATH: getServerCwd()
+                }
             },
             transport: TransportKind.stdio
         },
@@ -25,7 +29,11 @@ export function activate(context: vscode.ExtensionContext) {
             command: getServerCommand(),
             args: getServerArgs(),
             options: {
-                cwd: getServerCwd()
+                cwd: getServerCwd(),
+                env: {
+                    ...process.env,
+                    PYTHONPATH: getServerCwd()
+                }
             },
             transport: TransportKind.stdio
         }
@@ -82,12 +90,12 @@ export function deactivate(): Thenable<void> | undefined {
 
 function getServerCommand(): string {
     const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get<string>('path', 'python');
+    return config.get<string>('path', '~/.pyenv/versions/3.12.0/bin/python3');
 }
 
 function getServerArgs(): string[] {
     const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get<string[]>('args', ['-m', 'lsp.server.main']);
+    return config.get<string[]>('args', ['lsp/server/main.py']);
 }
 
 function getServerCwd(): string {
