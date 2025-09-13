@@ -1,0 +1,19 @@
+// Test simple pour vérifier la structure du plugin
+@Version("1.0.0")
+module examples.simple_dataplex_test
+
+// Import des annotations de base
+import { Version } from meshr.core
+
+// Import du plugin GCP Dataplex
+import { DataplexAspect, DataGovernance } from stdlib.plugins.gcp.dataplex
+
+// Aspect simple pour test
+@DataplexAspect(
+    aspect_type_id="simple-test",
+    display_name="Simple Test",
+    description="Test simple de l'aspect"
+)
+aspect SimpleTest is
+    test_field : String = "Test field"
+end

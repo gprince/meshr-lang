@@ -3,32 +3,19 @@
 // ==============================
 // Module d'annotations standard et méta-annotations pour Meshr-Lang
 
+@Version("1.0.0")
+@Documented(summary="Annotations standard et méta-annotations pour Meshr-Lang")
 module meshr.annotations
-
-export { 
-  RetentionPolicy, 
-  AnnotationTarget, 
-  Target, 
-  Retention, 
-  Repeatable,
-  Experimental,
-  Deprecated,
-  Version,
-  Author,
-  Scope,
-  Confidentiality,
-  Documented
-}
 
 // ========== ENUMS ==========
 
-enum RetentionPolicy is (
+export enum RetentionPolicy is (
   "compile",
   "model", 
   "export"
 )
 
-enum AnnotationTarget is (
+export enum AnnotationTarget is (
   "all",
   "annotation",
   "enum", 
@@ -41,13 +28,13 @@ enum AnnotationTarget is (
   "relation"
 )
 
-enum ScopeLevel is (
+export enum ScopeLevel is (
   "public",
   "internal",
   "private"
 )
 
-enum ConfidentialityLevel is (
+export enum ConfidentialityLevel is (
   "public",
   "internal",
   "confidential",

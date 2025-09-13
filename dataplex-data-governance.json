@@ -1,0 +1,325 @@
+{
+  "aspect_types": [
+    {
+      "aspect_type_id": "data-governance",
+      "display_name": "Data Governance",
+      "description": "A starting point to track important information about sensitive data",
+      "project_id": "oma-sdh-staging",
+      "location": "us-west2",
+      "labels": {},
+      "fields": [
+        {
+          "name": "data_governor",
+          "type": "string",
+          "description": "Name of the Data Governor responsible for the governance of the data asset",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "business_owner",
+          "type": "string",
+          "description": "Name of the owner or contact for the data asset",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "data_classification",
+          "type": "enum",
+          "description": "",
+          "required": false,
+          "enum_values": [
+            "PUBLIC",
+            "SENSITIVE",
+            "CONFIDENTIAL"
+          ]
+        },
+        {
+          "name": "approved_by_governance",
+          "type": "bool",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "date_of_governance_approval",
+          "type": "datetime",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "data_lifecycle",
+          "type": "enum",
+          "description": "",
+          "required": false,
+          "enum_values": [
+            "TEST",
+            "DEV",
+            "QA",
+            "PRODUCTION",
+            "OTHER",
+            "DEPRECATED"
+          ]
+        },
+        {
+          "name": "retention_date",
+          "type": "datetime",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "delete_by_date",
+          "type": "datetime",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "is_encrypted",
+          "type": "bool",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "has_pii",
+          "type": "bool",
+          "description": "",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "aspect_type_id",
+          "type": "string",
+          "description": "",
+          "required": true,
+          "enum_values": null
+        },
+        {
+          "name": "display_name",
+          "type": "string",
+          "description": "Default Aspect",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "description",
+          "type": "string",
+          "description": "Default aspect description",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "project_id",
+          "type": "string",
+          "description": "default-project",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "location",
+          "type": "string",
+          "description": "us-central1",
+          "required": false,
+          "enum_values": null
+        },
+        {
+          "name": "labels",
+          "type": "string",
+          "description": "",
+          "required": true,
+          "enum_values": null
+        }
+      ]
+    }
+  ],
+  "api_calls": [
+    {
+      "method": "POST",
+      "url": "https://dataplex.googleapis.com/v1/projects/oma-sdh-staging/locations/us-west2/aspectTypes",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer YOUR_ACCESS_TOKEN"
+      },
+      "body": {
+        "aspectTypeId": "data-governance",
+        "displayName": "Data Governance",
+        "description": "A starting point to track important information about sensitive data",
+        "labels": {},
+        "metadataTemplate": {
+          "recordFields": [
+            {
+              "index": 1,
+              "name": "data_governor",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 2,
+              "name": "business_owner",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 3,
+              "name": "data_classification",
+              "type": "enum",
+              "constraints": {
+                "required": false
+              },
+              "enumValues": [
+                {
+                  "index": 1,
+                  "name": "PUBLIC"
+                },
+                {
+                  "index": 2,
+                  "name": "SENSITIVE"
+                },
+                {
+                  "index": 3,
+                  "name": "CONFIDENTIAL"
+                }
+              ]
+            },
+            {
+              "index": 4,
+              "name": "approved_by_governance",
+              "type": "bool",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 5,
+              "name": "date_of_governance_approval",
+              "type": "datetime",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 6,
+              "name": "data_lifecycle",
+              "type": "enum",
+              "constraints": {
+                "required": false
+              },
+              "enumValues": [
+                {
+                  "index": 1,
+                  "name": "TEST"
+                },
+                {
+                  "index": 2,
+                  "name": "DEV"
+                },
+                {
+                  "index": 3,
+                  "name": "QA"
+                },
+                {
+                  "index": 4,
+                  "name": "PRODUCTION"
+                },
+                {
+                  "index": 5,
+                  "name": "OTHER"
+                },
+                {
+                  "index": 6,
+                  "name": "DEPRECATED"
+                }
+              ]
+            },
+            {
+              "index": 7,
+              "name": "retention_date",
+              "type": "datetime",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 8,
+              "name": "delete_by_date",
+              "type": "datetime",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 9,
+              "name": "is_encrypted",
+              "type": "bool",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 10,
+              "name": "has_pii",
+              "type": "bool",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 11,
+              "name": "aspect_type_id",
+              "type": "string",
+              "constraints": {
+                "required": true
+              }
+            },
+            {
+              "index": 12,
+              "name": "display_name",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 13,
+              "name": "description",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 14,
+              "name": "project_id",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 15,
+              "name": "location",
+              "type": "string",
+              "constraints": {
+                "required": false
+              }
+            },
+            {
+              "index": 16,
+              "name": "labels",
+              "type": "string",
+              "constraints": {
+                "required": true
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

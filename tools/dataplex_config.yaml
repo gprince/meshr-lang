@@ -1,0 +1,51 @@
+# Configuration pour le déploiement vers Dataplex Universal Catalog
+# Ce fichier contient les paramètres de déploiement qui ne doivent pas être dans les annotations Meshr
+
+# Configuration par défaut
+default:
+  project_id: "your-project-id"
+  location: "us-central1"
+  credentials_path: null  # Utilise les credentials par défaut si null
+  
+# Configurations par environnement
+environments:
+  staging:
+    project_id: "oma-sdh-staging"
+    location: "us-west2"
+    credentials_path: null
+    labels:
+      env: "staging"
+      team: "data-governance"
+  
+  production:
+    project_id: "oma-sdh-production"
+    location: "us-central1"
+    credentials_path: null
+    labels:
+      env: "production"
+      team: "data-governance"
+
+# Configuration des aspects
+aspects:
+  data-governance:
+    environment: "staging"
+    labels:
+      env: "staging"
+      domain: "governance"
+      version: "1.0.0"
+  
+  data-quality:
+    environment: "staging"
+    labels:
+      env: "staging"
+      domain: "quality"
+      version: "1.0.0"
+
+# Configuration des entrées
+entries:
+  customer-database:
+    environment: "staging"
+    labels:
+      env: "staging"
+      domain: "customer"
+      tier: "production"

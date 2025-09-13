@@ -20,6 +20,7 @@ from .parser import MeshrParser
 from .diagnostics import MeshrDiagnostics
 from .completion import MeshrCompletion
 from .symbols import MeshrSymbols
+from .module_validation import ModuleValidator
 
 logger = logging.getLogger(__name__)
 
@@ -34,6 +35,7 @@ class MeshrLanguageServer(LanguageServer):
         self.diagnostics = MeshrDiagnostics(self.parser)
         self.completion = MeshrCompletion(self.parser)
         self.symbols = MeshrSymbols(self.parser)
+        self.module_validator = None  # Initialisé dans initialize
         
         # Cache des documents analysés
         self.document_cache: Dict[str, Any] = {}
@@ -48,6 +50,11 @@ class MeshrLanguageServer(LanguageServer):
         def initialize(params: InitializeParams) -> InitializeResult:
             """Initialisation du serveur"""
             logger.info("Initialisation du serveur LSP Meshr-Lang")
+            
+            # Initialiser le validateur de modules
+            if params.root_uri:
+                workspace_root = params.root_uri.replace('file://', '')
+                self.module_validator = ModuleValidator(workspace_root)
             
             return InitializeResult(
                 capabilities=ServerCapabilities(
@@ -118,8 +125,25 @@ class MeshrLanguageServer(LanguageServer):
             # Parser le document
             tree = self.parser.parse(doc.text)
             
-            # Générer les diagnostics
+            # Générer les diagnostics de base
             diagnostics = self.diagnostics.analyze(tree, doc.uri)
+            
+            # Ajouter la validation des modules si disponible
+            if self.module_validator:
+                try:
+                    # Analyser le module
+                    module_info = self.module_validator.analyze_file(doc.uri, doc.text)
+                    
+                    # Valider les imports/exports
+                    module_diagnostics = self.module_validator.validate_imports_exports(module_info)
+                    diagnostics.extend(module_diagnostics)
+                    
+                    # Valider les dépendances circulaires
+                    circular_diagnostics = self.module_validator.validate_circular_dependencies()
+                    diagnostics.extend(circular_diagnostics)
+                    
+                except Exception as e:
+                    logger.error(f"Erreur lors de la validation du module {doc.uri}: {e}")
             
             # Publier les diagnostics
             self.publish_diagnostics(doc.uri, diagnostics)

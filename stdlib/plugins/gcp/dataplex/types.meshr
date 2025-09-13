@@ -1,0 +1,68 @@
+// Plugin GCP Dataplex - Types et enums pour l'intégration Dataplex Universal Catalog
+// Version 1.0.0
+
+@Version("1.0.0")
+@Documented(summary="Types et enums pour l'intégration Dataplex Universal Catalog")
+module stdlib.plugins.gcp.dataplex.types
+
+// Import des annotations de base
+import { Version, Documented, since, id, display_name, description } from meshr.core
+
+@since("1.0.0")
+@id("data-classification-enum")
+@description("Classification des données selon le niveau de sensibilité")
+export enum DataClassification is (
+    PUBLIC,
+    SENSITIVE,
+    CONFIDENTIAL
+)
+
+@since("1.0.0")
+@id("data-lifecycle-enum")
+@description("Étapes du cycle de vie des données")
+export enum DataLifecycle is (
+    TEST,
+    DEV,
+    QA,
+    PRODUCTION,
+    OTHER,
+    DEPRECATED
+)
+
+@since("1.0.0")
+@id("data-quality-status-enum")
+@description("Statut de qualité des données")
+export enum DataQualityStatus is (
+    EXCELLENT,
+    GOOD,
+    FAIR,
+    POOR,
+    UNKNOWN
+)
+
+@since("1.0.0")
+@id("entry-type-enum")
+@description("Types d'entrées supportés par Dataplex")
+export enum EntryType is (
+    TABLE,
+    VIEW,
+    DATABASE,
+    SCHEMA,
+    COLUMN,
+    FILE,
+    DIRECTORY,
+    DATASET,
+    MODEL,
+    JOB,
+    PIPELINE
+)
+
+@since("1.0.0")
+@id("governance-level-enum")
+@description("Niveau de gouvernance des données")
+export enum GovernanceLevel is (
+    ENTERPRISE,
+    DEPARTMENTAL,
+    PROJECT,
+    INDIVIDUAL
+)

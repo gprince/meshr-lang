@@ -1,0 +1,129 @@
+// Plugin GCP Dataplex - Aspects prédéfinis pour Dataplex Universal Catalog
+// Version 1.0.0
+
+@Version("1.0.0")
+@Documented(summary="Aspects prédéfinis pour Dataplex Universal Catalog")
+module stdlib.plugins.gcp.dataplex.aspects
+
+// Import des annotations de base
+import { Version, Documented, since, id, display_name, description } from meshr.core
+
+// Import des types nécessaires
+import { DataClassification, DataLifecycle, DataQualityStatus } from stdlib.plugins.gcp.dataplex.types
+
+@since("1.0.0")
+@id("data-governance-aspect")
+@description("A starting point to track important information about sensitive data, data governance contacts, and governance lifecycle attributes")
+export aspect DataGovernance is
+    // Propriétaire des données
+    data_governor : String = "Name of the Data Governor responsible for the governance of the data asset"
+    
+    // Propriétaire métier
+    business_owner : String = "Name of the owner or contact for the data asset"
+    
+    // Classification des données
+    data_classification : DataClassification = DataClassification.PUBLIC
+    
+    // Approbation par la gouvernance
+    approved_by_governance : Boolean = false
+    
+    // Date d'approbation par la gouvernance
+    date_of_governance_approval : Datetime = Datetime"2025-01-01T00:00:00Z"
+    
+    // Cycle de vie des données
+    data_lifecycle : DataLifecycle = DataLifecycle.TEST
+    
+    // Date de rétention
+    retention_date : Datetime = Datetime"2025-12-31T23:59:59Z"
+    
+    // Date de suppression
+    delete_by_date : Datetime = Datetime"2025-12-31T23:59:59Z"
+    
+    // Chiffrement
+    is_encrypted : Boolean = false
+    
+    // Données personnelles
+    has_pii : Boolean = false
+end
+
+@since("1.0.0")
+@id("data-quality-aspect")
+@description("Métriques et informations sur la qualité des données")
+export aspect DataQuality is
+    // Scores de qualité
+    completeness_score : Float = 0.0
+    accuracy_score : Float = 0.0
+    consistency_score : Float = 0.0
+    freshness_score : Float = 0.0
+    validity_score : Float = 0.0
+    
+    // Statut global
+    quality_status : DataQualityStatus = DataQualityStatus.UNKNOWN
+    
+    // Dates
+    last_validation_date : Datetime = Datetime"2025-01-01T00:00:00Z"
+    next_validation_date : Datetime = Datetime"2025-01-01T00:00:00Z"
+    
+    // Règles de validation
+    validation_rules : List of String = List[]
+    
+    // Métadonnées
+    validation_tool : String = "Tool used for validation"
+    validation_frequency : String = "How often validation is performed"
+end
+
+@since("1.0.0")
+@id("data-lineage-aspect")
+@description("Informations sur la généalogie et la traçabilité des données")
+export aspect DataLineage is
+    // Sources
+    source_systems : List of String = List[]
+    source_tables : List of String = List[]
+    
+    // Transformations
+    transformation_logic : String = "Description of data transformations"
+    transformation_tools : List of String = List[]
+    
+    // Destinations
+    target_systems : List of String = List[]
+    target_tables : List of String = List[]
+    
+    // Métadonnées
+    lineage_last_updated : Datetime = Datetime"2025-01-01T00:00:00Z"
+    lineage_tool : String = "Tool used for lineage tracking"
+    
+    // Relations
+    upstream_dependencies : List of String = List[]
+    downstream_dependencies : List of String = List[]
+end
+
+@since("1.0.0")
+@id("data-security-aspect")
+@description("Informations sur la sécurité et la protection des données")
+export aspect DataSecurity is
+    // Classification de sécurité
+    security_classification : String = "Security classification level"
+    
+    // Contrôles d'accès
+    access_control_policy : String = "Access control policy description"
+    authorized_users : List of String = List[]
+    authorized_roles : List of String = List[]
+    
+    // Chiffrement
+    encryption_at_rest : Boolean = false
+    encryption_in_transit : Boolean = false
+    encryption_algorithm : String = "Encryption algorithm used"
+    
+    // Audit
+    audit_enabled : Boolean = false
+    audit_retention_days : Integer = 90
+    
+    // Conformité
+    compliance_frameworks : List of String = List[]
+    data_retention_policy : String = "Data retention policy"
+    
+    // Sensibilité
+    contains_pii : Boolean = false
+    contains_phi : Boolean = false
+    contains_financial_data : Boolean = false
+end

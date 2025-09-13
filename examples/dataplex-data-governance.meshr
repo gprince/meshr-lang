@@ -1,0 +1,94 @@
+// Module de déclaration d'aspect Data Governance pour Dataplex Universal Catalog
+// Utilise le plugin officiel GCP Dataplex
+
+@Version("1.0.0")
+@Documented(summary="Exemple d'utilisation du plugin GCP Dataplex")
+module examples.dataplex_data_governance
+
+// Import des annotations de base
+import { Version, Documented } from meshr.core
+
+// Import du plugin GCP Dataplex
+import { DataplexAspect, DataGovernance, DataClassification, DataLifecycle } from stdlib.plugins.gcp.dataplex
+
+// ========== ASPECT DATA GOVERNANCE PERSONNALISÉ ==========
+
+@DataplexAspect(
+    aspect_type_id="data-governance",
+    display_name="Data Governance",
+    description="A starting point to track important information about sensitive data, data governance contacts, and governance lifecycle attributes.",
+    labels=Map{"env": "staging"}
+)
+aspect CustomDataGovernance is
+    // Propriétaire des données
+    data_governor : String = "Name of the Data Governor responsible for the governance of the data asset"
+    
+    // Propriétaire métier
+    business_owner : String = "Name of the owner or contact for the data asset"
+    
+    // Classification des données
+    data_classification : DataClassification = DataClassification.PUBLIC
+    
+    // Approbation par la gouvernance
+    approved_by_governance : Boolean = false
+    
+    // Date d'approbation par la gouvernance
+    date_of_governance_approval : Datetime = Datetime"2025-01-01T00:00:00Z"
+    
+    // Cycle de vie des données
+    data_lifecycle : DataLifecycle = DataLifecycle.TEST
+    
+    // Date de rétention
+    retention_date : Datetime = Datetime"2025-12-31T23:59:59Z"
+    
+    // Date de suppression
+    delete_by_date : Datetime = Datetime"2025-12-31T23:59:59Z"
+    
+    // Chiffrement
+    is_encrypted : Boolean = false
+    
+    // Données personnelles
+    has_pii : Boolean = false
+end
+
+// ========== EXEMPLE D'UTILISATION DANS UNE ENTITÉ ==========
+
+@DataplexEntry(
+    entry_id="customer-database",
+    entry_type="TABLE",
+    display_name="Customer Database",
+    description="Main customer database containing personal information"
+)
+entity CustomerDatabase is
+    database_name : String
+    table_name : String
+    schema_name : String
+    
+    aspects {
+        DataGovernance {
+            data_governor: "John Smith",
+            business_owner: "Jane Doe",
+            data_classification: DataClassification.SENSITIVE,
+            approved_by_governance: true,
+            date_of_governance_approval: Datetime"2025-01-15T10:30:00Z",
+            data_lifecycle: DataLifecycle.PRODUCTION,
+            retention_date: Datetime"2030-12-31T23:59:59Z",
+            delete_by_date: Datetime"2030-12-31T23:59:59Z",
+            is_encrypted: true,
+            has_pii: true
+        }
+    }
+end
+
+@DataplexEntry(
+    entry_id="string",
+    entry_type="string",
+    display_name="string",
+    description="Configuration pour la création d'une entrée dans Dataplex"
+)
+annotation DataplexEntry is
+    required entry_id : String
+    required entry_type : String
+    optional display_name : String = "Default Entry"
+    optional description : String = "Default entry description"
+end
