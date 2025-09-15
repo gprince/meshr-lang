@@ -1,32 +1,35 @@
-# Byte-compiled / cache
+# Node modules
+lsp/client/node_modules/
+lsp/client/lib/
+
+# Build artifacts
+lsp/client/out/extension.js
+lsp/client/out/extension.js.map
+lsp/client/out/extension_bundled.js
+lsp/client/*.vsix
+
+# Python cache
 __pycache__/
-*.py[cod]
+*.pyc
 *.pyo
+*.pyd
+.Python
+*.so
 
-# VSCode
+# IDE files
 .vscode/
-*.code-workspace
+.idea/
+*.swp
+*.swo
 
-# ANTLR generated
-*.interp
-*.tokens
-*.log
-*.jar
-*.class
-grammar/generated/
-grammar/*.tokens
-grammar/*.interp
-*.antlr
-
-# JARs and build tools
-antlr-4.*.jar
-
-# Python environments
-.env
-.venv
-ENV/
-venv/
-__pycache__/
-
-# macOS
+# OS files
 .DS_Store
+Thumbs.db
+
+# Logs
+*.log
+/tmp/
+
+# Test artifacts
+test_*.py
+*_test.py
