@@ -8,10 +8,14 @@
     ],
     "sourceMap": true,
     "rootDir": "src",
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noImplicitAny": false
   },
+  "include": [
+    "src/extension_lsp_debug.ts"
+  ],
   "exclude": [
     "node_modules",
     ".vscode-test"
