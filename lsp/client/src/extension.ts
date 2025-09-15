@@ -1,122 +1,43 @@
 import * as vscode from 'vscode';
-import {
-    LanguageClient,
-    LanguageClientOptions,
-    ServerOptions,
-    TransportKind
-} from 'vscode-languageclient/node';
-
-let client: LanguageClient;
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Extension Meshr-Lang activée');
-
-    // Configuration du serveur LSP
-    const serverOptions: ServerOptions = {
-        run: {
-            command: getServerCommand(),
-            args: getServerArgs(),
-            options: {
-                cwd: getServerCwd(),
-                env: {
-                    ...process.env,
-                    PYTHONPATH: getServerCwd()
-                }
-            },
-            transport: TransportKind.stdio
-        },
-        debug: {
-            command: getServerCommand(),
-            args: getServerArgs(),
-            options: {
-                cwd: getServerCwd(),
-                env: {
-                    ...process.env,
-                    PYTHONPATH: getServerCwd()
-                }
-            },
-            transport: TransportKind.stdio
+    console.log('Extension Meshr-Lang ULTRA SIMPLE activée !');
+    
+    // Message immédiat
+    vscode.window.showInformationMessage('🎉 Extension Meshr-Lang ULTRA SIMPLE activée !');
+    
+    // Commande simple
+    const disposable = vscode.commands.registerCommand('meshr-lang.test', () => {
+        vscode.window.showInformationMessage('✅ Commande testée !');
+    });
+    
+    context.subscriptions.push(disposable);
+    
+    // Diagnostic simple
+    const diagnosticCollection = vscode.languages.createDiagnosticCollection('meshr');
+    context.subscriptions.push(diagnosticCollection);
+    
+    // Analyser les documents
+    const analyzeDocument = (document: vscode.TextDocument) => {
+        if (document.languageId === 'meshr') {
+            const diagnostic = new vscode.Diagnostic(
+                new vscode.Range(0, 0, 0, 1),
+                'Extension ULTRA SIMPLE fonctionne !',
+                vscode.DiagnosticSeverity.Information
+            );
+            
+            diagnosticCollection.set(document.uri, [diagnostic]);
         }
     };
-
-    // Configuration du client LSP
-    const clientOptions: LanguageClientOptions = {
-        documentSelector: [{ scheme: 'file', language: 'meshr' }],
-        synchronize: {
-            fileEvents: vscode.workspace.createFileSystemWatcher('**/.meshr')
-        }
-    };
-
-    // Créer le client LSP
-    client = new LanguageClient(
-        'meshr-lang-server',
-        'Meshr-Lang Language Server',
-        serverOptions,
-        clientOptions
-    );
-
-    // Démarrer le client
-    client.start();
-
-    // Enregistrer les commandes
-    context.subscriptions.push(
-        vscode.commands.registerCommand('meshr-lang.restartServer', () => {
-            restartServer();
-        })
-    );
-
-    context.subscriptions.push(
-        vscode.commands.registerCommand('meshr-lang.showOutput', () => {
-            client.outputChannel.show();
-        })
-    );
-
-    // Nettoyer à la désactivation
-    context.subscriptions.push({
-        dispose: () => {
-            if (client) {
-                client.stop();
-            }
-        }
+    
+    // Écouter les documents
+    vscode.workspace.textDocuments.forEach(analyzeDocument);
+    vscode.workspace.onDidOpenTextDocument(analyzeDocument);
+    vscode.workspace.onDidChangeTextDocument(event => {
+        analyzeDocument(event.document);
     });
 }
 
-export function deactivate(): Thenable<void> | undefined {
-    if (!client) {
-        return undefined;
-    }
-    return client.stop();
-}
-
-function getServerCommand(): string {
-    const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get<string>('path', '~/.pyenv/versions/3.12.0/bin/python3');
-}
-
-function getServerArgs(): string[] {
-    const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    return config.get<string[]>('args', ['lsp/server/main.py']);
-}
-
-function getServerCwd(): string {
-    const config = vscode.workspace.getConfiguration('meshr-lang.server');
-    const cwd = config.get<string>('cwd', '${workspaceFolder}');
-    
-    // Remplacer les variables d'environnement
-    if (cwd.includes('${workspaceFolder}')) {
-        const workspaceFolder = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
-        if (workspaceFolder) {
-            return cwd.replace('${workspaceFolder}', workspaceFolder);
-        }
-    }
-    
-    return cwd;
-}
-
-async function restartServer(): Promise<void> {
-    if (client) {
-        await client.stop();
-        client.start();
-        vscode.window.showInformationMessage('Serveur LSP Meshr-Lang redémarré');
-    }
+export function deactivate() {
+    console.log('Extension Meshr-Lang ULTRA SIMPLE désactivée');
 }
