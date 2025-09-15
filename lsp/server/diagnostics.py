@@ -5,6 +5,7 @@ Diagnostics et validation pour Meshr-Lang
 import logging
 from typing import List, Optional, Any
 from lsprotocol.types import Diagnostic, Position, Range, DiagnosticSeverity
+from .semantic_validator import SemanticValidator
 
 logger = logging.getLogger(__name__)
 
@@ -13,14 +14,16 @@ class MeshrDiagnostics:
     
     def __init__(self, parser):
         self.parser = parser
+        self.semantic_validator = SemanticValidator()
     
-    def analyze(self, tree: Optional[Any], uri: str) -> List[Diagnostic]:
+    def analyze(self, tree: Optional[Any], uri: str, text: str = "") -> List[Diagnostic]:
         """
         Analyse l'arbre de syntaxe et génère les diagnostics
         
         Args:
             tree: L'arbre de syntaxe abstraite
             uri: URI du document
+            text: Le contenu du document (pour la validation sémantique)
             
         Returns:
             Liste des diagnostics
@@ -40,8 +43,13 @@ class MeshrDiagnostics:
             ))
             return diagnostics
         
-        # Analyser l'arbre pour détecter les erreurs
+        # Analyser l'arbre pour détecter les erreurs de syntaxe
         diagnostics.extend(self._analyze_tree(tree))
+        
+        # Ajouter la validation sémantique si le texte est fourni
+        if text:
+            semantic_diagnostics = self.semantic_validator.validate(text)
+            diagnostics.extend(semantic_diagnostics)
         
         return diagnostics
     
@@ -49,8 +57,31 @@ class MeshrDiagnostics:
         """Analyse récursive de l'arbre de syntaxe"""
         diagnostics = []
         
-        # TODO: Implémenter l'analyse spécifique selon le type de nœud
-        # Pour l'instant, on retourne une liste vide
+        # Récupérer les erreurs de syntaxe du parser
+        syntax_errors = self.parser.get_syntax_errors()
+        if syntax_errors:
+            diagnostics.extend(self._extract_syntax_errors(syntax_errors))
+        
+        return diagnostics
+    
+    def _extract_syntax_errors(self, syntax_errors: List[dict]) -> List[Diagnostic]:
+        """Extrait les erreurs de syntaxe de l'arbre ANTLR"""
+        diagnostics = []
+        
+        for error in syntax_errors:
+            # Convertir les numéros de ligne (ANTLR commence à 1, LSP à 0)
+            line = error['line'] - 1 if error['line'] > 0 else 0
+            column = error['column']
+            
+            diagnostics.append(Diagnostic(
+                range=Range(
+                    start=Position(line=line, character=column),
+                    end=Position(line=line, character=column + 1)
+                ),
+                message=error['message'],
+                severity=DiagnosticSeverity.Error,
+                source="meshr-lang"
+            ))
         
         return diagnostics
     

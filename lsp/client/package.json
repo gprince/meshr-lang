@@ -4,6 +4,7 @@
   "description": "Support du langage Meshr-Lang pour VSCode/Cursor",
   "version": "0.1.0",
   "publisher": "meshr-lang",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -22,11 +23,16 @@
     "type": "git",
     "url": "https://github.com/meshr-lang/meshr-lang.git"
   },
-  "license": "MIT",
   "activationEvents": [
-    "onLanguage:meshr"
+    "onLanguage:meshr",
+    "onCommand:meshr-lang.test",
+    "onCommand:meshr-lang.startServer",
+    "onCommand:meshr-lang.restartServer",
+    "onCommand:meshr-lang.stopServer",
+    "onCommand:meshr-lang.showOutput",
+    "onCommand:meshr-lang.revalidate"
   ],
-  "main": "./out/extension.js",
+  "main": "./out/extension_bundled.js",
   "contributes": {
     "languages": [
       {
@@ -56,6 +62,21 @@
     ],
     "commands": [
       {
+        "command": "meshr-lang.test",
+        "title": "Test",
+        "category": "Meshr-Lang"
+      },
+      {
+        "command": "meshr-lang.startServer",
+        "title": "Démarrer le serveur LSP",
+        "category": "Meshr-Lang"
+      },
+      {
+        "command": "meshr-lang.stopServer",
+        "title": "Arrêter le serveur LSP",
+        "category": "Meshr-Lang"
+      },
+      {
         "command": "meshr-lang.restartServer",
         "title": "Redémarrer le serveur LSP",
         "category": "Meshr-Lang"
@@ -63,6 +84,11 @@
       {
         "command": "meshr-lang.showOutput",
         "title": "Afficher la sortie du serveur",
+        "category": "Meshr-Lang"
+      },
+      {
+        "command": "meshr-lang.revalidate",
+        "title": "Revalider les diagnostics",
         "category": "Meshr-Lang"
       }
     ],
@@ -76,7 +102,10 @@
         },
         "meshr-lang.server.args": {
           "type": "array",
-          "default": ["-m", "lsp.server.main"],
+          "default": [
+            "-m",
+            "lsp.server.main"
+          ],
           "description": "Arguments pour le serveur LSP"
         },
         "meshr-lang.server.cwd": {
@@ -98,20 +127,24 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npm run bundle",
     "compile": "tsc -p ./",
+    "bundle": "webpack --mode production",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@types/vscode": "^1.74.0",
     "@types/node": "16.x",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^5.45.0",
     "@typescript-eslint/parser": "^5.45.0",
     "eslint": "^8.28.0",
-    "typescript": "^4.9.4"
+    "ts-loader": "^9.5.4",
+    "typescript": "^4.9.4",
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"

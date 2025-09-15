@@ -7,7 +7,76 @@
 > **Version :** 0.1.0  
 > **Statut :** En conception active  
 > **Mainteneur :** G. Prince - Architecte Principal
-> **Dernière mise à jour :** 2025-01-12
+> **Dernière mise à jour :** 2025-09-15
+
+---
+
+## 🎯 Introduction
+
+**Meshr-Lang** est un langage de modélisation déclaratif conçu spécifiquement pour l'architecture **Data Mesh** et la gouvernance des données à l'échelle de l'entreprise. Il répond aux défis modernes de la gestion des données distribuées en offrant une syntaxe claire, expressive et alignée sur les principes de l'architecture Data Mesh.
+
+### 🧭 Contexte et motivation
+
+Dans un monde où les données deviennent le moteur de l'innovation, les organisations font face à des défis croissants :
+
+- **📊 Explosion du volume de données** : Multiplication des sources et formats
+- **🏢 Complexité organisationnelle** : Données dispersées dans des silos métier
+- **🔒 Exigences de conformité** : RGPD, SOX, HIPAA et autres réglementations
+- **⚡ Besoin d'agilité** : Time-to-market critique pour les produits data
+- **🎯 Qualité et fiabilité** : Confiance dans les données pour la prise de décision
+
+L'architecture **Data Mesh** émerge comme une solution à ces défis, mais nécessite des outils et langages adaptés pour être mise en œuvre efficacement.
+
+### 🎨 Philosophie du langage
+
+Meshr-Lang s'inspire de plusieurs principes fondamentaux :
+
+#### 🏗️ **Déclaratif avant tout**
+- **Ce que vous voulez**, pas comment l'obtenir
+- Focus sur la **sémantique métier** plutôt que l'implémentation technique
+- **Lisibilité** et **expressivité** au cœur du design
+
+#### 🌐 **Data Mesh Native**
+- **Domaine-centré** : Chaque module représente un domaine métier
+- **Décentralisé** : Pas de dépendance à une architecture centralisée
+- **Self-serve** : Outils et patterns intégrés pour l'autonomie des équipes
+
+#### 🔧 **Pragmatique et évolutif**
+- **Syntaxe simple** mais **puissante**
+- **Extensibilité** via les annotations et aspects
+- **Intégration** avec l'écosystème existant
+
+### 🚀 Valeur ajoutée
+
+Meshr-Lang apporte une **valeur unique** dans l'écosystème des langages de modélisation :
+
+| Aspect | Meshr-Lang | Alternatives |
+|--------|------------|--------------|
+| **Focus Data Mesh** | ✅ Natif | ❌ Générique |
+| **Gouvernance intégrée** | ✅ Built-in | ❌ Externe |
+| **Syntaxe déclarative** | ✅ Simple | ❌ Complexe |
+| **Annotations riches** | ✅ Expressives | ❌ Basiques |
+| **Évolutivité** | ✅ Modulaire | ❌ Monolithique |
+
+### 🎯 Public cible
+
+Ce langage s'adresse à :
+
+- **🏢 Data Architects** : Conception d'architectures Data Mesh
+- **📊 Data Product Owners** : Définition de produits de données
+- **🔒 Data Stewards** : Gouvernance et qualité des données
+- **👨‍💻 Data Engineers** : Implémentation et intégration
+- **📈 Data Analysts** : Compréhension et utilisation des données
+- **⚖️ Compliance Officers** : Conformité et audit
+
+### 🌟 Vision à long terme
+
+Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data Mesh, en offrant :
+
+- **🌍 Adoption large** dans l'industrie
+- **🔧 Écosystème riche** d'outils et intégrations
+- **📚 Communauté active** de contributeurs
+- **🎓 Formation et certification** pour les professionnels
 
 ---
 
@@ -92,6 +161,80 @@ Meshr-Lang s'inscrit dans la philosophie du **Data Mesh** et des architectures d
 - **La documentation est vivante** : Le code source devient la source de vérité pour l'architecture
 - **L'automatisation est centrale** : Les modèles déclaratifs génèrent automatiquement les artefacts techniques
 - **La gouvernance est intégrée** : Les politiques et contraintes sont exprimées directement dans le modèle
+
+### 🧠 Rationnel du langage
+
+#### 🔍 Pourquoi un nouveau langage ?
+
+L'écosystème actuel des langages de modélisation présente plusieurs limitations pour l'architecture Data Mesh :
+
+**❌ Langages existants inadaptés :**
+- **UML** : Trop générique, pas de support natif pour les concepts Data Mesh
+- **JSON Schema** : Syntaxe verbeuse, pas de support pour les relations complexes
+- **YAML** : Pas de validation de types, syntaxe peu expressive
+- **GraphQL Schema** : Limité aux APIs, pas de support pour la gouvernance
+- **OpenAPI** : Focus API uniquement, pas de modélisation métier
+
+**✅ Besoins spécifiques Data Mesh :**
+- **Domaine-centré** : Modélisation des domaines métier et leurs frontières
+- **Gouvernance intégrée** : Support natif pour les politiques et contraintes
+- **Relations complexes** : Modélisation des dépendances entre produits de données
+- **Métadonnées riches** : Annotations et aspects pour la documentation
+- **Évolutivité** : Support pour l'architecture distribuée et décentralisée
+
+#### 🎨 Choix de design
+
+**1. Syntaxe déclarative**
+```meshr
+// Ce que vous voulez, pas comment l'obtenir
+entity Customer is
+  id : String
+  name : String
+  email : String pattern "^[^@]+@[^@]+$"
+end
+```
+
+**2. Types riches et contraints**
+```meshr
+// Types avec contraintes intégrées
+type Email is String pattern "^[^@]+@[^@]+$"
+type Age is Integer range 0..150
+type PhoneNumber is String pattern "^\\+?[1-9]\\d{1,14}$"
+```
+
+**3. Annotations expressives**
+```meshr
+@Version("1.2.0")
+@Author(name="Data Team", email="data@company.com")
+@Documented(summary="Customer data model")
+@Confidentiality("internal")
+entity Customer is
+  // ...
+end
+```
+
+**4. Relations sémantiques**
+```meshr
+// Relations avec sémantique métier
+relation CustomerOrder from Customer(id) to Order(customerId)
+relation ProductCategory from Product(id) to Category(id)
+```
+
+#### 🏗️ Architecture du langage
+
+**Composants clés :**
+
+1. **📦 Modules** : Unités de déploiement et de versioning
+2. **🏷️ Types** : Système de types riche avec contraintes
+3. **🔗 Relations** : Modélisation des dépendances métier
+4. **📝 Annotations** : Métadonnées et documentation intégrée
+5. **🎯 Aspects** : Comportements transversaux (sécurité, qualité, etc.)
+
+**Principe de composition :**
+- **Modulaire** : Chaque module est autonome
+- **Composable** : Les modules peuvent s'assembler
+- **Extensible** : Nouvelles fonctionnalités via les aspects
+- **Validable** : Vérification statique des contraintes
 
 ### 🚀 Objectifs principaux
 
@@ -334,11 +477,46 @@ enum PIICategory is (contact, identity, financial, health, biometric, location)
 enum SensitivityLevel is (public, internal, restricted, confidential)
 ```
 
-- Doit apparaître juste **après les imports**, jamais en fin de module.
+- Peut apparaître **n'importe où dans le module** pour une meilleure organisation.
 - Permet de déclarer tous les artefacts exportés en un seul point.
-- Aucune déclaration listée dans ce bloc n’a besoin du mot-clé `export` en ligne.
+- Aucune déclaration listée dans ce bloc n'a besoin du mot-clé `export` en ligne.
+- **Flexibilité maximale** : plusieurs exports groupés autorisés pour organiser le code par sections logiques.
 
-#### 🧠 Règles de priorité d’export
+#### 🎯 Exemple d'organisation flexible
+
+```meshr
+@Version("1.0.0")
+module my.data
+
+import { DataClassification } from meshr.security
+
+// Export des types de base
+export { UserStatus, Department }
+
+enum UserStatus is ("active", "inactive", "pending")
+enum Department is ("hr", "finance", "engineering")
+
+// Export des entités principales
+export { User, Profile }
+
+entity User is
+  id : String
+  name : String
+  status : UserStatus
+end
+
+entity Profile is
+  userId : String
+  department : Department
+end
+
+// Export des relations
+export { UserProfile }
+
+relation UserProfile from User(id) to Profile(userId)
+```
+
+#### 🧠 Règles de priorité d'export
 
 1. Une déclaration précédée de `export` est **immédiatement publique**.
 2. Une déclaration listée dans `export { ... }` devient **publique à posteriori**.

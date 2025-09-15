@@ -4,6 +4,8 @@
 // Module de sécurité pour la classification des données,
 // la conformité GDPR et le contrôle d'accès
 
+@Version("1.0.0")
+@Documented(summary="Module de sécurité pour la classification des données, la conformité GDPR et le contrôle d'accès")
 module meshr.security
 
 export { 

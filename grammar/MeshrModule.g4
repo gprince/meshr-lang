@@ -4,7 +4,7 @@ grammar MeshrModule;
 // Entrée principale
 // ==============================
 compilationUnit
-    : annotatedModuleDecl importDecl* exportDecl* topLevelDecl* EOF
+    : annotatedModuleDecl importDecl* (exportDecl | topLevelDecl)* EOF
     ;
 
 // ==============================

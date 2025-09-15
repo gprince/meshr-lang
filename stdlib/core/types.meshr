@@ -3,6 +3,8 @@
 // ==============================
 // Module de types de base et communs pour la stdlib
 
+@Version("1.0.0")
+@Documented(summary="Types de base et communs pour la stdlib Meshr-Lang")
 module meshr.types
 
 export { 

@@ -22,342 +22,9 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css" />
 </head>
 <body>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#meshr-lang-documentation-du-langage"
-id="toc-meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
-du langage</a>
-<ul>
-<li><a href="#table-des-matières" id="toc-table-des-matières">📑 Table
-des matières</a>
-<ul>
-<li><a href="#introduction" id="toc-introduction">🎯
-Introduction</a></li>
-<li><a href="#syntaxe-et-concepts-de-base"
-id="toc-syntaxe-et-concepts-de-base">🔤 Syntaxe et concepts de
-base</a></li>
-<li><a href="#organisation-du-code" id="toc-organisation-du-code">📦
-Organisation du code</a></li>
-<li><a href="#métadonnées-et-annotations"
-id="toc-métadonnées-et-annotations">🏷️ Métadonnées et
-annotations</a></li>
-<li><a href="#types-de-données" id="toc-types-de-données">🔢 Types de
-données</a></li>
-<li><a href="#contrôles-avancés" id="toc-contrôles-avancés">🔒 Contrôles
-avancés</a></li>
-<li><a href="#ressources-et-bonnes-pratiques"
-id="toc-ressources-et-bonnes-pratiques">📚 Ressources et bonnes
-pratiques</a></li>
-<li><a href="#annexes" id="toc-annexes">📖 Annexes</a></li>
-</ul></li>
-<li><a href="#objectif-du-langage" id="toc-objectif-du-langage">🧭
-Objectif du langage</a>
-<ul>
-<li><a href="#vision-et-philosophie" id="toc-vision-et-philosophie">🎯
-Vision et philosophie</a></li>
-<li><a href="#objectifs-principaux" id="toc-objectifs-principaux">🚀
-Objectifs principaux</a></li>
-<li><a href="#avantages-clés" id="toc-avantages-clés">🌟 Avantages
-clés</a></li>
-</ul></li>
-<li><a href="#syntaxe-de-base" id="toc-syntaxe-de-base">🔤 Syntaxe de
-base</a>
-<ul>
-<li><a href="#structure-des-fichiers" id="toc-structure-des-fichiers">📄
-Structure des fichiers</a></li>
-<li><a href="#style-déclaratif" id="toc-style-déclaratif">🎨 Style
-déclaratif</a></li>
-<li><a href="#commentaires" id="toc-commentaires">💬
-Commentaires</a></li>
-<li><a href="#types-de-valeurs-primitives"
-id="toc-types-de-valeurs-primitives">🔢 Types de valeurs
-primitives</a></li>
-<li><a href="#structure-dun-module" id="toc-structure-dun-module">🏗️
-Structure d’un module</a></li>
-</ul></li>
-<li><a href="#déclaration-des-modules-et-imports"
-id="toc-déclaration-des-modules-et-imports">📦 Déclaration des modules
-et imports</a>
-<ul>
-<li><a href="#concept-et-objectifs" id="toc-concept-et-objectifs">🎯
-Concept et objectifs</a></li>
-<li><a href="#architecture-modulaire" id="toc-architecture-modulaire">🏗️
-Architecture modulaire</a></li>
-<li><a href="#syntaxe" id="toc-syntaxe">📐 Syntaxe</a></li>
-<li><a href="#sémantique" id="toc-sémantique">📚 Sémantique</a></li>
-<li><a href="#types-dimports-supportés"
-id="toc-types-dimports-supportés">🔧 Types d’imports supportés</a></li>
-<li><a href="#ordre-des-déclarations" id="toc-ordre-des-déclarations">📋
-Ordre des déclarations</a></li>
-<li><a href="#export-des-déclarations"
-id="toc-export-des-déclarations">📤 Export des déclarations</a></li>
-<li><a href="#convention-darborescence"
-id="toc-convention-darborescence">📁 Convention d’arborescence</a></li>
-</ul></li>
-<li><a href="#annotations" id="toc-annotations">🏷️ Annotations</a>
-<ul>
-<li><a href="#syntaxe-1" id="toc-syntaxe-1">📐 Syntaxe</a></li>
-<li><a href="#règles" id="toc-règles">🧠 Règles</a></li>
-<li><a href="#annotations-avec-arguments-typés"
-id="toc-annotations-avec-arguments-typés">🧩 [2025-09-10] — Annotations
-avec arguments typés</a></li>
-<li><a href="#déclaration-des-types-dannotations"
-id="toc-déclaration-des-types-dannotations">✍️ Déclaration des types
-d’annotations</a></li>
-<li><a href="#types-de-base-autorisés-pour-les-annotations"
-id="toc-types-de-base-autorisés-pour-les-annotations">🔤 Types de base
-autorisés pour les annotations</a></li>
-<li><a href="#contraintes-sur-les-types-string"
-id="toc-contraintes-sur-les-types-string">🎯 Contraintes sur les types
-String</a></li>
-<li><a href="#annotations-standard-stdlib"
-id="toc-annotations-standard-stdlib">🏷️ Annotations Standard
-(StdLib)</a></li>
-</ul></li>
-<li><a href="#énumérations" id="toc-énumérations">🔢 Énumérations</a>
-<ul>
-<li><a href="#concept-et-objectifs-1" id="toc-concept-et-objectifs-1">🎯
-Concept et objectifs</a></li>
-<li><a href="#types-dénumérations" id="toc-types-dénumérations">🏗️ Types
-d’énumérations</a></li>
-<li><a href="#syntaxe-simple-inline" id="toc-syntaxe-simple-inline">📐
-Syntaxe simple (inline)</a></li>
-<li><a href="#export-groupé" id="toc-export-groupé">📤 Export
-groupé</a></li>
-<li><a href="#règles-1" id="toc-règles-1">🧠 Règles</a></li>
-<li><a href="#enums-avec-attributs-typés"
-id="toc-enums-avec-attributs-typés">🧩 [2025-09-10] — Enums avec
-attributs typés</a></li>
-<li><a href="#syntaxe-enrichie" id="toc-syntaxe-enrichie">🧬 Syntaxe
-enrichie</a></li>
-<li><a href="#règles-2" id="toc-règles-2">🔎 Règles</a></li>
-<li><a href="#intervalles-interval" id="toc-intervalles-interval">⏱️
-Intervalles (Interval)</a></li>
-<li><a href="#types-composites-list-map-range-record"
-id="toc-types-composites-list-map-range-record">🧩 Types composites:
-List, Map, Range, Record</a></li>
-</ul></li>
-<li><a href="#records-et-collections" id="toc-records-et-collections">📋
-Records et Collections</a>
-<ul>
-<li><a href="#syntaxe-des-records" id="toc-syntaxe-des-records">📐
-Syntaxe des Records</a></li>
-<li><a href="#types-de-collections" id="toc-types-de-collections">🧩
-Types de Collections</a></li>
-<li><a href="#collections-imbriquées" id="toc-collections-imbriquées">🔗
-Collections imbriquées</a></li>
-<li><a href="#usage-dans-tous-les-contextes"
-id="toc-usage-dans-tous-les-contextes">🎯 Usage dans tous les
-contextes</a></li>
-<li><a href="#règles-sémantiques-1" id="toc-règles-sémantiques-1">🧠
-Règles sémantiques</a></li>
-</ul></li>
-<li><a href="#entités-et-relations" id="toc-entités-et-relations">🏗️
-Entités et Relations</a>
-<ul>
-<li><a href="#entités" id="toc-entités">🏢 Entités</a></li>
-<li><a href="#types-de-relations" id="toc-types-de-relations">🔗 Types
-de Relations</a></li>
-<li><a href="#relations" id="toc-relations">🔗 Relations</a></li>
-<li><a href="#caractéristiques-des-entités-et-relations"
-id="toc-caractéristiques-des-entités-et-relations">🎯 Caractéristiques
-des Entités et Relations</a></li>
-</ul></li>
-<li><a href="#traits" id="toc-traits">🧩 Traits</a>
-<ul>
-<li><a href="#concept-et-rôle-1" id="toc-concept-et-rôle-1">🎯 Concept
-et rôle</a></li>
-<li><a href="#caractéristiques-des-traits"
-id="toc-caractéristiques-des-traits">🏗️ Caractéristiques des
-traits</a></li>
-<li><a href="#différence-avec-les-aspects"
-id="toc-différence-avec-les-aspects">🔄 Différence avec les
-aspects</a></li>
-<li><a href="#syntaxe-3" id="toc-syntaxe-3">📐 Syntaxe</a></li>
-<li><a href="#injection-via-with" id="toc-injection-via-with">🔗
-Injection via <code>with</code></a></li>
-<li><a href="#aspects-dans-les-traits"
-id="toc-aspects-dans-les-traits">🎭 Aspects dans les Traits</a></li>
-<li><a href="#règles-de-composition-sémantique"
-id="toc-règles-de-composition-sémantique">🧠 Règles de composition
-(sémantique)</a></li>
-<li><a href="#module-unité-namespace-et-fichier-unique"
-id="toc-module-unité-namespace-et-fichier-unique">🧩 [2025-09-09] —
-Module = unité, namespace et fichier unique</a></li>
-</ul></li>
-<li><a href="#aspects" id="toc-aspects">🎭 Aspects</a>
-<ul>
-<li><a href="#concept-et-rôle-2" id="toc-concept-et-rôle-2">🎯 Concept
-et rôle</a></li>
-<li><a href="#caractéristiques-des-aspects"
-id="toc-caractéristiques-des-aspects">🏗️ Caractéristiques des
-aspects</a></li>
-<li><a href="#syntaxe-de-base-1" id="toc-syntaxe-de-base-1">🔧 Syntaxe
-de base</a></li>
-<li><a href="#héritage-et-composition"
-id="toc-héritage-et-composition">🏗️ Héritage et composition</a></li>
-<li><a href="#types-daspects" id="toc-types-daspects">🎯 Types
-d’Aspects</a></li>
-<li><a href="#champs-et-contraintes" id="toc-champs-et-contraintes">📝
-Champs et contraintes</a></li>
-<li><a href="#annotations-sur-les-aspects"
-id="toc-annotations-sur-les-aspects">🏷️ Annotations sur les
-Aspects</a></li>
-<li><a href="#règles-de-composition" id="toc-règles-de-composition">🧠
-Règles de composition</a></li>
-<li><a href="#instanciation-future" id="toc-instanciation-future">🔮
-Instanciation (future)</a></li>
-</ul></li>
-<li><a href="#modificateur-sealed" id="toc-modificateur-sealed">🔒
-Modificateur <code>sealed</code></a>
-<ul>
-<li><a href="#syntaxe-4" id="toc-syntaxe-4">📐 Syntaxe</a></li>
-<li><a href="#règles-dhéritage-et-dextension"
-id="toc-règles-dhéritage-et-dextension">🔒 Règles d’héritage et
-d’extension</a></li>
-<li><a href="#exemples-valides" id="toc-exemples-valides">📝 Exemples
-valides</a></li>
-<li><a href="#exemples-invalides" id="toc-exemples-invalides">❌
-Exemples invalides</a></li>
-<li><a href="#règles-sémantiques-2" id="toc-règles-sémantiques-2">🧠
-Règles sémantiques</a></li>
-</ul></li>
-<li><a href="#artefacts-définissables"
-id="toc-artefacts-définissables">🧱 Artefacts définissables</a>
-<ul>
-<li><a href="#domain" id="toc-domain">1. <code>domain</code></a></li>
-<li><a href="#product" id="toc-product">2. <code>product</code></a></li>
-<li><a href="#contract" id="toc-contract">3.
-<code>contract</code></a></li>
-<li><a href="#aspect-1" id="toc-aspect-1">4.
-<code>aspect</code></a></li>
-<li><a href="#team" id="toc-team">5. <code>team</code></a></li>
-<li><a href="#policy" id="toc-policy">6. <code>policy</code></a></li>
-</ul></li>
-<li><a href="#décisions-de-conception"
-id="toc-décisions-de-conception">📘 Décisions de conception</a>
-<ul>
-<li><a href="#syntaxe-déclarative-avec-blocs"
-id="toc-syntaxe-déclarative-avec-blocs">🧩 [2025-09-09] — Syntaxe
-déclarative avec blocs <code>{}</code></a></li>
-<li><a href="#visibilité-par-export-explicite"
-id="toc-visibilité-par-export-explicite">🧩 [2025-09-10] — Visibilité
-par export explicite</a></li>
-<li><a href="#deux-formes-dexport-inline-ou-groupé"
-id="toc-deux-formes-dexport-inline-ou-groupé">🧩 [2025-09-10] — Deux
-formes d’export : inline ou groupé</a></li>
-<li><a href="#modificateur-sealed-pour-contrôler-lextensibilité"
-id="toc-modificateur-sealed-pour-contrôler-lextensibilité">🧩
-[2025-09-12] — Modificateur <code>sealed</code> pour contrôler
-l’extensibilité</a></li>
-<li><a href="#types-de-collections-typés-et-littéraux"
-id="toc-types-de-collections-typés-et-littéraux">🧩 [2025-09-12] — Types
-de collections typés et littéraux</a></li>
-<li><a href="#entités-et-relations-pour-la-modélisation-de-données"
-id="toc-entités-et-relations-pour-la-modélisation-de-données">🧩
-[2025-09-12] — Entités et Relations pour la modélisation de
-données</a></li>
-</ul></li>
-<li><a href="#bibliothèque-standard-stdlib"
-id="toc-bibliothèque-standard-stdlib">📚 Bibliothèque Standard
-(StdLib)</a>
-<ul>
-<li><a href="#objectifs" id="toc-objectifs">🎯 Objectifs</a></li>
-<li><a href="#modules-disponibles" id="toc-modules-disponibles">📦
-Modules disponibles</a></li>
-<li><a href="#structure-actuelle" id="toc-structure-actuelle">🏗️
-Structure actuelle</a></li>
-<li><a href="#cas-dusage" id="toc-cas-dusage">🎯 Cas d’usage</a></li>
-<li><a href="#roadmap" id="toc-roadmap">📋 Roadmap</a></li>
-</ul></li>
-<li><a href="#à-venir" id="toc-à-venir">🚧 À venir</a></li>
-<li><a href="#exemples-pratiques-et-cas-dusage"
-id="toc-exemples-pratiques-et-cas-dusage">🚀 Exemples pratiques et cas
-d’usage</a>
-<ul>
-<li><a href="#cas-dusage-1-e-commerce-et-gestion-des-commandes"
-id="toc-cas-dusage-1-e-commerce-et-gestion-des-commandes">🛒 Cas d’usage
-1 : E-commerce et gestion des commandes</a></li>
-<li><a href="#cas-dusage-2-architecture-data-mesh---domaine-rh"
-id="toc-cas-dusage-2-architecture-data-mesh---domaine-rh">🏢 Cas d’usage
-2 : Architecture Data Mesh - Domaine RH</a></li>
-<li><a href="#cas-dusage-3-secteur-financier---gestion-des-comptes"
-id="toc-cas-dusage-3-secteur-financier---gestion-des-comptes">🏦 Cas
-d’usage 3 : Secteur financier - Gestion des comptes</a></li>
-<li><a
-href="#cas-dusage-4-intégration-technique---apis-et-microservices"
-id="toc-cas-dusage-4-intégration-technique---apis-et-microservices">🔧
-Cas d’usage 4 : Intégration technique - APIs et microservices</a></li>
-</ul></li>
-<li><a href="#bonnes-pratiques-et-conventions"
-id="toc-bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
-conventions</a>
-<ul>
-<li><a href="#conventions-de-nommage" id="toc-conventions-de-nommage">📝
-Conventions de nommage</a></li>
-<li><a href="#organisation-des-modules"
-id="toc-organisation-des-modules">🏗️ Organisation des modules</a></li>
-<li><a href="#utilisation-des-traits-et-aspects"
-id="toc-utilisation-des-traits-et-aspects">🔧 Utilisation des traits et
-aspects</a></li>
-<li><a href="#documentation-et-commentaires"
-id="toc-documentation-et-commentaires">📋 Documentation et
-commentaires</a></li>
-<li><a href="#gestion-des-erreurs-et-validation"
-id="toc-gestion-des-erreurs-et-validation">🚨 Gestion des erreurs et
-validation</a></li>
-<li><a href="#sécurité-et-conformité" id="toc-sécurité-et-conformité">🔒
-Sécurité et conformité</a></li>
-<li><a href="#tests-et-validation" id="toc-tests-et-validation">🧪 Tests
-et validation</a></li>
-</ul></li>
-<li><a href="#annexes-1" id="toc-annexes-1">Annexes</a>
-<ul>
-<li><a href="#annexe-a-grammaire-ebnf-référence"
-id="toc-annexe-a-grammaire-ebnf-référence">Annexe A — Grammaire EBNF
-(référence)</a></li>
-<li><a href="#annexe-b-grammaire-antlr-référence-python-target"
-id="toc-annexe-b-grammaire-antlr-référence-python-target">Annexe B —
-Grammaire ANTLR (référence, Python target)</a></li>
-</ul></li>
-<li><a href="#annexe-a-guide-complet-des-littéraux"
-id="toc-annexe-a-guide-complet-des-littéraux">📚 <strong>Annexe A :
-Guide complet des littéraux</strong></a>
-<ul>
-<li><a href="#littéraux-primitifs" id="toc-littéraux-primitifs">🔤
-<strong>Littéraux primitifs</strong></a></li>
-<li><a href="#littéraux-composites" id="toc-littéraux-composites">📦
-<strong>Littéraux composites</strong></a></li>
-<li><a href="#littéraux-spécialisés" id="toc-littéraux-spécialisés">🌍
-<strong>Littéraux spécialisés</strong></a></li>
-<li><a href="#littéraux-temporels" id="toc-littéraux-temporels">⏰
-<strong>Littéraux temporels</strong></a></li>
-<li><a href="#littéraux-sql" id="toc-littéraux-sql">🗄️ <strong>Littéraux
-SQL</strong></a></li>
-<li><a href="#exemples-dusage-dans-les-annotations"
-id="toc-exemples-dusage-dans-les-annotations">🎯 <strong>Exemples
-d’usage dans les annotations</strong></a></li>
-<li><a href="#exemples-dusage-dans-les-enums"
-id="toc-exemples-dusage-dans-les-enums">🔧 <strong>Exemples d’usage dans
-les enums</strong></a></li>
-<li><a href="#exemples-dusage-dans-les-records"
-id="toc-exemples-dusage-dans-les-records">📋 <strong>Exemples d’usage
-dans les records</strong></a></li>
-<li><a href="#exemples-dusage-dans-les-aspects"
-id="toc-exemples-dusage-dans-les-aspects">🎨 <strong>Exemples d’usage
-dans les aspects</strong></a></li>
-<li><a href="#exemples-dusage-dans-les-entités"
-id="toc-exemples-dusage-dans-les-entités">🏗️ <strong>Exemples d’usage
-dans les entités</strong></a></li>
-<li><a href="#conseils-dutilisation" id="toc-conseils-dutilisation">💡
-<strong>Conseils d’utilisation</strong></a></li>
-</ul></li>
-</ul></li>
-</ul>
-</nav>
 <h1 id="meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
 du langage</h1>
 <div data-align="center">
@@ -367,11 +34,128 @@ du langage</h1>
 <p><strong>Version :</strong> 0.1.0<br />
 <strong>Statut :</strong> En conception active<br />
 <strong>Mainteneur :</strong> G. Prince - Architecte Principal
-<strong>Dernière mise à jour :</strong> 2025-01-12</p>
+<strong>Dernière mise à jour :</strong> 2025-09-15</p>
 </blockquote>
 <hr />
+<h2 id="introduction">🎯 Introduction</h2>
+<p><strong>Meshr-Lang</strong> est un langage de modélisation déclaratif
+conçu spécifiquement pour l’architecture <strong>Data Mesh</strong> et
+la gouvernance des données à l’échelle de l’entreprise. Il répond aux
+défis modernes de la gestion des données distribuées en offrant une
+syntaxe claire, expressive et alignée sur les principes de
+l’architecture Data Mesh.</p>
+<h3 id="contexte-et-motivation">🧭 Contexte et motivation</h3>
+<p>Dans un monde où les données deviennent le moteur de l’innovation,
+les organisations font face à des défis croissants :</p>
+<ul>
+<li><strong>📊 Explosion du volume de données</strong> : Multiplication
+des sources et formats</li>
+<li><strong>🏢 Complexité organisationnelle</strong> : Données
+dispersées dans des silos métier</li>
+<li><strong>🔒 Exigences de conformité</strong> : RGPD, SOX, HIPAA et
+autres réglementations</li>
+<li><strong>⚡ Besoin d’agilité</strong> : Time-to-market critique pour
+les produits data</li>
+<li><strong>🎯 Qualité et fiabilité</strong> : Confiance dans les
+données pour la prise de décision</li>
+</ul>
+<p>L’architecture <strong>Data Mesh</strong> émerge comme une solution à
+ces défis, mais nécessite des outils et langages adaptés pour être mise
+en œuvre efficacement.</p>
+<h3 id="philosophie-du-langage">🎨 Philosophie du langage</h3>
+<p>Meshr-Lang s’inspire de plusieurs principes fondamentaux :</p>
+<h4 id="déclaratif-avant-tout">🏗️ <strong>Déclaratif avant
+tout</strong></h4>
+<ul>
+<li><strong>Ce que vous voulez</strong>, pas comment l’obtenir</li>
+<li>Focus sur la <strong>sémantique métier</strong> plutôt que
+l’implémentation technique</li>
+<li><strong>Lisibilité</strong> et <strong>expressivité</strong> au cœur
+du design</li>
+</ul>
+<h4 id="data-mesh-native">🌐 <strong>Data Mesh Native</strong></h4>
+<ul>
+<li><strong>Domaine-centré</strong> : Chaque module représente un
+domaine métier</li>
+<li><strong>Décentralisé</strong> : Pas de dépendance à une architecture
+centralisée</li>
+<li><strong>Self-serve</strong> : Outils et patterns intégrés pour
+l’autonomie des équipes</li>
+</ul>
+<h4 id="pragmatique-et-évolutif">🔧 <strong>Pragmatique et
+évolutif</strong></h4>
+<ul>
+<li><strong>Syntaxe simple</strong> mais <strong>puissante</strong></li>
+<li><strong>Extensibilité</strong> via les annotations et aspects</li>
+<li><strong>Intégration</strong> avec l’écosystème existant</li>
+</ul>
+<h3 id="valeur-ajoutée">🚀 Valeur ajoutée</h3>
+<p>Meshr-Lang apporte une <strong>valeur unique</strong> dans
+l’écosystème des langages de modélisation :</p>
+<table>
+<thead>
+<tr>
+<th>Aspect</th>
+<th>Meshr-Lang</th>
+<th>Alternatives</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Focus Data Mesh</strong></td>
+<td>✅ Natif</td>
+<td>❌ Générique</td>
+</tr>
+<tr>
+<td><strong>Gouvernance intégrée</strong></td>
+<td>✅ Built-in</td>
+<td>❌ Externe</td>
+</tr>
+<tr>
+<td><strong>Syntaxe déclarative</strong></td>
+<td>✅ Simple</td>
+<td>❌ Complexe</td>
+</tr>
+<tr>
+<td><strong>Annotations riches</strong></td>
+<td>✅ Expressives</td>
+<td>❌ Basiques</td>
+</tr>
+<tr>
+<td><strong>Évolutivité</strong></td>
+<td>✅ Modulaire</td>
+<td>❌ Monolithique</td>
+</tr>
+</tbody>
+</table>
+<h3 id="public-cible">🎯 Public cible</h3>
+<p>Ce langage s’adresse à :</p>
+<ul>
+<li><strong>🏢 Data Architects</strong> : Conception d’architectures
+Data Mesh</li>
+<li><strong>📊 Data Product Owners</strong> : Définition de produits de
+données</li>
+<li><strong>🔒 Data Stewards</strong> : Gouvernance et qualité des
+données</li>
+<li><strong>👨‍💻 Data Engineers</strong> : Implémentation et
+intégration</li>
+<li><strong>📈 Data Analysts</strong> : Compréhension et utilisation des
+données</li>
+<li><strong>⚖️ Compliance Officers</strong> : Conformité et audit</li>
+</ul>
+<h3 id="vision-à-long-terme">🌟 Vision à long terme</h3>
+<p>Meshr-Lang aspire à devenir <strong>le standard de facto</strong>
+pour la modélisation Data Mesh, en offrant :</p>
+<ul>
+<li><strong>🌍 Adoption large</strong> dans l’industrie</li>
+<li><strong>🔧 Écosystème riche</strong> d’outils et intégrations</li>
+<li><strong>📚 Communauté active</strong> de contributeurs</li>
+<li><strong>🎓 Formation et certification</strong> pour les
+professionnels</li>
+</ul>
+<hr />
 <h2 id="table-des-matières">📑 Table des matières</h2>
-<h3 id="introduction">🎯 Introduction</h3>
+<h3 id="introduction-1">🎯 Introduction</h3>
 <ul>
 <li><a href="#-objectif-du-langage">🧭 Objectif du langage</a>
 <ul>
@@ -502,6 +286,71 @@ déclaratifs génèrent automatiquement les artefacts techniques</li>
 <li><strong>La gouvernance est intégrée</strong> : Les politiques et
 contraintes sont exprimées directement dans le modèle</li>
 </ul>
+<h3 id="rationnel-du-langage">🧠 Rationnel du langage</h3>
+<h4 id="pourquoi-un-nouveau-langage">🔍 Pourquoi un nouveau langage
+?</h4>
+<p>L’écosystème actuel des langages de modélisation présente plusieurs
+limitations pour l’architecture Data Mesh :</p>
+<p><strong>❌ Langages existants inadaptés :</strong> -
+<strong>UML</strong> : Trop générique, pas de support natif pour les
+concepts Data Mesh - <strong>JSON Schema</strong> : Syntaxe verbeuse,
+pas de support pour les relations complexes - <strong>YAML</strong> :
+Pas de validation de types, syntaxe peu expressive - <strong>GraphQL
+Schema</strong> : Limité aux APIs, pas de support pour la gouvernance -
+<strong>OpenAPI</strong> : Focus API uniquement, pas de modélisation
+métier</p>
+<p><strong>✅ Besoins spécifiques Data Mesh :</strong> -
+<strong>Domaine-centré</strong> : Modélisation des domaines métier et
+leurs frontières - <strong>Gouvernance intégrée</strong> : Support natif
+pour les politiques et contraintes - <strong>Relations
+complexes</strong> : Modélisation des dépendances entre produits de
+données - <strong>Métadonnées riches</strong> : Annotations et aspects
+pour la documentation - <strong>Évolutivité</strong> : Support pour
+l’architecture distribuée et décentralisée</p>
+<h4 id="choix-de-design">🎨 Choix de design</h4>
+<p><strong>1. Syntaxe déclarative</strong></p>
+<pre class="meshr"><code>// Ce que vous voulez, pas comment l&#39;obtenir
+entity Customer is
+  id : String
+  name : String
+  email : String pattern &quot;^[^@]+@[^@]+$&quot;
+end</code></pre>
+<p><strong>2. Types riches et contraints</strong></p>
+<pre class="meshr"><code>// Types avec contraintes intégrées
+type Email is String pattern &quot;^[^@]+@[^@]+$&quot;
+type Age is Integer range 0..150
+type PhoneNumber is String pattern &quot;^\\+?[1-9]\\d{1,14}$&quot;</code></pre>
+<p><strong>3. Annotations expressives</strong></p>
+<pre class="meshr"><code>@Version(&quot;1.2.0&quot;)
+@Author(name=&quot;Data Team&quot;, email=&quot;data@company.com&quot;)
+@Documented(summary=&quot;Customer data model&quot;)
+@Confidentiality(&quot;internal&quot;)
+entity Customer is
+  // ...
+end</code></pre>
+<p><strong>4. Relations sémantiques</strong></p>
+<pre class="meshr"><code>// Relations avec sémantique métier
+relation CustomerOrder from Customer(id) to Order(customerId)
+relation ProductCategory from Product(id) to Category(id)</code></pre>
+<h4 id="architecture-du-langage">🏗️ Architecture du langage</h4>
+<p><strong>Composants clés :</strong></p>
+<ol type="1">
+<li><strong>📦 Modules</strong> : Unités de déploiement et de
+versioning</li>
+<li><strong>🏷️ Types</strong> : Système de types riche avec
+contraintes</li>
+<li><strong>🔗 Relations</strong> : Modélisation des dépendances
+métier</li>
+<li><strong>📝 Annotations</strong> : Métadonnées et documentation
+intégrée</li>
+<li><strong>🎯 Aspects</strong> : Comportements transversaux (sécurité,
+qualité, etc.)</li>
+</ol>
+<p><strong>Principe de composition :</strong> -
+<strong>Modulaire</strong> : Chaque module est autonome -
+<strong>Composable</strong> : Les modules peuvent s’assembler -
+<strong>Extensible</strong> : Nouvelles fonctionnalités via les aspects
+- <strong>Validable</strong> : Vérification statique des contraintes</p>
 <h3 id="objectifs-principaux">🚀 Objectifs principaux</h3>
 <p>Meshr-Lang vise à offrir une syntaxe lisible, formelle et exécutable
 pour :</p>
@@ -778,13 +627,46 @@ exporter.</li>
 enum PIICategory is (contact, identity, financial, health, biometric, location)
 enum SensitivityLevel is (public, internal, restricted, confidential)</code></pre>
 <ul>
-<li>Doit apparaître juste <strong>après les imports</strong>, jamais en
-fin de module.</li>
+<li>Peut apparaître <strong>n’importe où dans le module</strong> pour
+une meilleure organisation.</li>
 <li>Permet de déclarer tous les artefacts exportés en un seul
 point.</li>
 <li>Aucune déclaration listée dans ce bloc n’a besoin du mot-clé
 <code>export</code> en ligne.</li>
+<li><strong>Flexibilité maximale</strong> : plusieurs exports groupés
+autorisés pour organiser le code par sections logiques.</li>
 </ul>
+<h4 id="exemple-dorganisation-flexible">🎯 Exemple d’organisation
+flexible</h4>
+<pre class="meshr"><code>@Version(&quot;1.0.0&quot;)
+module my.data
+
+import { DataClassification } from meshr.security
+
+// Export des types de base
+export { UserStatus, Department }
+
+enum UserStatus is (&quot;active&quot;, &quot;inactive&quot;, &quot;pending&quot;)
+enum Department is (&quot;hr&quot;, &quot;finance&quot;, &quot;engineering&quot;)
+
+// Export des entités principales
+export { User, Profile }
+
+entity User is
+  id : String
+  name : String
+  status : UserStatus
+end
+
+entity Profile is
+  userId : String
+  department : Department
+end
+
+// Export des relations
+export { UserProfile }
+
+relation UserProfile from User(id) to Profile(userId)</code></pre>
 <h4 id="règles-de-priorité-dexport">🧠 Règles de priorité d’export</h4>
 <ol type="1">
 <li>Une déclaration précédée de <code>export</code> est
@@ -4187,7 +4069,7 @@ NEWLINE: (&#39;\r&#39;? &#39;\n&#39;)+ -&gt; skip ;
 COMMENT: &#39;//&#39; ~[\r\n]* -&gt; skip ;
 MULTILINE_COMMENT: &#39;/*&#39; .*? &#39;*/&#39; -&gt; skip ;</code></pre>
 <hr />
-<h2 id="annexe-a-guide-complet-des-littéraux">📚 <strong>Annexe A :
+<h2 id="annexe-c-guide-complet-des-littéraux">📚 <strong>Annexe C :
 Guide complet des littéraux</strong></h2>
 <p>Cette annexe présente tous les types de littéraux supportés par
 Meshr-lang avec des exemples concrets et pratiques.</p>

@@ -3,8 +3,20 @@ Serveur Language Server Protocol pour Meshr-Lang
 """
 
 import logging
+import sys
+import traceback
 from typing import List, Optional, Dict, Any
 from pathlib import Path
+
+# Configuration du logging avec débogage
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stderr),  # Logs vers stderr pour LSP
+        logging.FileHandler('/tmp/meshr-lsp-debug.log', mode='w')  # Logs vers fichier
+    ]
+)
 
 from pygls.server import LanguageServer
 from lsprotocol.types import (
@@ -49,40 +61,65 @@ class MeshrLanguageServer(LanguageServer):
         @self.feature('initialize')
         def initialize(params: InitializeParams) -> InitializeResult:
             """Initialisation du serveur"""
-            logger.info("Initialisation du serveur LSP Meshr-Lang")
+            logger.info("🚀 Initialisation du serveur LSP Meshr-Lang")
+            logger.debug(f"📋 Client: {getattr(params, 'client_info', 'N/A')}")
+            logger.debug(f"📋 Workspace: {getattr(params, 'root_uri', 'N/A')}")
+            logger.debug(f"📋 Capabilities: {getattr(params, 'capabilities', 'N/A')}")
             
-            # Initialiser le validateur de modules
-            if params.root_uri:
-                workspace_root = params.root_uri.replace('file://', '')
-                self.module_validator = ModuleValidator(workspace_root)
-            
-            return InitializeResult(
-                capabilities=ServerCapabilities(
-                    text_document_sync=TextDocumentSyncKind.FULL,
-                    completion_provider=CompletionOptions(
-                        resolve_provider=True,
-                        trigger_characters=['.', '@', ' ', '\n']
-                    ),
-                    hover_provider=True,
-                    document_symbol_provider=True,
-                    workspace_symbol_provider=True,
-                    diagnostic_provider=True
+            try:
+                # Initialiser le validateur de modules
+                if params.root_uri:
+                    workspace_root = params.root_uri.replace('file://', '')
+                    self.module_validator = ModuleValidator(workspace_root)
+                    logger.info(f"✅ Validateur de modules initialisé pour: {workspace_root}")
+                
+                result = InitializeResult(
+                    capabilities=ServerCapabilities(
+                        text_document_sync=TextDocumentSyncKind.Full,
+                        completion_provider=CompletionOptions(
+                            resolve_provider=True,
+                            trigger_characters=['.', '@', ' ', '\n']
+                        ),
+                        hover_provider=True,
+                        document_symbol_provider=True,
+                        workspace_symbol_provider=True,
+                        diagnostic_provider=True
+                    )
                 )
-            )
+                
+                logger.info("✅ Serveur LSP initialisé avec succès")
+                return result
+                
+            except Exception as e:
+                logger.error(f"❌ Erreur initialisation: {e}")
+                logger.error(traceback.format_exc())
+                raise
         
         @self.feature('textDocument/didOpen')
         def did_open(ls, params):
             """Document ouvert"""
             doc = params.text_document
-            logger.info(f"Document ouvert: {doc.uri}")
-            self._analyze_document(doc)
+            logger.info(f"📖 Document ouvert: {doc.uri} (version {doc.version})")
+            
+            try:
+                self._analyze_document(doc)
+                logger.debug(f"✅ Document analysé: {doc.uri}")
+            except Exception as e:
+                logger.error(f"❌ Erreur analyse document {doc.uri}: {e}")
+                logger.error(traceback.format_exc())
         
         @self.feature('textDocument/didChange')
         def did_change(ls, params):
             """Document modifié"""
             doc = params.text_document
-            logger.info(f"Document modifié: {doc.uri}")
-            self._analyze_document(doc)
+            logger.debug(f"📝 Document modifié: {doc.uri} (version {doc.version})")
+            
+            try:
+                self._analyze_document(doc)
+                logger.debug(f"✅ Document re-analysé: {doc.uri}")
+            except Exception as e:
+                logger.error(f"❌ Erreur re-analyse document {doc.uri}: {e}")
+                logger.error(traceback.format_exc())
         
         @self.feature('textDocument/didClose')
         def did_close(ls, params):
@@ -91,6 +128,21 @@ class MeshrLanguageServer(LanguageServer):
             logger.info(f"Document fermé: {doc.uri}")
             if doc.uri in self.document_cache:
                 del self.document_cache[doc.uri]
+        
+        @self.feature('textDocument/didSave')
+        def did_save(ls, params):
+            """Document sauvegardé"""
+            doc = params.text_document
+            logger.info(f"💾 Document sauvegardé: {doc.uri}")
+            
+            try:
+                self._analyze_document(doc)
+                logger.debug(f"✅ Document re-analysé après sauvegarde: {doc.uri}")
+            except Exception as e:
+                logger.error(f"❌ Erreur re-analyse après sauvegarde {doc.uri}: {e}")
+                logger.error(traceback.format_exc())
+        
+        # Commande revalidate supprimée - gérée côté client
         
         @self.feature('textDocument/completion')
         def completion(ls, params) -> List[CompletionItem]:
@@ -125,8 +177,8 @@ class MeshrLanguageServer(LanguageServer):
             # Parser le document
             tree = self.parser.parse(doc.text)
             
-            # Générer les diagnostics de base
-            diagnostics = self.diagnostics.analyze(tree, doc.uri)
+            # Générer les diagnostics de base (syntaxe + sémantique)
+            diagnostics = self.diagnostics.analyze(tree, doc.uri, doc.text)
             
             # Ajouter la validation des modules si disponible
             if self.module_validator:

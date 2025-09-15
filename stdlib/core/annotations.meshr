@@ -8,14 +8,15 @@
 module meshr.annotations
 
 // ========== ENUMS ==========
+export { RetentionPolicy, AnnotationTarget, ScopeLevel, ConfidentialityLevel }
 
-export enum RetentionPolicy is (
+enum RetentionPolicy is (
   "compile",
   "model", 
   "export"
 )
 
-export enum AnnotationTarget is (
+enum AnnotationTarget is (
   "all",
   "annotation",
   "enum", 
@@ -28,13 +29,13 @@ export enum AnnotationTarget is (
   "relation"
 )
 
-export enum ScopeLevel is (
+enum ScopeLevel is (
   "public",
   "internal",
   "private"
 )
 
-export enum ConfidentialityLevel is (
+enum ConfidentialityLevel is (
   "public",
   "internal",
   "confidential",
@@ -42,6 +43,8 @@ export enum ConfidentialityLevel is (
 )
 
 // ========== MÉTA-ANNOTATIONS ==========
+
+export { Target, Retention, Repeatable, Experimental, Deprecated, Version, Author, Scope, Confidentiality, Documented }
 
 @Target("annotation")
 @Retention(model)

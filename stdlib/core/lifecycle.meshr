@@ -4,6 +4,8 @@
 // Module de cycle de vie pour la gestion des versions,
 // statuts et transitions des données
 
+@Version("1.0.0")
+@Documented(summary="Module de cycle de vie pour la gestion des versions, statuts et transitions des données")
 module meshr.lifecycle
 
 export { 

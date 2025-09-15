@@ -6,7 +6,7 @@
 (* ==============================
    Entrée principale
    ============================== *)
-compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
+compilation-unit    = module-decl, { import-decl }, { ( export-decl | top-level-decl ) }, EOF ;
 
 module-decl         = { annotation }, "module", qualified-name ;
 

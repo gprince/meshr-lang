@@ -4,10 +4,11 @@
 // Module de gouvernance pour la stewardship des données,
 // la qualité et la conformité
 
+@Version("1.0.0")
+@Documented(summary="Module de gouvernance pour la stewardship des données, la qualité et la conformité")
 module meshr.governance
 
 export { 
-  DataQualityLevel, 
   StewardshipRole, 
   DataStewardship, 
   DataQuality, 
@@ -20,7 +21,7 @@ export {
 
 // ========== ENUMS ==========
 
-enum DataQualityLevel is (
+export enum DataQualityLevel is (
   "excellent",
   "good",
   "fair", 

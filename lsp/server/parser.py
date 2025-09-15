@@ -3,7 +3,7 @@ Intégration du parser ANTLR avec le serveur LSP
 """
 
 import logging
-from typing import Optional, Any
+from typing import Optional, Any, List
 from pathlib import Path
 import sys
 
@@ -14,14 +14,61 @@ try:
     from MeshrModuleLexer import MeshrModuleLexer
     from MeshrModuleParser import MeshrModuleParser
     from MeshrModuleListener import MeshrModuleListener
-    from antlr4 import InputStream, CommonTokenStream, ParseTreeWalker
+    from antlr4 import InputStream, CommonTokenStream, ParseTreeWalker, RecognitionException, Token
+    from antlr4.error.ErrorListener import ErrorListener
 except ImportError as e:
     logging.warning(f"Impossible d'importer la grammaire ANTLR: {e}")
     MeshrModuleLexer = None
     MeshrModuleParser = None
     MeshrModuleListener = None
+    ErrorListener = None
+    RecognitionException = None
+    Token = None
 
 logger = logging.getLogger(__name__)
+
+class MeshrErrorListener(ErrorListener):
+    """Listener personnalisé pour capturer les erreurs ANTLR"""
+    
+    def __init__(self):
+        self.errors = []
+        self.lexer_errors = []
+    
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        """Capture les erreurs de syntaxe"""
+        error_info = {
+            'line': line,
+            'column': column,
+            'message': msg,
+            'offending_symbol': offendingSymbol,
+            'type': 'syntax'
+        }
+        self.errors.append(error_info)
+        logger.debug(f"Erreur de syntaxe ligne {line}:{column} - {msg}")
+    
+    def reportLexicalError(self, recognizer, offendingSymbol, line, column, msg, e):
+        """Capture les erreurs lexicales (token recognition errors)"""
+        error_info = {
+            'line': line,
+            'column': column,
+            'message': f"Caractère invalide: '{offendingSymbol}'",
+            'offending_symbol': offendingSymbol,
+            'type': 'lexical'
+        }
+        self.lexer_errors.append(error_info)
+        logger.debug(f"Erreur lexicale ligne {line}:{column} - {msg}")
+    
+    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        """Rapporte les ambiguïtés"""
+        pass
+    
+    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        """Rapporte les tentatives de contexte complet"""
+        pass
+    
+    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        """Rapporte la sensibilité au contexte"""
+        pass
 
 class MeshrParser:
     """Parser Meshr-Lang utilisant ANTLR"""
@@ -29,6 +76,7 @@ class MeshrParser:
     def __init__(self):
         self.lexer = None
         self.parser = None
+        self.error_listener = None
         self._check_grammar_availability()
     
     def _check_grammar_availability(self):
@@ -68,15 +116,31 @@ class MeshrParser:
             
             # Créer le lexer
             self.lexer = MeshrModuleLexer(input_stream)
+            
+            # Ajouter notre listener d'erreurs personnalisé au lexer
+            self.error_listener = MeshrErrorListener()
+            self.lexer.removeErrorListeners()  # Supprimer les listeners par défaut
+            self.lexer.addErrorListener(self.error_listener)
+            
             token_stream = CommonTokenStream(self.lexer)
             
             # Créer le parser
             self.parser = MeshrModuleParser(token_stream)
             
+            # Ajouter notre listener d'erreurs personnalisé au parser
+            self.parser.removeErrorListeners()  # Supprimer les listeners par défaut
+            self.parser.addErrorListener(self.error_listener)
+            
             # Parser le module
             tree = self.parser.compilationUnit()
             
-            logger.debug("Parsing réussi")
+            # Vérifier s'il y a des erreurs de syntaxe
+            syntax_errors = self.parser.getNumberOfSyntaxErrors()
+            if syntax_errors > 0:
+                logger.warning(f"Erreurs de syntaxe détectées: {syntax_errors}")
+                # On retourne quand même l'arbre pour permettre l'analyse des erreurs
+            
+            logger.debug("Parsing terminé")
             return tree
             
         except Exception as e:
@@ -86,6 +150,16 @@ class MeshrParser:
     def is_grammar_available(self) -> bool:
         """Vérifie si la grammaire ANTLR est disponible"""
         return self.lexer is not None and self.parser is not None
+    
+    def get_syntax_errors(self) -> List[dict]:
+        """Récupère les erreurs de syntaxe et lexicales capturées"""
+        if self.error_listener:
+            # Combiner les erreurs de syntaxe et lexicales
+            all_errors = self.error_listener.errors + self.error_listener.lexer_errors
+            # Trier par ligne et colonne
+            all_errors.sort(key=lambda x: (x['line'], x['column']))
+            return all_errors
+        return []
     
     def get_tokens(self, text: str) -> list:
         """
