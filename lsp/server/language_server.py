@@ -30,6 +30,7 @@ from pygls.workspace import Document
 
 from .parser import MeshrParser
 from .diagnostics import MeshrDiagnostics
+from .project_manager import LSPProjectManager
 from .completion import MeshrCompletion
 from .symbols import MeshrSymbols
 from .module_validation import ModuleValidator
@@ -48,6 +49,7 @@ class MeshrLanguageServer(LanguageServer):
         self.completion = MeshrCompletion(self.parser)
         self.symbols = MeshrSymbols(self.parser)
         self.module_validator = None  # Initialisé dans initialize
+        self.project_manager = LSPProjectManager()
         
         # Cache des documents analysés
         self.document_cache: Dict[str, Any] = {}
@@ -72,6 +74,10 @@ class MeshrLanguageServer(LanguageServer):
                     workspace_root = params.root_uri.replace('file://', '')
                     self.module_validator = ModuleValidator(workspace_root)
                     logger.info(f"✅ Validateur de modules initialisé pour: {workspace_root}")
+                    
+                    # Initialiser le gestionnaire de projet
+                    self.project_manager.add_workspace_root(workspace_root)
+                    logger.info(f"✅ Gestionnaire de projet initialisé pour: {workspace_root}")
                 
                 result = InitializeResult(
                     capabilities=ServerCapabilities(
@@ -83,7 +89,9 @@ class MeshrLanguageServer(LanguageServer):
                         hover_provider=True,
                         document_symbol_provider=True,
                         workspace_symbol_provider=True,
-                        diagnostic_provider=True
+                        diagnostic_provider=True,
+                        definition_provider=True,
+                        references_provider=True
                     )
                 )
                 
@@ -170,6 +178,35 @@ class MeshrLanguageServer(LanguageServer):
             return self.symbols.get_workspace_symbols(
                 self.workspace, params.query
             )
+        
+        @self.feature('textDocument/definition')
+        def definition(ls, params) -> Optional[List[Location]]:
+            """Gestionnaire pour Go to Definition"""
+            try:
+                uri = params.text_document.uri
+                position = params.position
+                
+                # Obtenir le symbole à la position
+                doc = self.workspace.get_document(uri)
+                line = doc.lines[position.line]
+                
+                # Extraire le symbole (simplifié)
+                word = self._get_word_at_position(line, position.character)
+                if not word:
+                    return None
+                
+                # Résoudre le symbole via le gestionnaire de projet
+                symbol_info = self.project_manager.resolve_symbol(uri, word)
+                if symbol_info:
+                    location = self.project_manager.get_definition(uri, word)
+                    if location:
+                        return [Location(**location)]
+                
+                return None
+                
+            except Exception as e:
+                logger.error(f"❌ Erreur lors de la résolution de définition: {e}")
+                return None
     
     def _analyze_document(self, doc: TextDocumentItem):
         """Analyse un document et publie les diagnostics"""
@@ -218,3 +255,23 @@ class MeshrLanguageServer(LanguageServer):
                 severity=1  # Error
             )
             self.publish_diagnostics(doc.uri, [error_diagnostic])
+    
+    def _get_word_at_position(self, line: str, character: int) -> Optional[str]:
+        """Extrait le mot à la position donnée dans une ligne"""
+        if character >= len(line):
+            return None
+            
+        # Trouver le début du mot
+        start = character
+        while start > 0 and (line[start-1].isalnum() or line[start-1] in '._'):
+            start -= 1
+            
+        # Trouver la fin du mot
+        end = character
+        while end < len(line) and (line[end].isalnum() or line[end] in '._'):
+            end += 1
+            
+        if start < end:
+            return line[start:end]
+        return None
+    

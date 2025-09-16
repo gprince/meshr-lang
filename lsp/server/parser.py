@@ -27,7 +27,7 @@ except ImportError as e:
 
 logger = logging.getLogger(__name__)
 
-class MeshrErrorListener(ErrorListener):
+class MeshrErrorListener:
     """Listener personnalisé pour capturer les erreurs ANTLR"""
     
     def __init__(self):
@@ -77,6 +77,7 @@ class MeshrParser:
         self.lexer = None
         self.parser = None
         self.error_listener = None
+        self.antlr_available = MeshrModuleLexer is not None
         self._check_grammar_availability()
     
     def _check_grammar_availability(self):
@@ -106,6 +107,10 @@ class MeshrParser:
         Returns:
             L'arbre de syntaxe abstraite ou None en cas d'erreur
         """
+        if not self.antlr_available:
+            logger.warning("ANTLR non disponible - parser en mode dégradé")
+            return None
+            
         if not self.lexer or not self.parser:
             logger.warning("Parser non disponible")
             return None

@@ -1,0 +1,44 @@
+# ==============================
+# Projet HR Employees - Configuration
+# ==============================
+# Exemple de projet Meshr-Lang avec dépendances vers la StdLib
+
+[project]
+name = "hr-employees"
+version = "1.0.0"
+description = "Module de gestion des employés dans une architecture Data Mesh avec gouvernance complète"
+authors = ["HR Data Team <hr.data@company.com>"]
+license = "MIT"
+repository = "https://github.com/company/hr-employees"
+documentation = "https://docs.company.com/hr-employees"
+
+# Configuration du module principal
+[project.module]
+name = "hr.employees"
+path = "src/hr-employees.meshr"
+
+# Dépendances vers la StdLib
+[dependencies]
+meshr-stdlib = { version = "1.0.0", path = "../../stdlib" }
+
+# Configuration du build
+[build]
+target = "data-mesh"
+output = "dist/"
+include_tests = true
+validate_semantics = true
+
+# Configuration LSP
+[lsp]
+enable_diagnostics = true
+enable_completion = true
+enable_hover = true
+enable_go_to_definition = true
+enable_find_references = true
+
+# Configuration de la documentation
+[documentation]
+generate = true
+format = ["html", "pdf", "markdown"]
+output = "docs/"
+include_examples = true

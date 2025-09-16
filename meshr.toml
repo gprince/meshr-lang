@@ -1,0 +1,54 @@
+# ==============================
+# Configuration de projet Meshr-Lang
+# ==============================
+# Fichier de configuration principal pour un projet Meshr-Lang
+# Définit les métadonnées, dépendances et paramètres du projet
+
+[project]
+name = "meshr-lang-workspace"
+version = "1.0.0"
+description = "Workspace principal du langage Meshr-Lang avec exemples et StdLib"
+authors = ["Meshr-Lang Team <team@meshr-lang.org>"]
+license = "MIT"
+repository = "https://github.com/company/hr-employees"
+documentation = "https://docs.company.com/hr-employees"
+
+# Configuration du module principal (commenté car pas de module principal dans le projet racine)
+# [project.module]
+# name = "hr.employees"
+# path = "src/hr-employees.meshr"
+
+# Dépendances du projet
+[dependencies]
+# StdLib officielle (built-in)
+meshr-stdlib = { version = "1.0.0", path = "../stdlib" }
+
+# Dépendances externes (futures)
+# meshr-analytics = { version = "2.1.0", registry = "https://registry.meshr-lang.org" }
+# company-security = { version = "1.5.0", git = "https://github.com/company/security-modules" }
+
+# Dépendances de développement
+[dev-dependencies]
+meshr-testing = { version = "0.1.0", path = "../testing" }
+
+# Configuration du build
+[build]
+target = "data-mesh"
+output = "dist/"
+include_tests = true
+validate_semantics = true
+
+# Configuration LSP
+[lsp]
+enable_diagnostics = true
+enable_completion = true
+enable_hover = true
+enable_go_to_definition = true
+enable_find_references = true
+
+# Configuration de la documentation
+[documentation]
+generate = true
+format = ["html", "pdf", "markdown"]
+output = "docs/"
+include_examples = true

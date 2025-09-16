@@ -1,0 +1,37 @@
+# ==============================
+# Configuration StdLib Meshr-Lang
+# ==============================
+# Configuration de la bibliothèque standard Meshr-Lang
+
+[project]
+name = "meshr-stdlib"
+version = "1.0.0"
+description = "Bibliothèque standard Meshr-Lang pour la gouvernance, sécurité et lifecycle des données"
+authors = ["Meshr-Lang Team <team@meshr-lang.org>"]
+license = "MIT"
+repository = "https://github.com/meshr-lang/stdlib"
+
+# Modules de la StdLib
+[modules]
+# Module de sécurité
+"meshr.security" = { path = "core/security.meshr", version = "1.0.0" }
+"meshr.governance" = { path = "core/governance.meshr", version = "1.0.0" }
+"meshr.lifecycle" = { path = "core/lifecycle.meshr", version = "1.0.0" }
+"meshr.types" = { path = "core/types.meshr", version = "1.0.0" }
+"meshr.annotations" = { path = "core/annotations.meshr", version = "1.0.0" }
+
+# Modules d'exemples
+"examples.simple_imports" = { path = "examples/simple-imports.meshr", version = "1.0.0" }
+"examples.annotations_usage" = { path = "examples/annotations-usage.meshr", version = "1.0.0" }
+"examples.meta_annotations" = { path = "examples/meta-annotations.meshr", version = "1.0.0" }
+
+# Configuration des exports
+[exports]
+# Réexportation des modules principaux
+"meshr.core" = ["meshr.security", "meshr.governance", "meshr.lifecycle", "meshr.types", "meshr.annotations"]
+
+# Configuration de build
+[build]
+target = "stdlib"
+output = "dist/"
+validate_all = true

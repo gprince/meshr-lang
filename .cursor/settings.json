@@ -1,0 +1,40 @@
+{
+  "meshr-lang.maxCacheSize": 50,
+  "meshr-lang.maxConcurrentRequests": 2,
+  "meshr-lang.enableMemoryOptimization": true,
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/dist/**": true,
+    "**/.git/**": true,
+    "**/lsp/server/dist/**": true,
+    "**/lsp/server/__pycache__/**": true,
+    "**/grammar/generated/**": true,
+    "**/out/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/build": true,
+    "**/dist": true,
+    "**/lsp/server/dist": true,
+    "**/grammar/generated": true,
+    "**/out": true
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.suggest.autoImports": "off",
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.workspaceSymbols.scope": "currentProject",
+  "typescript.suggest.enabled": false,
+  "typescript.preferences.maxNodeModuleJsFileSize": 1024,
+  "typescript.tsc.autoDetect": "off",
+  "typescript.npm": "off",
+  "typescript.preferences.includePackageJsonAutoImports": "off",
+  "typescript.updateImportsOnFileMove.enabled": "never",
+  "typescript.validate.enable": false,
+  "python.analysis.autoImportCompletions": false,
+  "python.analysis.memory.keepLibraryAst": false,
+  "extensions.autoUpdate": false,
+  "workbench.settings.enableNaturalLanguageSearch": false,
+  "search.smartCase": false,
+  "files.trimTrailingWhitespace": false
+}

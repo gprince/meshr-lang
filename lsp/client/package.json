@@ -1,10 +1,11 @@
 {
   "name": "meshr-lang",
-  "displayName": "Meshr-Lang",
-  "description": "Support du langage Meshr-Lang pour VSCode/Cursor",
+  "displayName": "Meshr-Lang Language Support",
+  "description": "Meshr-Lang language support with IntelliSense, Go to Definition, and Hover for data mesh modeling",
   "version": "0.1.0",
   "publisher": "meshr-lang",
   "license": "MIT",
+  "icon": "images/icon.png",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -127,7 +128,7 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run bundle",
+    "vscode:prepublish": "echo 'Skipping prepublish'",
     "compile": "tsc -p ./",
     "bundle": "webpack --mode production",
     "watch": "tsc -watch -p ./",
@@ -148,5 +149,14 @@
   },
   "dependencies": {
     "vscode-languageclient": "^8.1.0"
+  },
+  "vsce": {
+    "files": [
+      "out/**/*",
+      "syntaxes/**/*",
+      "snippets/**/*",
+      "language-configuration.json",
+      "server/**/*"
+    ]
   }
 }
