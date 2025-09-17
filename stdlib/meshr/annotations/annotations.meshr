@@ -1,0 +1,278 @@
+/*
+==============================
+Meshr-Lang StdLib - Annotations Module
+==============================
+Annotations communes pour Meshr-Lang
+*/
+
+@Since("1.0.0")
+@Version("1.0.0")
+@Documented(summary="Annotations communes pour Meshr-Lang")
+module meshr.annotations
+
+import {AnnotationTarget, Target, Retention} from meshr.annotations.meta
+
+// ========== EXPORTS ==========
+export { 
+  ScopeLevel, ConfidentialityLevel,
+  Experimental, Deprecated, Since, Version, Author, Scope, Confidentiality, Documented 
+}
+
+// ========== ENUMS ==========
+
+/*
+Niveaux de portée pour définir la visibilité et l'accessibilité 
+des éléments dans l'architecture Data Mesh
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Niveaux de portée pour définir la visibilité dans l'architecture Data Mesh",
+  description="Contrôle l'accessibilité des éléments : public (tous domaines), internal (organisation), private (domaine propriétaire)",
+  examples="@Scope(level=\"internal\") pour limiter l'accès à l'organisation"
+)
+enum ScopeLevel is (
+  "public",      // Accessible à tous les domaines et équipes
+  "internal",    // Accessible uniquement au sein de l'organisation
+  "private"      // Accessible uniquement au domaine propriétaire
+)
+
+/*
+Niveaux de confidentialité pour classifier la sensibilité des données
+selon les politiques de gouvernance de l'organisation
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Niveaux de confidentialité pour classifier la sensibilité des données",
+  description="Classification selon les politiques de gouvernance : public, internal, confidential, restricted avec restrictions d'accès croissantes",
+  examples="@Confidentiality(level=\"restricted\") pour les données hautement sensibles"
+)
+enum ConfidentialityLevel is (
+  "public",        // Données publiques, aucune restriction
+  "internal",      // Données internes à l'organisation
+  "confidential",  // Données confidentielles, accès restreint
+  "restricted"     // Données hautement sensibles, accès très restreint
+)
+
+// ========== ANNOTATIONS COMMUNES ==========
+
+/*
+@Experimental - Marque une déclaration comme expérimentale.
+Utilisée pour indiquer que l'élément peut changer dans les futures versions
+et ne devrait pas être utilisé en production sans précautions.
+
+Exemple d'usage :
+  @Experimental(reason="New aggregation algorithm, API may change")
+  metric ExperimentalKPI is
+    source Customer
+    calculation avg(satisfaction_score)
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Marque une déclaration comme expérimentale",
+  description="Indique que l'élément peut changer dans les futures versions et ne devrait pas être utilisé en production sans précautions",
+  examples="@Experimental(reason=\"New aggregation algorithm\") metric ExperimentalKPI"
+)
+annotation Experimental is
+  optional reason : String = "Feature is experimental and may change"  // Raison de l'état expérimental
+end
+
+/*
+@Deprecated - Marque une déclaration comme obsolète.
+Indique que l'élément ne devrait plus être utilisé et sera supprimé
+dans une future version. Doit fournir une alternative si possible.
+
+Exemple d'usage :
+  @Deprecated(
+    reason="Use CustomerV2 entity instead", 
+    since="2024-01-01",
+    replacement="CustomerV2"
+  )
+  entity Customer is
+    id : String
+    name : String
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Marque une déclaration comme obsolète",
+  description="Indique que l'élément ne devrait plus être utilisé et sera supprimé dans une future version. Doit fournir une alternative si possible",
+  examples="@Deprecated(reason=\"Use CustomerV2\", replacement=\"CustomerV2\") entity Customer"
+)
+annotation Deprecated is
+  required reason : String      // Raison de la dépréciation
+  optional since : String = ""  // Date ou version depuis laquelle c'est déprécié
+  optional replacement : String = ""  // Alternative recommandée
+end
+
+/*
+@Since - Indique depuis quelle version une déclaration existe.
+Utilisée pour tracer l'historique et l'évolution des éléments
+dans le temps, facilitant la migration et la compatibilité.
+
+Exemple d'usage :
+  @Since("1.2.0")
+  @Version("1.2.0")
+  @Author(name="Data Team")
+  metric NewKPI is
+    source Customer
+    calculation count(*)
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Indique depuis quelle version une déclaration existe",
+  description="Utilisée pour tracer l'historique et l'évolution des éléments dans le temps, facilitant la migration et la compatibilité",
+  examples="@Since(\"1.2.0\") metric NewKPI pour indiquer l'ajout en version 1.2.0"
+)
+annotation Since is
+  required value : String  // Version depuis laquelle l'élément existe (format SemVer)
+end
+
+/*
+@Version - Spécifie la version d'une déclaration.
+Utilisée pour le versioning sémantique et le suivi des évolutions
+des éléments du Data Mesh.
+
+Exemple d'usage :
+  @Version("2.1.0")
+  @Author(name="Data Team", email="data@company.com")
+  entity Product is
+    id : String
+    name : String
+    price : Float
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Spécifie la version d'une déclaration",
+  description="Utilisée pour le versioning sémantique et le suivi des évolutions des éléments du Data Mesh",
+  examples="@Version(\"2.1.0\") entity Product pour indiquer la version actuelle"
+)
+annotation Version is
+  required value : String  // Version au format SemVer (ex: "1.2.3")
+end
+
+/*
+@Author - Identifie l'auteur ou l'équipe responsable d'une déclaration.
+Facilite la traçabilité et la responsabilité dans l'architecture Data Mesh.
+
+Exemple d'usage :
+  @Author(
+    name="Customer Domain Team", 
+    email="customer-team@company.com",
+    organization="Customer Experience Division"
+  )
+  entity Customer is
+    customer_id : String
+    email : String
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Identifie l'auteur ou l'équipe responsable d'une déclaration",
+  description="Facilite la traçabilité et la responsabilité dans l'architecture Data Mesh en identifiant qui est responsable de l'élément",
+  examples="@Author(name=\"Customer Team\", email=\"customer@company.com\") entity Customer"
+)
+annotation Author is
+  required name : String           // Nom de l'auteur ou de l'équipe
+  optional email : String = ""     // Adresse email de contact
+  optional organization : String = ""  // Organisation ou division
+end
+
+/*
+@Scope - Définit le niveau de portée et d'accessibilité d'une déclaration.
+Essentiel pour la gouvernance des données dans l'architecture Data Mesh
+en contrôlant qui peut accéder à quoi.
+
+Exemple d'usage :
+  @Scope(level="internal", description="Customer data accessible within organization only")
+  @Confidentiality(level="confidential", classification="PII")
+  entity Customer is
+    customer_id : String
+    personal_data : String
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Définit le niveau de portée et d'accessibilité d'une déclaration",
+  description="Essentiel pour la gouvernance des données dans l'architecture Data Mesh en contrôlant qui peut accéder à quoi",
+  examples="@Scope(level=\"internal\", description=\"Customer data within organization only\")"
+)
+annotation Scope is
+  required level : ScopeLevel      // Niveau de portée (public, internal, private)
+  optional description : String = ""  // Description détaillée des règles d'accès
+end
+
+/*
+@Confidentiality - Spécifie le niveau de confidentialité et les règles de traitement.
+Critique pour la conformité RGPD/GDPR et la gouvernance des données sensibles.
+
+Exemple d'usage :
+  @Confidentiality(
+    level="restricted",
+    classification="PII + Financial",
+    handling_instructions="Encrypt at rest, audit all access, retention 7 years"
+  )
+  entity BankAccount is
+    account_number : String
+    balance : Float
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Spécifie le niveau de confidentialité et les règles de traitement",
+  description="Critique pour la conformité RGPD/GDPR et la gouvernance des données sensibles avec classification et instructions de traitement",
+  examples="@Confidentiality(level=\"restricted\", classification=\"PII + Financial\", handling_instructions=\"Encrypt at rest\")"
+)
+annotation Confidentiality is
+  required level : ConfidentialityLevel    // Niveau de confidentialité
+  optional classification : String = ""    // Classification détaillée (ex: "PII", "Financial")
+  optional handling_instructions : String = ""  // Instructions de traitement et sécurité
+end
+
+/*
+@Documented - Fournit une documentation structurée pour une déclaration.
+Améliore la découvrabilité et la compréhension des éléments du Data Mesh
+par les équipes et les outils automatisés.
+
+Exemple d'usage :
+  @Documented(
+    summary="Customer satisfaction metrics for product improvement",
+    description="Aggregated satisfaction scores collected from surveys and feedback",
+    examples="See /docs/metrics/satisfaction-examples.md",
+    see_also="CustomerFeedback entity, SatisfactionSurvey trait"
+  )
+  metric CustomerSatisfaction is
+    source Customer
+    calculation avg(satisfaction_score)
+  end
+*/
+@Since("1.0.0")
+@Target("all")
+@Retention("model")
+@Documented(
+  summary="Fournit une documentation structurée pour une déclaration",
+  description="Améliore la découvrabilité et la compréhension des éléments du Data Mesh par les équipes et les outils automatisés",
+  examples="@Documented(summary=\"Customer metrics\", description=\"Aggregated satisfaction scores\", examples=\"See /docs/examples\")"
+)
+annotation Documented is
+  required summary : String         // Résumé concis de l'élément
+  optional description : String = ""  // Description détaillée
+  optional examples : String = ""   // Exemples d'usage ou références
+  optional see_also : String = ""   // Références vers éléments liés
+end

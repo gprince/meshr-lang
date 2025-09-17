@@ -1,0 +1,255 @@
+/*
+==============================
+Meshr-Lang StdLib - Lifecycle Module
+==============================
+Module de cycle de vie pour la gestion des versions, statuts et transitions des données
+dans l'architecture Data Mesh. Fournit les primitives pour tracer l'évolution des 
+données depuis leur création jusqu'à leur archivage ou suppression.
+*/
+
+@Since("1.0.0")
+@Version("1.0.0")
+@Documented(summary="Module de cycle de vie pour la gestion des versions, statuts et transitions des données")
+module meshr.lifecycle
+
+export { 
+  DataStatus, 
+  LifecycleStage, 
+  DataLifecycle, 
+  VersionControl, 
+  WithLifecycle, 
+  WithVersioning, 
+  VERSION_TRANSITION, 
+  STATUS_CHANGE 
+}
+
+// ========== ENUMS ==========
+
+/*
+États possibles d'une donnée dans son cycle de vie.
+Utilisé pour contrôler l'accès et les opérations autorisées.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="États possibles d'une donnée dans son cycle de vie",
+  description="Contrôle l'accès et les opérations autorisées selon l'état : draft, active, deprecated, archived, deleted",
+  examples="status : DataStatus = \"active\" pour des données en production"
+)
+enum DataStatus is (
+  "draft",        // Données en cours de développement, non publiées
+  "active",       // Données publiées et utilisables en production
+  "deprecated",   // Données obsolètes mais encore accessibles
+  "archived",     // Données archivées, accès restreint
+  "deleted"       // Données supprimées, accès interdit
+)
+
+/*
+Étapes du cycle de vie d'un produit de données.
+Reflète la maturité et le niveau de service d'un Data Product.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Étapes du cycle de vie d'un produit de données",
+  description="Reflète la maturité et le niveau de service d'un Data Product : development, testing, production, maintenance, retirement",
+  examples="lifecycle_stage : LifecycleStage = \"production\" pour un produit mature"
+)
+enum LifecycleStage is (
+  "development",  // En cours de développement
+  "testing",      // En phase de test et validation
+  "production",   // Déployé en production
+  "maintenance",  // En maintenance, évolutions mineures
+  "retirement"    // En cours de décommissionnement
+)
+
+// ========== ASPECTS ==========
+
+/*
+Aspect de cycle de vie des données - fournit les métadonnées essentielles
+pour tracer l'évolution d'un élément depuis sa création jusqu'à sa suppression.
+Essentiel pour la gouvernance et la conformité des données.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      DataLifecycle {
+        created_at: "2024-01-15T10:30:00Z",
+        updated_at: "2024-03-20T14:45:00Z",
+        version: "2.1.0",
+        status: "active",
+        deprecation_date: "2099-12-31",
+        archive_date: "2099-12-31",
+        lifecycle_stage: "production"
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de cycle de vie des données avec métadonnées essentielles",
+  description="Fournit les métadonnées pour tracer l'évolution d'un élément depuis sa création jusqu'à sa suppression. Essentiel pour la gouvernance et la conformité",
+  examples="entity Customer is ... aspects { DataLifecycle { created_at: \"2024-01-15T10:30:00Z\", status: \"active\" } } end"
+)
+aspect DataLifecycle is
+  created_at : Timestamp        // Date et heure de création
+  updated_at : Timestamp        // Date et heure de dernière modification
+  version : String              // Version actuelle (format SemVer)
+  status : DataStatus           // État actuel dans le cycle de vie
+  deprecation_date : Date       // Date prévue de dépréciation
+  archive_date : Date           // Date prévue d'archivage
+  lifecycle_stage : LifecycleStage  // Étape du cycle de vie du produit
+end
+
+/*
+Aspect de contrôle de version - fournit des métadonnées détaillées
+sur les versions et les transitions entre versions. Critique pour
+la traçabilité des changements et la gestion des migrations.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    segment : String  // Nouveau champ ajouté en v2.1.0
+    
+    aspects {
+      VersionControl {
+        version: "2.1.0",
+        previous_version: "2.0.3",
+        version_notes: "Added customer segmentation fields",
+        released_by: "data-team@company.com",
+        release_date: "2024-03-15T09:30:00Z",
+        breaking_changes: false
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de contrôle de version avec métadonnées détaillées",
+  description="Fournit des métadonnées sur les versions et transitions. Critique pour la traçabilité des changements et la gestion des migrations",
+  examples="entity Customer is ... aspects { VersionControl { version: \"2.1.0\", previous_version: \"2.0.3\", breaking_changes: false } } end"
+)
+aspect VersionControl is
+  version : String              // Version actuelle (SemVer)
+  previous_version : String     // Version précédente
+  version_notes : String        // Notes de version et changelog
+  released_by : String          // Auteur ou équipe responsable de la release
+  release_date : Timestamp      // Date et heure de publication
+  breaking_changes : Boolean = false  // Indique si la version contient des breaking changes
+end
+
+// ========== TRAITS ==========
+
+/*
+Trait pour ajouter automatiquement les capacités de cycle de vie
+à n'importe quelle entité. Fournit les champs de base et applique
+l'aspect DataLifecycle avec des valeurs par défaut sensées.
+
+Exemple d'usage :
+  entity Customer with WithLifecycle is
+    customer_id : String
+    email : String
+    // Les champs created_at, updated_at, version, status sont automatiquement ajoutés
+  end
+*/
+trait WithLifecycle is
+  created_at : Timestamp        // Date de création (auto-générée)
+  updated_at : Timestamp        // Date de modification (auto-mise à jour)
+  version : String = "1.0.0"    // Version initiale par défaut
+  status : DataStatus = "active" // État actif par défaut
+  
+  aspects {
+    DataLifecycle { 
+      created_at: created_at, 
+      updated_at: updated_at, 
+      version: version, 
+      status: status,
+      deprecation_date: "2099-12-31",      // Date lointaine par défaut
+      archive_date: "2099-12-31",          // Date lointaine par défaut
+      lifecycle_stage: "production"        // Étape production par défaut
+    }
+  }
+end
+
+/*
+Trait pour ajouter automatiquement les capacités de versioning
+à n'importe quelle entité. Fournit les champs de version et applique
+l'aspect VersionControl pour tracer les changements.
+
+Exemple d'usage :
+  entity Product with WithVersioning is
+    product_id : String
+    name : String
+    version_notes : String = "Initial version"
+    // L'aspect VersionControl est automatiquement appliqué
+  end
+*/
+trait WithVersioning is
+  version : String              // Version actuelle (obligatoire)
+  version_notes : String        // Notes de version (obligatoire)
+  
+  aspects {
+    VersionControl {
+      version: version,
+      previous_version: "0.0.0",              // Version précédente par défaut
+      version_notes: version_notes,
+      released_by: "system",                  // Auteur par défaut
+      release_date: "2024-01-01T00:00:00Z",  // Date par défaut
+      breaking_changes: false                 // Pas de breaking changes par défaut
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+/*
+Relation de type pour modéliser les transitions de version.
+Permet de tracer les évolutions d'un élément d'une version à l'autre
+avec les métadonnées de la transition (qui, quand, pourquoi).
+
+Exemple d'usage :
+  relation CustomerMigration of type VERSION_TRANSITION is
+    from Customer(customer_id)
+    to CustomerV2(customer_id)
+    
+    from_version: "1.2.0"
+    to_version: "2.0.0"
+    transition_date: "2024-03-15T09:30:00Z"
+    transition_reason: "Added customer segmentation and GDPR compliance"
+    approved_by: "data-governance@company.com"
+  end
+*/
+type relation VERSION_TRANSITION is
+  from_version : String      // Version source de la transition
+  to_version : String        // Version cible de la transition
+  transition_date : Timestamp // Date et heure de la transition
+  transition_reason : String  // Raison de la transition (changelog)
+  approved_by : String       // Personne ou équipe ayant approuvé la transition
+end
+
+/*
+Relation de type pour modéliser les changements de statut.
+Permet de tracer les changements d'état d'un élément dans son cycle de vie
+(draft → active → deprecated → archived → deleted).
+
+Exemple d'usage :
+  relation CustomerDeprecation of type STATUS_CHANGE is
+    from Customer(customer_id)
+    to CustomerV2(customer_id)
+    
+    from_status: "active"
+    to_status: "deprecated"
+    changed_at: "2024-06-01T00:00:00Z"
+    changed_by: "data-team@company.com"
+    reason: "Migrating to CustomerV2 schema with improved data model"
+  end
+*/
+type relation STATUS_CHANGE is
+  from_status : DataStatus   // Statut source du changement
+  to_status : DataStatus     // Statut cible du changement
+  changed_at : Timestamp     // Date et heure du changement
+  changed_by : String        // Personne ou équipe ayant effectué le changement
+  reason : String           // Raison du changement de statut
+end
+

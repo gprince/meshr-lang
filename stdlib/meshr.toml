@@ -14,11 +14,12 @@ repository = "https://github.com/meshr-lang/stdlib"
 # Modules de la StdLib
 [modules]
 # Module de sécurité
-"meshr.security" = { path = "core/security.meshr", version = "1.0.0" }
-"meshr.governance" = { path = "core/governance.meshr", version = "1.0.0" }
-"meshr.lifecycle" = { path = "core/lifecycle.meshr", version = "1.0.0" }
+"meshr.security" = { path = "meshr/security/security.meshr", version = "1.0.0" }
+"meshr.governance" = { path = "meshr/governance/governance.meshr", version = "1.0.0" }
+"meshr.lifecycle" = { path = "meshr/lifecycle/lifecycle.meshr", version = "1.0.0" }
 "meshr.types" = { path = "core/types.meshr", version = "1.0.0" }
-"meshr.annotations" = { path = "core/annotations.meshr", version = "1.0.0" }
+"meshr.annotations" = { path = "meshr/annotations/annotations.meshr", version = "1.0.0" }
+"meshr.annotations.meta" = { path = "meshr/annotations/meta/meta.meshr", version = "1.0.0" }
 
 # Modules d'exemples
 "examples.simple_imports" = { path = "examples/simple-imports.meshr", version = "1.0.0" }

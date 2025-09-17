@@ -1,0 +1,141 @@
+/*
+==============================
+Meshr-Lang StdLib - Meta Annotations Module
+==============================
+Méta-annotations pour cibler les déclarations d'annotations elles-mêmes
+*/
+
+@Since("1.0.0")
+@Version("1.0.0")
+@Documented(summary="Méta-annotations pour les déclarations d'annotations")
+module meshr.annotations.meta
+
+// ========== EXPORTS ==========
+export { RetentionPolicy, AnnotationTarget, Target, Retention, Repeatable }
+
+// ========== ENUMS POUR MÉTA-ANNOTATIONS ==========
+
+/*
+Politique de rétention des annotations - détermine à quel moment 
+les annotations sont conservées durant le cycle de vie du modèle
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Politique de rétention des annotations durant le cycle de vie du modèle",
+  description="Contrôle à quel moment les annotations sont conservées : compilation uniquement, dans le modèle généré, ou dans les exports publics",
+  examples="@Retention(\"export\") pour inclure l'annotation dans les API publiques"
+)
+enum RetentionPolicy is (
+  compile,    // Annotation disponible uniquement durant la compilation
+  model,      // Annotation conservée dans le modèle généré (défaut)
+  "export"    // Annotation incluse dans les exports/API publiques
+)
+
+/*
+Types de déclarations pouvant être ciblées par une annotation.
+Utilisé par @Target pour restreindre l'usage d'une annotation.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Types de déclarations pouvant être ciblées par une annotation",
+  description="Énumération utilisée par @Target pour restreindre l'usage d'une annotation à certains types de déclarations uniquement",
+  examples="@Target(\"entity\") pour limiter une annotation aux entités seulement"
+)
+enum AnnotationTarget is (
+  all,            // Peut être appliquée sur toute déclaration
+  "annotation",   // Uniquement sur les déclarations d'annotations (méta-annotation)
+  "enum",         // Uniquement sur les énumérations
+  "module",       // Uniquement sur les déclarations de modules
+  "record",       // Uniquement sur les records
+  "trait",        // Uniquement sur les traits
+  "aspect",       // Uniquement sur les aspects
+  "entity",       // Uniquement sur les entités
+  "type relation",  // Uniquement sur les relations de type
+  "relation",     // Uniquement sur les relations
+  "metric"        // Uniquement sur les métriques (depuis v0.2.0)
+)
+
+// ========== MÉTA-ANNOTATIONS ==========
+
+/*
+@Target - Spécifie le type de déclaration sur lequel une annotation peut être appliquée.
+Cette méta-annotation permet de restreindre l'usage d'une annotation personnalisée.
+
+IMPORTANT: @Target fait partie du langage de base de Meshr-Lang et est reconnue
+nativement par le compilateur, en plus d'être déclarée ici pour la cohérence.
+
+Exemple d'usage :
+  @Target("entity")
+  annotation BusinessEntity is
+    required domain : String
+  end
+  
+  // Cette annotation ne pourra être utilisée que sur des entités
+*/
+@Since("1.0.0")
+@Target("annotation")
+@Retention("model")
+@Documented(
+  summary="Spécifie le type de déclaration sur lequel une annotation peut être appliquée",
+  description="Méta-annotation intégrée au langage qui permet de restreindre l'usage d'une annotation personnalisée à certains types de déclarations",
+  examples="@Target(\"entity\") annotation BusinessEntity is required domain : String end"
+)
+annotation Target is
+  required value : AnnotationTarget  // Type de déclaration ciblé
+end
+
+/*
+@Retention - Définit la politique de rétention d'une annotation.
+Contrôle à quel moment l'annotation est conservée dans le cycle de vie.
+
+IMPORTANT: @Retention fait partie du langage de base de Meshr-Lang et est reconnue
+nativement par le compilateur, en plus d'être déclarée ici pour la cohérence.
+
+Exemple d'usage :
+  @Target("all")
+  @Retention("export")  // Sera incluse dans les API publiques
+  annotation PublicAPI is
+    required version : String
+  end
+*/
+@Since("1.0.0")
+@Target("annotation")
+@Retention("model")
+@Documented(
+  summary="Définit la politique de rétention d'une annotation",
+  description="Méta-annotation intégrée au langage qui contrôle à quel moment l'annotation est conservée dans le cycle de vie : compilation, modèle ou export",
+  examples="@Retention(\"export\") annotation PublicAPI is required version : String end"
+)
+annotation Retention is
+  required value : RetentionPolicy  // Politique de rétention à appliquer
+end
+
+/*
+@Repeatable - Indique qu'une annotation peut être appliquée plusieurs fois 
+sur la même déclaration. Sans cette méta-annotation, une annotation 
+ne peut apparaître qu'une seule fois par déclaration.
+
+Exemple d'usage :
+  @Target("entity")
+  @Retention("model")
+  @Repeatable(true)
+  annotation Tag is
+    required name : String
+  end
+  
+  // Utilisation possible :
+  @Tag(name="important")
+  @Tag(name="reviewed")
+  entity Customer is ...
+*/
+@Since("1.0.0")
+@Target("annotation")
+@Retention("model")
+@Documented(
+  summary="Indique qu'une annotation peut être appliquée plusieurs fois sur la même déclaration",
+  description="Méta-annotation qui permet à une annotation d'être répétée sur la même déclaration. Sans cette annotation, une annotation ne peut apparaître qu'une seule fois",
+  examples="@Repeatable(true) annotation Tag is required name : String end puis @Tag(name=\"important\") @Tag(name=\"reviewed\")"
+)
+annotation Repeatable is
+  optional value : Boolean = true  // true si l'annotation est répétable
+end

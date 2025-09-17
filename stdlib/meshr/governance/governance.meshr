@@ -1,0 +1,303 @@
+/*
+==============================
+Meshr-Lang StdLib - Governance Module
+==============================
+Module de gouvernance pour la stewardship des données, la qualité et la conformité
+dans l'architecture Data Mesh. Fournit les primitives pour gérer la propriété,
+la qualité, la traçabilité et la responsabilité des données.
+*/
+
+@Since("1.0.0")
+@Version("1.0.0")
+@Documented(summary="Module de gouvernance pour la stewardship des données, la qualité et la conformité")
+module meshr.governance
+
+// ========== EXPORTS ==========
+export { 
+  DataQualityLevel,
+  StewardshipRole, 
+  DataStewardship, 
+  DataQuality, 
+  DataLineage, 
+  WithStewardship, 
+  WithQuality, 
+  DATA_OWNERSHIP, 
+  QUALITY_REVIEW 
+}
+
+// ========== ENUMS ==========
+
+/*
+Niveaux de qualité des données pour évaluer la fiabilité
+et la conformité aux standards de qualité dans le Data Mesh.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Niveaux de qualité des données pour évaluer la fiabilité",
+  description="Échelle de qualité des données : excellent (>95%), good (85-95%), fair (70-85%), poor (<70%), unknown (non évalué)",
+  examples="quality_score : DataQualityLevel = \"excellent\" pour des données de haute qualité"
+)
+enum DataQualityLevel is (
+  "excellent",    // Qualité excellente (>95% de conformité)
+  "good",         // Bonne qualité (85-95% de conformité)
+  "fair",         // Qualité correcte (70-85% de conformité)
+  "poor",         // Qualité insuffisante (<70% de conformité)
+  "unknown"       // Qualité non évaluée
+)
+
+/*
+Rôles de stewardship des données dans l'organisation.
+Définit les responsabilités et niveaux d'autorité sur les données.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Rôles de stewardship des données dans l'organisation",
+  description="Hiérarchie des responsabilités : data_owner (propriétaire), data_steward (gestionnaire), data_custodian (gardien), data_consumer (consommateur)",
+  examples="role : StewardshipRole = \"data_steward\" pour un gestionnaire de données"
+)
+enum StewardshipRole is (
+  "data_owner",      // Propriétaire métier des données
+  "data_steward",    // Gestionnaire responsable de la qualité
+  "data_custodian",  // Gardien technique des données
+  "data_consumer"    // Consommateur autorisé des données
+)
+
+// ========== ASPECTS ==========
+
+/*
+Aspect de stewardship des données - définit la propriété et la responsabilité
+des données dans l'architecture Data Mesh. Essentiel pour la gouvernance
+et l'accountability des Data Products.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      DataStewardship {
+        steward: "data.steward@company.com",
+        owner: "marketing.team@company.com",
+        business_domain: "marketing",
+        last_review: "2024-01-01",
+        next_review: "2024-12-31",
+        contact_email: "data.steward@company.com"
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de stewardship des données pour définir la propriété et responsabilité",
+  description="Fournit les métadonnées de gouvernance : steward, owner, domaine métier, cycles de review. Essentiel pour l'accountability des Data Products",
+  examples="entity Customer is ... aspects { DataStewardship { steward: \"data.steward@company.com\", owner: \"marketing.team@company.com\" } } end"
+)
+aspect DataStewardship is
+  steward : String              // Gestionnaire responsable de la donnée
+  owner : String                // Propriétaire métier de la donnée
+  business_domain : String      // Domaine métier propriétaire
+  last_review : Date            // Date de dernière revue
+  next_review : Date            // Date de prochaine revue planifiée
+  contact_email : String        // Contact pour questions sur la donnée
+end
+
+/*
+Aspect de qualité des données - fournit les métadonnées de qualité,
+validation et monitoring. Critique pour maintenir la confiance
+dans les Data Products du Data Mesh.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      DataQuality {
+        quality_score: 0.95,
+        validation_rules: List["email_format", "required_fields", "uniqueness"],
+        monitoring_frequency: Interval 1 day,
+        alert_threshold: 0.8,
+        last_validation: "2024-03-15T10:30:00Z",
+        quality_issues: List[]
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de qualité des données avec métadonnées de validation et monitoring",
+  description="Fournit les métriques de qualité, règles de validation, seuils d'alerte et historique. Critique pour maintenir la confiance dans les Data Products",
+  examples="entity Customer is ... aspects { DataQuality { quality_score: 0.95, validation_rules: List[\"email_format\"] } } end"
+)
+aspect DataQuality is
+  quality_score : Float         // Score de qualité (0.0 à 1.0)
+  validation_rules : List of String  // Règles de validation appliquées
+  monitoring_frequency : Interval    // Fréquence de monitoring
+  alert_threshold : Float       // Seuil d'alerte qualité
+  last_validation : Timestamp   // Dernière validation effectuée
+  quality_issues : List of String    // Issues de qualité identifiées
+end
+
+/*
+Aspect de lineage des données - trace l'origine, les transformations
+et le flux des données. Essentiel pour la traçabilité et la conformité
+dans l'architecture Data Mesh.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      DataLineage {
+        source_systems: List["CRM", "ERP"],
+        transformations: List["email_normalization", "deduplication"],
+        data_refresh_frequency: Interval 1 hour,
+        sla: Interval 4 hour,
+        last_updated: "2024-03-15T14:30:00Z",
+        lineage_quality: "excellent"
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de lineage des données pour tracer l'origine et les transformations",
+  description="Fournit la traçabilité complète : systèmes sources, transformations, SLA, fréquence de refresh. Essentiel pour la conformité et le debugging",
+  examples="entity Customer is ... aspects { DataLineage { source_systems: List[\"CRM\"], transformations: List[\"normalization\"] } } end"
+)
+aspect DataLineage is
+  source_systems : List of String    // Systèmes sources des données
+  transformations : List of String   // Transformations appliquées
+  data_refresh_frequency : Interval  // Fréquence de rafraîchissement
+  sla : Interval                     // SLA de mise à jour
+  last_updated : Timestamp           // Dernière mise à jour
+  lineage_quality : DataQualityLevel // Qualité de la traçabilité
+end
+
+// ========== TRAITS ==========
+
+/*
+Trait pour ajouter automatiquement les capacités de stewardship
+à n'importe quelle entité. Fournit les champs de base et applique
+l'aspect DataStewardship avec des valeurs par défaut.
+
+Exemple d'usage :
+  entity Customer with WithStewardship is
+    customer_id : String
+    email : String
+    steward : String = "data.steward@company.com"
+    owner : String = "marketing.team@company.com"
+    business_domain : String = "marketing"
+    // L'aspect DataStewardship est automatiquement appliqué
+  end
+*/
+trait WithStewardship is
+  steward : String              // Gestionnaire responsable (obligatoire)
+  owner : String                // Propriétaire métier (obligatoire)
+  business_domain : String      // Domaine métier (obligatoire)
+  
+  aspects {
+    DataStewardship { 
+      steward: steward, 
+      owner: owner, 
+      business_domain: business_domain,
+      last_review: "2024-01-01",              // Date de revue par défaut
+      next_review: "2024-12-31",              // Prochaine revue par défaut
+      contact_email: "steward@company.com"    // Contact par défaut
+    }
+  }
+end
+
+/*
+Trait pour ajouter automatiquement les capacités de qualité
+à n'importe quelle entité. Fournit les champs de monitoring et applique
+l'aspect DataQuality avec des règles de validation standard.
+
+Exemple d'usage :
+  entity Customer with WithQuality is
+    customer_id : String
+    email : String
+    quality_score : Float = 0.95
+    monitoring_frequency : Interval = Interval 1 day
+    // L'aspect DataQuality est automatiquement appliqué
+  end
+*/
+trait WithQuality is
+  quality_score : Float         // Score de qualité (obligatoire)
+  monitoring_frequency : Interval  // Fréquence de monitoring (obligatoire)
+  
+  aspects {
+    DataQuality {
+      quality_score: quality_score,
+      validation_rules: List["completeness", "accuracy", "consistency"],  // Règles standard
+      monitoring_frequency: monitoring_frequency,
+      alert_threshold: 0.8,                    // Seuil d'alerte par défaut
+      last_validation: "2024-01-01T00:00:00Z", // Validation par défaut
+      quality_issues: List[]                   // Aucune issue par défaut
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+/*
+Relation de type pour modéliser l'attribution de propriété des données.
+Permet de tracer qui est responsable de quoi, avec quelles responsabilités
+et selon quelle fréquence de révision.
+
+Exemple d'usage :
+  relation CustomerOwnership of type DATA_OWNERSHIP is
+    from Customer(customer_id)
+    to DataTeam(team_id)
+    
+    assigned_at: "2024-01-15T10:00:00Z"
+    role: "data_steward"
+    responsibilities: List["quality_monitoring", "access_control", "documentation"]
+    review_frequency: Interval 6 month
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Relation de type pour modéliser l'attribution de propriété des données",
+  description="Trace qui est responsable de quoi avec quelles responsabilités et fréquence de révision. Essentiel pour l'accountability dans le Data Mesh",
+  examples="relation CustomerOwnership of type DATA_OWNERSHIP is from Customer(customer_id) to DataTeam(team_id) role: \"data_steward\" end"
+)
+type relation DATA_OWNERSHIP is
+  assigned_at : Timestamp        // Date d'attribution de la responsabilité
+  role : StewardshipRole         // Rôle de stewardship attribué
+  responsibilities : List of String  // Responsabilités spécifiques
+  review_frequency : Interval    // Fréquence de révision de l'attribution
+end
+
+/*
+Relation de type pour modéliser les revues de qualité des données.
+Permet de tracer les évaluations qualité, les problèmes identifiés
+et les plans de remédiation mis en place.
+
+Exemple d'usage :
+  relation CustomerQualityReview of type QUALITY_REVIEW is
+    from Customer(customer_id)
+    to QualityReport(report_id)
+    
+    reviewed_by: "quality.team@company.com"
+    reviewed_at: "2024-03-15T14:30:00Z"
+    quality_score: 0.92
+    issues_found: List["missing_email_validation", "duplicate_records"]
+    remediation_plan: "Implement email validation and deduplication process"
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Relation de type pour modéliser les revues de qualité des données",
+  description="Trace les évaluations qualité, problèmes identifiés et plans de remédiation. Critical pour le continuous improvement de la qualité",
+  examples="relation CustomerReview of type QUALITY_REVIEW is from Customer(customer_id) to QualityReport(report_id) quality_score: 0.92 end"
+)
+type relation QUALITY_REVIEW is
+  reviewed_by : String           // Personne ou équipe ayant effectué la revue
+  reviewed_at : Timestamp        // Date et heure de la revue
+  quality_score : Float          // Score de qualité attribué (0.0 à 1.0)
+  issues_found : List of String  // Issues de qualité identifiées
+  remediation_plan : String      // Plan de remédiation proposé
+end
+

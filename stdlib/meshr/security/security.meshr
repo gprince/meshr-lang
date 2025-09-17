@@ -1,0 +1,297 @@
+/*
+==============================
+Meshr-Lang StdLib - Security Module
+==============================
+Module de sécurité pour la classification des données, la conformité GDPR et le contrôle d'accès
+dans l'architecture Data Mesh. Fournit les primitives pour sécuriser, classifier et contrôler
+l'accès aux données selon les réglementations et politiques de sécurité.
+*/
+
+@Since("1.0.0")
+@Version("1.0.0")
+@Documented(summary="Module de sécurité pour la classification des données, la conformité GDPR et le contrôle d'accès")
+module meshr.security
+
+// ========== EXPORTS ==========
+export { 
+  DataClassificationLevel, 
+  AccessControlType, 
+  DataClassification, 
+  GDPRCompliance, 
+  SecurityControls, 
+  WithSecurity, 
+  WithGDPR, 
+  ACCESS_CONTROL, 
+  DATA_SHARING 
+}
+
+// ========== ENUMS ==========
+
+/*
+Niveaux de classification des données selon leur sensibilité
+et les exigences de sécurité dans l'architecture Data Mesh.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Niveaux de classification des données selon leur sensibilité",
+  description="Classification de sécurité : public (aucune restriction), internal (organisation), confidential (accès restreint), restricted (hautement sensible)",
+  examples="level : DataClassificationLevel = \"confidential\" pour des données sensibles"
+)
+enum DataClassificationLevel is (
+  "public",        // Données publiques, aucune restriction d'accès
+  "internal",      // Données internes à l'organisation
+  "confidential",  // Données confidentielles, accès restreint
+  "restricted"     // Données hautement sensibles, accès très restreint
+)
+
+/*
+Types de contrôle d'accès supportés pour sécuriser les données.
+Définit les mécanismes d'autorisation dans le Data Mesh.
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Types de contrôle d'accès supportés pour sécuriser les données",
+  description="Mécanismes d'autorisation : role-based (par rôle), attribute-based (par attribut), policy-based (par politique), discretionary (discrétionnaire)",
+  examples="access_control : AccessControlType = \"role-based\" pour un contrôle par rôles"
+)
+enum AccessControlType is (
+  "role-based",      // Contrôle d'accès basé sur les rôles (RBAC)
+  "attribute-based", // Contrôle d'accès basé sur les attributs (ABAC)
+  "policy-based",    // Contrôle d'accès basé sur les politiques
+  "discretionary"    // Contrôle d'accès discrétionnaire (DAC)
+)
+
+// ========== ASPECTS ==========
+
+/*
+Aspect de classification des données - définit le niveau de sécurité
+et les contrôles d'accès requis. Fondamental pour la sécurité
+dans l'architecture Data Mesh.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      DataClassification {
+        level: "confidential",
+        encryption_required: true,
+        access_control: "role-based",
+        data_retention: Interval 7 year,
+        steward: "privacy@company.com"
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de classification des données pour définir le niveau de sécurité",
+  description="Fournit la classification de sécurité, contrôles d'accès, exigences de chiffrement et rétention. Fondamental pour la sécurité des Data Products",
+  examples="entity Customer is ... aspects { DataClassification { level: \"confidential\", encryption_required: true } } end"
+)
+aspect DataClassification is
+  level : DataClassificationLevel     // Niveau de classification de sécurité
+  encryption_required : Boolean = false  // Chiffrement obligatoire
+  access_control : AccessControlType = "role-based"  // Type de contrôle d'accès
+  data_retention : Interval          // Période de rétention des données
+  steward : String                   // Responsable de la sécurité
+end
+
+/*
+Aspect de conformité GDPR - fournit les métadonnées nécessaires
+pour la conformité au Règlement Général sur la Protection des Données.
+Essentiel pour les Data Products traitant des données personnelles.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      GDPRCompliance {
+        data_subject_rights: List["access", "rectification", "erasure", "portability"],
+        retention_period: Interval 7 year,
+        lawful_basis: "consent",
+        dpo_contact: "dpo@company.com",
+        consent_required: true,
+        anonymization_required: true
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de conformité GDPR pour les données personnelles",
+  description="Fournit les métadonnées GDPR : droits des personnes, base légale, DPO, consentement, anonymisation. Essentiel pour la conformité réglementaire",
+  examples="entity Customer is ... aspects { GDPRCompliance { data_subject_rights: List[\"access\", \"erasure\"], lawful_basis: \"consent\" } } end"
+)
+aspect GDPRCompliance is
+  data_subject_rights : List of String   // Droits des personnes concernées
+  retention_period : Interval           // Période de rétention GDPR
+  lawful_basis : String                 // Base légale du traitement
+  dpo_contact : String                  // Contact du DPO (Data Protection Officer)
+  consent_required : Boolean = true     // Consentement requis
+  anonymization_required : Boolean = false  // Anonymisation requise
+end
+
+/*
+Aspect de contrôles de sécurité - définit les mesures techniques
+de sécurité appliquées aux données. Critique pour la protection
+des Data Products dans l'architecture Data Mesh.
+
+Exemple d'usage :
+  entity Customer is
+    customer_id : String
+    email : String
+    
+    aspects {
+      SecurityControls {
+        encryption_at_rest: true,
+        encryption_in_transit: true,
+        access_logging: true,
+        audit_frequency: Interval 1 month,
+        security_review_date: "2024-12-31"
+      }
+    }
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Aspect de contrôles de sécurité pour définir les mesures techniques",
+  description="Fournit les contrôles techniques : chiffrement, logging, audit, revues. Critique pour la protection des Data Products sensibles",
+  examples="entity Customer is ... aspects { SecurityControls { encryption_at_rest: true, access_logging: true } } end"
+)
+aspect SecurityControls is
+  encryption_at_rest : Boolean = false     // Chiffrement au repos
+  encryption_in_transit : Boolean = true   // Chiffrement en transit
+  access_logging : Boolean = true          // Logging des accès
+  audit_frequency : Interval              // Fréquence des audits de sécurité
+  security_review_date : Date             // Date de prochaine revue sécurité
+end
+
+// ========== TRAITS ==========
+
+/*
+Trait pour ajouter automatiquement les capacités de sécurité
+à n'importe quelle entité. Fournit les champs de classification et applique
+l'aspect DataClassification avec des valeurs par défaut sécurisées.
+
+Exemple d'usage :
+  entity Customer with WithSecurity is
+    customer_id : String
+    email : String
+    classification : DataClassificationLevel = "confidential"
+    encryption_required : Boolean = true
+    // L'aspect DataClassification est automatiquement appliqué
+  end
+*/
+trait WithSecurity is
+  classification : DataClassificationLevel  // Niveau de classification (obligatoire)
+  encryption_required : Boolean = false     // Chiffrement requis (défaut: false)
+  
+  aspects {
+    DataClassification { 
+      level: classification, 
+      encryption_required: encryption_required,
+      access_control: "role-based",           // Contrôle d'accès par défaut
+      data_retention: Interval 7 year,       // Rétention par défaut
+      steward: "security@company.com"        // Steward sécurité par défaut
+    }
+  }
+end
+
+/*
+Trait pour ajouter automatiquement les capacités de conformité GDPR
+à n'importe quelle entité traitant des données personnelles. Applique
+l'aspect GDPRCompliance avec les droits standard des personnes.
+
+Exemple d'usage :
+  entity Customer with WithGDPR is
+    customer_id : String
+    email : String
+    dpo_contact : String = "dpo@company.com"
+    retention_period : Interval = Interval 7 year
+    // L'aspect GDPRCompliance est automatiquement appliqué
+  end
+*/
+trait WithGDPR is
+  dpo_contact : String              // Contact DPO (obligatoire)
+  retention_period : Interval       // Période de rétention GDPR (obligatoire)
+  
+  aspects {
+    GDPRCompliance {
+      data_subject_rights: List["access", "rectification", "erasure", "portability"],  // Droits standard
+      retention_period: retention_period,
+      lawful_basis: "consent",              // Base légale par défaut
+      dpo_contact: dpo_contact,
+      consent_required: true,               // Consentement requis par défaut
+      anonymization_required: false        // Anonymisation optionnelle
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+/*
+Relation de type pour modéliser l'attribution de contrôles d'accès.
+Permet de tracer qui a accordé quels accès, à qui, pour combien de temps
+et avec quelle justification. Essentiel pour l'audit de sécurité.
+
+Exemple d'usage :
+  relation CustomerAccess of type ACCESS_CONTROL is
+    from Customer(customer_id)
+    to DataAnalyst(analyst_id)
+    
+    granted_by: "security.admin@company.com"
+    granted_at: "2024-03-15T10:00:00Z"
+    expires_at: "2024-09-15T10:00:00Z"
+    permissions: List["read", "export"]
+    justification: "Business need for customer analytics project"
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Relation de type pour modéliser l'attribution de contrôles d'accès",
+  description="Trace qui a accordé quels accès avec justification et expiration. Essentiel pour l'audit de sécurité et la conformité",
+  examples="relation CustomerAccess of type ACCESS_CONTROL is from Customer(customer_id) to DataAnalyst(analyst_id) permissions: List[\"read\"] end"
+)
+type relation ACCESS_CONTROL is
+  granted_by : String           // Personne ayant accordé l'accès
+  granted_at : Timestamp        // Date d'attribution de l'accès
+  expires_at : Timestamp        // Date d'expiration de l'accès
+  permissions : List of String  // Permissions accordées (read, write, export, etc.)
+  justification : String        // Justification métier de l'accès
+end
+
+/*
+Relation de type pour modéliser le partage de données.
+Permet de tracer avec qui les données sont partagées, dans quel but
+et avec quel consentement. Critique pour la conformité GDPR.
+
+Exemple d'usage :
+  relation CustomerSharing of type DATA_SHARING is
+    from Customer(customer_id)
+    to AnalyticsPartner(partner_id)
+    
+    shared_with: "analytics.partner@company.com"
+    shared_at: "2024-03-15T14:30:00Z"
+    purpose: "Customer satisfaction analysis for product improvement"
+    retention_period: Interval 2 year
+    consent_obtained: true
+  end
+*/
+@Since("1.0.0")
+@Documented(
+  summary="Relation de type pour modéliser le partage de données",
+  description="Trace avec qui les données sont partagées, dans quel but et avec quel consentement. Critique pour la conformité GDPR et l'audit",
+  examples="relation CustomerSharing of type DATA_SHARING is from Customer(customer_id) to Partner(partner_id) purpose: \"analytics\" end"
+)
+type relation DATA_SHARING is
+  shared_with : String          // Destinataire du partage
+  shared_at : Timestamp         // Date du partage
+  purpose : String              // Finalité du partage
+  retention_period : Interval   // Période de rétention chez le destinataire
+  consent_obtained : Boolean    // Consentement obtenu pour le partage
+end
+

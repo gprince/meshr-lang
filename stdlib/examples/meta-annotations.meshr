@@ -6,7 +6,7 @@
 module examples.meta_annotations
 
 // Import des méta-annotations
-import { Target, Retention, Repeatable } from meshr.annotations
+import { Target, Retention, Repeatable } from meshr.annotations.meta
 
 export { CustomAnnotation, RepeatableAnnotation }
 
