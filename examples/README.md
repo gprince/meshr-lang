@@ -28,7 +28,14 @@ Ces exemples démontrent les capacités du langage Meshr-Lang pour :
 - **`hr-employees.meshr`** : Gestion des employés
   - Entités : `Employee`, `Department`, `Position`
   - Traits : `WithPersonalInfo`, `WithEmploymentInfo`
-  - Relations : Hiérarchie organisationnelle
+
+- **`hr-recrutement-project/`** : Projet complet de gestion de recrutement ⭐
+  - **Architecture modulaire** : `src/referentiels/`, `src/recrutement/`, `src/metrics/`
+  - **Entités** : `Candidate`, `JobPosting`, `Application`, `Interview`
+  - **Métriques avancées** : `TimeToHire`, `CostPerHire`, `SourceEffectiveness`
+  - **Pattern matching** : Dimensions conditionnelles avec `match...is...end`
+  - **Enums optimisés** : Syntaxe mixte identifiants/chaînes
+  - **Documentation professionnelle** : Mapping BigQuery/Dataplex automatisé
 
 ### 🏦 Secteur financier
 - **`banking-accounts.meshr`** : Gestion des comptes bancaires

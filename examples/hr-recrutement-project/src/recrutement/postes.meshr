@@ -1,0 +1,266 @@
+// ==============================
+// Postes - Domaine RH Recrutement
+// ==============================
+// Gestion des postes ouverts et des exigences
+
+@Version("1.0.0")
+@Author(name="HR Recruitment Team", email="recruitment@company.com")
+@Documented(
+  summary="Gestion des postes ouverts et des exigences de recrutement",
+  description="Entités pour la définition des postes, compétences requises et processus",
+  examples="Utilisé pour le matching candidat-poste et la gestion des ouvertures"
+)
+module hr.recrutement.postes
+
+import { WithSecurity, DataClassification } from meshr.security
+import { WithStewardship } from meshr.governance
+import { WithLifecycle } from meshr.lifecycle
+import { Status, Priority } from meshr.types
+import { BusinessUnit, Department, Team } from hr.referentiels.organisation
+import { Site, Office, WorkSpace, WorkingMode } from hr.referentiels.locaux
+import { Skill, ExperienceLevel, SkillProficiencyLevel } from hr.referentiels.profils
+
+export {
+  JobPosting,
+  JobRequirement,
+  JobSkillRequirement,
+  JobLocation,
+  JobStatus,
+  ContractType,
+  SeniorityLevel,
+  UrgencyLevel,
+  WithJobInfo,
+  WithCompensationInfo,
+  WithRequirementInfo
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum JobStatus is (
+  draft,               // En préparation
+  "pending approval",  // En attente d'approbation
+  approved,            // Approuvé
+  published,           // Publié
+  active,              // Actif (recrutement en cours)
+  "on hold",           // Suspendu temporairement
+  filled,              // Poste pourvu
+  cancelled,           // Annulé
+  expired              // Expiré
+)
+
+enum ContractType is (
+  "permanent",         // CDI
+  "fixed_term",        // CDD
+  "contractor",        // Freelance
+  "internship",        // Stage
+  "apprenticeship",    // Apprentissage
+  "part_time",         // Temps partiel
+  "consultant"         // Consultant
+)
+
+enum SeniorityLevel is (
+  intern,
+  junior, 
+  "mid level",
+  senior,
+  lead,
+  principal,
+  director,
+  vp
+)
+
+enum UrgencyLevel is (
+  low,
+  normal, 
+  high,
+  critical,
+  "business critical"
+)
+
+enum RequirementType is (
+  mandatory,           // Obligatoire
+  preferred,           // Préféré
+  "nice to have",      // Bonus
+  disqualifying        // Éliminatoire si absent
+)
+
+// ========== TRAITS ==========
+
+trait WithJobInfo is
+  title : String length 1..150
+  description : String length 0..5000
+  responsibilities : List of String
+  team_description : String length 0..1000
+  reporting_manager : String
+  team_size : Integer
+end
+
+trait WithCompensationInfo is
+  salary_min : Float
+  salary_max : Float
+  currency : String = "EUR"
+  bonus_eligible : Boolean = false
+  equity_eligible : Boolean = false
+  benefits_package : List of String
+  compensation_notes : String length 0..500
+end
+
+trait WithRequirementInfo is
+  minimum_experience : ExperienceLevel
+  education_required : String
+  language_requirements : Map of String to String
+  travel_requirement : Float = 0.0
+  security_clearance : String
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Poste ouvert au recrutement")
+entity JobPosting with WithSecurity, WithStewardship, WithLifecycle, WithJobInfo, WithCompensationInfo, WithRequirementInfo is
+  job_id : String
+  job_status : JobStatus
+  department_id : String
+  business_unit_id : String
+  hiring_manager : String
+  recruiter_assigned : String
+  contract_type : ContractType
+  seniority_level : SeniorityLevel
+  urgency_level : UrgencyLevel
+  headcount_approved : Integer = 1
+  posting_date : Date
+  application_deadline : Date
+  expected_start_date : Date
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "recruitment@company.com"
+    },
+    DataStewardship {
+      steward: "recruitment.lead@company.com",
+      owner: "hiring.manager@company.com",
+      business_domain: "recruitment",
+      last_review: "2024-09-01",
+      next_review: "2025-03-01",
+      contact_email: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Exigence de compétence pour un poste")
+entity JobSkillRequirement with WithSecurity, WithStewardship, WithSkillInfo is
+  requirement_id : String
+  job_id : String
+  skill_id : String
+  required_proficiency : SkillProficiencyLevel
+  minimum_years : Integer
+  requirement_type : RequirementType
+  assessment_method : String
+  weight_in_evaluation : Float
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Localisation possible pour un poste")
+entity JobLocation with WithSecurity, WithStewardship is
+  job_location_id : String
+  job_id : String
+  site_id : String
+  office_id : String
+  workspace_id : String
+  working_mode : WorkingMode
+  remote_percentage : Float = 0.0
+  relocation_assistance : Boolean = false
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Exigences générales pour un poste")
+entity JobRequirement with WithSecurity, WithStewardship is
+  requirement_id : String
+  job_id : String
+  requirement_category : String
+  requirement_description : String length 0..500
+  requirement_type : RequirementType
+  verification_method : String
+  compliance_related : Boolean = false
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation JobBelongsToDepartment is
+  from JobPosting(department_id)
+  to Department(department_id)
+  
+  budget_allocation : Float
+  approval_level_required : String
+end
+
+relation JobBelongsToBusinessUnit is
+  from JobPosting(business_unit_id)
+  to BusinessUnit(bu_id)
+  
+  strategic_priority : Priority
+  business_justification : String
+end
+
+relation JobHasSkillRequirements is
+  from JobPosting(job_id)
+  to JobSkillRequirement(job_id)
+  
+  total_skill_weight : Float
+  assessment_complexity : String
+end
+
+relation JobHasLocations is
+  from JobPosting(job_id)
+  to JobLocation(job_id)
+  
+  location_preference : Priority
+  cost_implications : Float
+end
+
+relation JobHasRequirements is
+  from JobPosting(job_id)
+  to JobRequirement(job_id)
+  
+  requirement_priority : Priority
+  verification_complexity : String
+end
+
+relation SkillRequirementMapsToSkill is
+  from JobSkillRequirement(skill_id)
+  to Skill(skill_id)
+  
+  market_availability : String
+  sourcing_difficulty : Priority
+end

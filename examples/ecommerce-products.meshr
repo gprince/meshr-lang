@@ -44,7 +44,7 @@ entity Product with WithSecurity, WithStewardship, WithLifecycle, WithVersioning
   status : ProductStatus
   category_id : String
   weight : Float
-  dimensions : String
+  product_dimensions : String
   
   aspects {
     DataClassification {

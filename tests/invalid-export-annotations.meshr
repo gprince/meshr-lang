@@ -1,0 +1,24 @@
+// ==============================
+// Tests invalides pour export avec annotations
+// ==============================
+module testexportannotationsinvalid
+
+// ERREUR: Export groupé avec annotations (ne doit PAS compiler)
+@since("1.0.0")
+@description("Ceci ne devrait pas être autorisé")
+export {
+  SomeEnum,
+  SomeEntity
+}
+
+// ERREUR: Annotations entre export et accolades
+export @since("1.0.0") {
+  SomeEnum,
+  SomeEntity  
+}
+
+// ERREUR: Annotations dans les accolades
+export {
+  @since("1.0.0") SomeEnum,
+  SomeEntity
+}

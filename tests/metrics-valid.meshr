@@ -1,0 +1,142 @@
+// ==============================
+// Tests valides pour les métriques
+// ==============================
+
+module metrics.valid.tests
+
+// Métrique simple avec calculation
+metric SimpleRevenue is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+end
+
+// Métrique avec aggregation
+metric ComplexRevenue is
+  source Order
+  aggregation {
+    total_revenue as sum(total_amount),
+    order_count as count(),
+    avg_order_value as total_revenue / order_count
+  }
+  unit "EUR"
+end
+
+// Métrique avec outputs
+metric RevenueWithOutputs is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  outputs {
+    total_revenue : Float,
+    order_count : Integer,
+    calculation_timestamp : Timestamp
+  }
+end
+
+// Métrique avec dimensions simples
+metric RevenueByRegion is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  dimensions {
+    region customer_region,
+    order_month date_trunc("month", order_date)
+  }
+end
+
+// Métrique avec dimensions et pattern matching
+metric RevenueBySegment is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  dimensions {
+    customer_segment match customer_type is
+      CustomerType.premium or CustomerType.gold -> "high_value",
+      CustomerType.standard -> "standard",
+      _ -> "other"
+    end
+  }
+end
+
+// Métrique avec filters
+metric RecentRevenue is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  filters {
+    order_status == "completed",
+    order_date >= Date "2024-01-01"
+  }
+end
+
+// Métrique avec temporal
+metric MonthlyRevenue is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  temporal {
+    window Interval 1 month,
+    refresh_frequency Interval 1 day,
+    historical_depth Interval 2 year
+  }
+end
+
+// Métrique avec aspects
+metric GovernedRevenue is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "finance@company.com",
+      business_criticality: "high"
+    }
+  }
+end
+
+// Métrique complète avec tous les éléments
+@BusinessCritical(impact="high")
+metric CompleteMetric with DataQuality is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit "days"
+  
+  outputs {
+    average_days : Float,
+    median_days : Float,
+    sample_size : Integer
+  }
+  
+  dimensions {
+    department department_id,
+    seniority_tier match seniority_level is
+      SeniorityLevel.intern or SeniorityLevel.junior -> "junior",
+      SeniorityLevel.senior or SeniorityLevel.lead -> "senior",
+      _ -> "executive"
+    end
+  }
+  
+  filters {
+    application_status == ApplicationStatus.hired,
+    application_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 6 month,
+    refresh_frequency Interval 1 day
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "hr.director@company.com",
+      technical_owner: "hr.analytics@company.com"
+    }
+  }
+end

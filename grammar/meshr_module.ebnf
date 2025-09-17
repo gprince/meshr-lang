@@ -25,8 +25,8 @@ export-items        = "{", identifier, { ",", identifier }, "}" ;
 (* ==============================
    Déclarations de haut niveau
    ============================== *)
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
-exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
 
 (* ========== ENUM ============= *)
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
@@ -202,6 +202,56 @@ number-literal      = digit, { digit }
 
 identifier          = letter, { letter | digit | "_" } ;
 NEWLINE             = ("\r"?), "\n", { ("\r"?), "\n" } ;
+
+(* ========== METRIC DECLARATION ============ *)
+metric-decl         = { annotation }, [ "sealed" ], "metric", identifier, [ with-clause ], "is",
+                      metric-source,
+                      ( metric-calculation | metric-aggregation ),
+                      [ metric-unit ],
+                      [ metric-outputs ],
+                      [ metric-dimensions ],
+                      [ metric-filters ],
+                      [ metric-temporal ],
+                      [ metric-aspects ],
+                      "end" ;
+
+metric-source       = "source", qualified-name ;
+metric-calculation  = "calculation", expression ;
+metric-aggregation  = "aggregation", "{", aggregation-field-list, "}" ;
+aggregation-field-list = aggregation-field, { ",", aggregation-field } ;
+aggregation-field   = identifier, "as", expression ;
+
+metric-unit         = "unit", string-literal ;
+metric-outputs      = "outputs", "{", output-field-list, "}" ;
+output-field-list   = output-field, { ",", output-field } ;
+output-field        = identifier, ":", type-ref ;
+
+metric-dimensions   = "dimensions", "{", dimension-list, "}" ;
+dimension-list      = dimension, { ",", dimension } ;
+dimension           = identifier, ( expression | match-expression ) ;
+
+match-expression    = "match", expression, "is", match-arms, "end" ;
+match-arms          = match-arm, { ",", match-arm } ;
+match-arm           = pattern, "->", match-result ;
+
+pattern             = literal-pattern | range-pattern | enum-pattern | wildcard-pattern | or-pattern ;
+literal-pattern     = string-literal | number-literal | boolean-literal ;
+range-pattern       = number-literal, "..", [ number-literal ] ;
+enum-pattern        = qualified-name ;
+wildcard-pattern    = "_" ;
+or-pattern          = pattern, { "or", pattern } ;
+match-result        = string-literal | number-literal | boolean-literal | qualified-name ;
+
+metric-filters      = "filters", "{", filter-list, "}" ;
+filter-list         = filter-expression, { ",", filter-expression } ;
+filter-expression   = expression ;
+
+metric-temporal     = "temporal", "{", temporal-config-list, "}" ;
+temporal-config-list = temporal-config, { ",", temporal-config } ;
+temporal-config     = temporal-field, interval-literal ;
+temporal-field      = "window" | "refresh_frequency" | "historical_depth" ;
+
+metric-aspects      = "aspects", "{", aspect-instance-list, "}" ;
 
 comment             = line-comment | block-comment ;
 line-comment        = "//", { character - end-of-line } ;

@@ -11,7 +11,7 @@ import { Version, Documented } from meshr.core
 @since("1.0.0")
 @id("dataplex-aspect-annotation")
 @description("Annotation pour déclarer un type d'aspect compatible avec Dataplex Universal Catalog")
-export annotation DataplexAspect is
+annotation DataplexAspect is
     required aspect_type_id : String
     optional display_name : String = "Default Aspect"
     optional description : String = "Default aspect description"
@@ -21,7 +21,7 @@ end
 @since("1.0.0")
 @id("dataplex-enum-annotation")
 @description("Annotation pour déclarer un enum compatible avec Dataplex Universal Catalog")
-export annotation DataplexEnum is
+annotation DataplexEnum is
     required enum_type : String
     optional description : String = "Default enum description"
 end
@@ -29,7 +29,7 @@ end
 @since("1.0.0")
 @id("dataplex-entry-annotation")
 @description("Annotation pour déclarer une entrée compatible avec Dataplex Universal Catalog")
-export annotation DataplexEntry is
+annotation DataplexEntry is
     required entry_id : String
     required entry_type : String
     optional display_name : String = "Default Entry"
@@ -42,27 +42,37 @@ end
 @since("1.0.0")
 @id("since-annotation")
 @description("Indique depuis quelle version cette déclaration est disponible")
-export annotation since is
+annotation since is
     required version : String
 end
 
 @since("1.0.0")
 @id("id-annotation")
 @description("Identifiant unique pour cette déclaration")
-export annotation id is
+annotation id is
     required identifier : String
 end
 
 @since("1.0.0")
 @id("display-name-annotation")
 @description("Nom d'affichage pour cette déclaration")
-export annotation display_name is
+annotation display_name is
     required name : String
 end
 
 @since("1.0.0")
 @id("description-annotation")
 @description("Description détaillée de cette déclaration")
-export annotation description is
+annotation description is
     required text : String
 end
+
+export {
+  DataplexAspect,
+  DataplexEnum, 
+  DataplexEntry,
+  since,
+  id,
+  display_name,
+  description
+}

@@ -1,0 +1,289 @@
+// ==============================
+// Candidats - Domaine RH Recrutement
+// ==============================
+// Gestion des candidats et de leurs profils
+
+@Version("1.0.0")
+@Author(name="HR Recruitment Team", email="recruitment@company.com")
+@Documented(
+  summary="Gestion des candidats et profils de recrutement",
+  description="Entités et relations pour la gestion complète des candidats",
+  examples="Utilisé pour le tracking des candidatures et évaluations"
+)
+module hr.recrutement.candidats
+
+import { WithSecurity, DataClassification, WithGDPR } from meshr.security
+import { WithStewardship, DataStewardship } from meshr.governance
+import { WithLifecycle } from meshr.lifecycle
+import { Status, Priority, Address, WithContactInfo } from meshr.types
+import { Skill, ExperienceLevel, SkillProficiencyLevel, WithSkillInfo, WithExperienceInfo } from hr.referentiels.profils
+
+export {
+  Candidate,
+  CandidateProfile,
+  CandidateSkill,
+  CandidateExperience,
+  Education,
+  CandidateStatus,
+  SourceChannel,
+  EducationLevel,
+  WithCandidateInfo,
+  WithEducationInfo,
+  WithRecruitmentTracking
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum CandidateStatus is (
+  sourced,             // Identifié/sourcé
+  contacted,           // Premier contact établi
+  interested,          // Intérêt confirmé
+  applied,             // Candidature formelle
+  screening,           // En cours de screening
+  interviewing,        // En processus d'entretien
+  "reference check",   // Vérification des références
+  "offer pending",     // Offre en préparation
+  "offer sent",        // Offre envoyée
+  "offer accepted",    // Offre acceptée
+  "offer declined",    // Offre refusée
+  hired,               // Embauché
+  rejected,            // Rejeté
+  withdrawn,           // Candidature retirée
+  "on hold"            // En attente
+)
+
+enum SourceChannel is (
+  "internal referral",
+  "job board",
+  linkedin,
+  "recruitment agency",
+  "university partnership",
+  "career fair",
+  "direct application",
+  headhunter,
+  "social media",
+  "employee network"
+)
+
+enum EducationLevel is (
+  "high school",
+  "associate degree",
+  "bachelor degree", 
+  "master degree",
+  "doctoral degree",
+  "professional certification",
+  "trade school"
+)
+
+enum InterviewType is (
+  "phone screening",
+  "video interview",
+  "technical interview",
+  "behavioral interview",
+  "case study",
+  presentation,
+  "panel interview",
+  "final interview"
+)
+
+// ========== TRAITS ==========
+
+trait WithCandidateInfo is
+  first_name : String length 1..50
+  last_name : String length 1..50
+  email : String pattern "^[^@]+@[^@]+$"
+  phone : String length 10..20
+  linkedin_profile : String
+  current_location : Address
+  willing_to_relocate : Boolean = false
+  notice_period : Interval
+end
+
+trait WithEducationInfo is
+  highest_education : EducationLevel
+  graduation_year : Integer
+  field_of_study : String
+  university_name : String
+  gpa : Float
+  honors : List of String
+end
+
+trait WithRecruitmentTracking is
+  source_channel : SourceChannel
+  referrer_name : String
+  application_date : Date
+  last_contact_date : Date
+  recruiter_assigned : String
+  recruitment_notes : String length 0..1000
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Candidat au recrutement")
+entity Candidate with WithSecurity, WithStewardship, WithGDPR, WithLifecycle, WithCandidateInfo, WithEducationInfo, WithRecruitmentTracking, WithContactInfo is
+  candidate_id : String
+  status : CandidateStatus
+  current_employer : String
+  current_position : String
+  current_salary : Float
+  expected_salary : Float
+  availability_date : Date
+  visa_required : Boolean = false
+  background_check_status : String
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    },
+    DataStewardship {
+      steward: "recruitment.lead@company.com",
+      owner: "hr.director@company.com",
+      business_domain: "recruitment",
+      last_review: "2024-09-01",
+      next_review: "2025-03-01",
+      contact_email: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Profil détaillé du candidat")
+entity CandidateProfile with WithSecurity, WithStewardship, WithGDPR is
+  profile_id : String
+  candidate_id : String
+  resume_text : String length 0..10000
+  cover_letter : String length 0..2000
+  portfolio_url : String
+  years_total_experience : Integer
+  years_relevant_experience : Integer
+  career_summary : String length 0..1000
+  career_objectives : String length 0..500
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based", 
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Compétence d'un candidat")
+entity CandidateSkill with WithSecurity, WithStewardship, WithSkillInfo is
+  candidate_skill_id : String
+  candidate_id : String
+  skill_id : String
+  proficiency_level : SkillProficiencyLevel
+  years_of_experience : Integer
+  last_used : Date
+  certification_available : Boolean = false
+  assessment_score : Float
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 2 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Expérience professionnelle du candidat")
+entity CandidateExperience with WithSecurity, WithStewardship, WithExperienceInfo is
+  experience_id : String
+  candidate_id : String
+  company_name : String
+  position_title : String
+  start_date : Date
+  end_date : Date
+  description : String length 0..1000
+  achievements : List of String
+  technologies_used : List of String
+  team_size_managed : Integer
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Formation et éducation du candidat")
+entity Education with WithSecurity, WithStewardship, WithEducationInfo is
+  education_id : String
+  candidate_id : String
+  institution_name : String
+  degree_type : EducationLevel
+  field_of_study : String
+  start_date : Date
+  end_date : Date
+  gpa : Float
+  honors_awards : List of String
+  thesis_topic : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation CandidateHasProfile is
+  from Candidate(candidate_id)
+  to CandidateProfile(candidate_id)
+  
+  profile_completeness : Float
+  last_updated : Timestamp
+end
+
+relation CandidateHasSkills is
+  from Candidate(candidate_id)
+  to CandidateSkill(candidate_id)
+  
+  skill_assessment_date : Date
+  assessor_name : String
+  assessment_method : String
+end
+
+relation CandidateHasExperience is
+  from Candidate(candidate_id)
+  to CandidateExperience(candidate_id)
+  
+  relevance_score : Float
+  verification_status : String
+  verification_date : Date
+end
+
+relation CandidateHasEducation is
+  from Candidate(candidate_id)
+  to Education(candidate_id)
+  
+  transcript_verified : Boolean = false
+  verification_date : Date
+  relevance_to_role : Float
+end
+
+relation SkillMapsToReferential is
+  from CandidateSkill(skill_id)
+  to Skill(skill_id)
+  
+  mapping_confidence : Float = 1.0
+  last_validated : Date
+end

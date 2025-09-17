@@ -1,0 +1,32 @@
+[project]
+name = "hr-recrutement"
+version = "1.0.0"
+description = "Système de gestion du recrutement - Domaine RH"
+authors = ["HR Data Team <hr.data@company.com>"]
+
+[dependencies]
+meshr-stdlib = { path = "../../stdlib" }
+
+[modules]
+# Référentiels
+"hr.referentiels.organisation" = "src/referentiels/organisation.meshr"
+"hr.referentiels.locaux" = "src/referentiels/locaux.meshr" 
+"hr.referentiels.profils" = "src/referentiels/profils.meshr"
+
+# Domaine recrutement
+"hr.recrutement.candidats" = "src/recrutement/candidats.meshr"
+"hr.recrutement.postes" = "src/recrutement/postes.meshr"
+"hr.recrutement.processus" = "src/recrutement/processus.meshr"
+"hr.recrutement.evaluations" = "src/recrutement/evaluations.meshr"
+
+# Métriques
+"hr.recrutement.metrics" = "src/metrics/recrutement-metrics.meshr"
+
+[build]
+target = "json"
+output_dir = "build/"
+
+[governance]
+data_steward = "hr.data@company.com"
+business_owner = "hr.director@company.com"
+compliance_requirements = ["GDPR", "CCPA"]

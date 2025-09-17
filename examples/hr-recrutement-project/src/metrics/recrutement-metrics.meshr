@@ -1,0 +1,387 @@
+// ==============================
+// Métriques Recrutement - Domaine RH
+// ==============================
+// Métriques de performance et KPIs du processus de recrutement
+
+@Version("1.0.0")
+@Author(name="HR Analytics Team", email="hr.analytics@company.com")
+@Documented(
+  summary="Métriques de performance du processus de recrutement",
+  description="KPIs et métriques pour optimiser l'efficacité du recrutement",
+  examples="Utilisé pour les dashboards RH et l'amélioration continue"
+)
+module hr.recrutement.metrics
+
+import { WithSecurity, DataClassification } from meshr.security
+import { WithStewardship } from meshr.governance
+import { Priority } from meshr.types
+import { Application, Interview, Offer } from hr.recrutement.processus
+import { JobPosting } from hr.recrutement.postes
+import { Candidate } from hr.recrutement.candidats
+import { Department, BusinessUnit } from hr.referentiels.organisation
+
+export {
+  TimeToHire,
+  CostPerHire,
+  SourceEffectiveness,
+  InterviewConversionRate,
+  OfferAcceptanceRate,
+  CandidateExperience,
+  RecruiterProductivity
+}
+
+// ========== ASPECTS POUR MÉTRIQUES ==========
+
+aspect MetricGovernance is
+  business_owner : String
+  technical_owner : String
+  data_refresh_frequency : Interval
+  data_freshness_sla : Interval
+  accuracy_threshold : Float
+  business_criticality : Priority
+  dashboard_visibility : List of String
+end
+
+aspect MetricQuality is
+  data_sources : List of String
+  calculation_method : String
+  validation_rules : List of String
+  known_limitations : String
+  confidence_level : Float
+end
+
+aspect MetricLineage is
+  upstream_dependencies : List of String
+  downstream_consumers : List of String
+  impact_analysis : String
+  change_notification_list : List of String
+end
+
+// ========== MÉTRIQUES ==========
+
+@BusinessCritical(impact="high", stakeholders=["hr director", "ceo"])
+@Documented(summary="Temps moyen de recrutement par poste")
+metric TimeToHire is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit "days"
+  
+  outputs {
+    average_days : Float,
+    median_days : Float,
+    p95_days : Float,
+    sample_size : Integer,
+    calculation_timestamp : Timestamp
+  }
+  
+  dimensions {
+    department from related(JobPosting, job_id).department_id,
+    seniority_level from related(JobPosting, job_id).seniority_level,
+    business_unit from related(JobPosting, job_id).business_unit_id,
+    period from date_trunc("month", application_date)
+  }
+  
+  filters {
+    application_status == ApplicationStatus.hired,
+    application_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 6 month,
+    refresh_frequency Interval 1 day,
+    historical_depth Interval 2 year
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "hr.director@company.com",
+      technical_owner: "hr.analytics@company.com",
+      data_refresh_frequency: Interval 1 day,
+      data_freshness_sla: Interval 2 hour,
+      accuracy_threshold: 95.0,
+      business_criticality: "high",
+      dashboard_visibility: List["executive", "hr management", "recruitment team"]
+    },
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "hr.analytics@company.com"
+    }
+  }
+end
+
+@BusinessCritical(impact="medium", stakeholders=["hr director", "finance"])
+@Documented(summary="Coût total du recrutement par embauche")
+metric CostPerHire is
+  source Application
+  
+  aggregation {
+    recruitment_costs as sum(related(RecruitmentCost, application_id).amount),
+    total_hires as count(*) where application_status == ApplicationStatus.hired,
+    cost_per_hire as recruitment_costs / total_hires
+  }
+  
+  unit "EUR"
+  
+  outputs {
+    total_cost : Float,
+    cost_per_hire : Float,
+    cost_breakdown : Map of String to Float,
+    hires_count : Integer
+  }
+  
+  dimensions {
+    department from related(JobPosting, job_id).department_id,
+    source_channel from related(Candidate, candidate_id).source_channel,
+    period from date_trunc("quarter", application_date)
+  }
+  
+  filters {
+    application_status == ApplicationStatus.hired,
+    application_date >= Date "2024-01-01"
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "hr.director@company.com",
+      technical_owner: "hr.analytics@company.com",
+      data_refresh_frequency: Interval 1 week,
+      business_criticality: "medium"
+    },
+    MetricQuality {
+      data_sources: List["applications", "recruitment costs", "job postings"],
+      calculation_method: "Total recruitment costs divided by successful hires",
+      confidence_level: 90.0
+    }
+  }
+end
+
+@Documented(summary="Efficacité des canaux de sourcing")
+metric SourceEffectiveness is
+  source Candidate
+  
+  aggregation {
+    applications_count as count(related(Application, candidate_id)),
+    hires_count as count(related(Application, candidate_id) where application_status == ApplicationStatus.hired),
+    conversion_rate as hires_count / applications_count * 100,
+    avg_time_to_hire as avg(related(Application, candidate_id).time_to_hire),
+    avg_quality_score as avg(related(Application, candidate_id).final_evaluation_score)
+  }
+  
+  outputs {
+    conversion_rate : Float,
+    average_quality : Float,
+    volume : Integer,
+    efficiency_score : Float
+  }
+  
+  dimensions {
+    source_channel from source_channel,
+    period from date_trunc("month", related(Application, candidate_id).application_date)
+  }
+  
+  filters {
+    related(Application, candidate_id).application_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 3 month,
+    refresh_frequency Interval 1 day
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "recruitment.lead@company.com",
+      technical_owner: "hr.analytics@company.com",
+      business_criticality: "high"
+    }
+  }
+end
+
+@Documented(summary="Taux de conversion par étape d'entretien")
+metric InterviewConversionRate is
+  source Interview
+  calculation count(*) where next_stage_reached == true / count(*)
+  unit "percentage"
+  
+  outputs {
+    conversion_rate : Float,
+    interviews_conducted : Integer,
+    successful_progressions : Integer,
+    stage_bottlenecks : List of String
+  }
+  
+  dimensions {
+    interview_type from interview_type,
+    interview_round from interview_round,
+    interviewer from interviewer_names,
+    period from date_trunc("week", scheduled_date)
+  }
+  
+  filters {
+    interview_status == "completed",
+    scheduled_date >= Date "2024-01-01"
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "recruitment.lead@company.com",
+      technical_owner: "hr.analytics@company.com",
+      data_refresh_frequency: Interval 1 day,
+      business_criticality: "medium"
+    },
+    MetricLineage {
+      upstream_dependencies: List["interviews", "applications"],
+      downstream_consumers: List["recruitment dashboard", "process optimization"],
+      impact_analysis: "Critical for interview process optimization"
+    }
+  }
+end
+
+@Documented(summary="Taux d'acceptation des offres")
+metric OfferAcceptanceRate is
+  source Offer
+  calculation count(*) where offer_status == "accepted" / count(*) * 100
+  unit "percentage"
+  
+  outputs {
+    acceptance_rate : Float,
+    offers_extended : Integer,
+    offers_accepted : Integer,
+    offers_declined : Integer,
+    decline_reasons : Map of String to Integer
+  }
+  
+  dimensions {
+    department from related(Application, application_id).related(JobPosting, job_id).department_id,
+    seniority_level from related(Application, application_id).related(JobPosting, job_id).seniority_level,
+    salary_range from case 
+      when salary_offered < 50000 then "entry level"
+      when salary_offered < 80000 then "mid level" 
+      when salary_offered < 120000 then "senior level"
+      else "executive level"
+    end,
+    period from date_trunc("month", offer_date)
+  }
+  
+  filters {
+    offer_status in ["accepted", "declined"],
+    offer_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 6 month,
+    refresh_frequency Interval 1 day
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "hr.director@company.com",
+      technical_owner: "hr.analytics@company.com",
+      data_refresh_frequency: Interval 1 day,
+      business_criticality: "high",
+      dashboard_visibility: List["executive", "hr management"]
+    }
+  }
+end
+
+@Experimental(reason="Nouvelle métrique d'expérience candidat en test")
+@Documented(summary="Score d'expérience candidat")
+metric CandidateExperience is
+  source Application
+  
+  aggregation {
+    avg_process_rating as avg(candidate_feedback_score),
+    communication_score as avg(communication_rating),
+    process_clarity_score as avg(process_clarity_rating),
+    timeliness_score as avg(timeliness_rating),
+    overall_nps as (count(promoters) - count(detractors)) / count(*) * 100
+  }
+  
+  outputs {
+    overall_experience_score : Float,
+    nps_score : Float,
+    feedback_response_rate : Float,
+    improvement_areas : List of String
+  }
+  
+  dimensions {
+    recruiter from recruiter_assigned,
+    department from related(JobPosting, job_id).department_id,
+    application_outcome from application_status,
+    period from date_trunc("month", application_date)
+  }
+  
+  filters {
+    feedback_provided == true,
+    application_date >= Date "2024-06-01"
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "recruitment.lead@company.com",
+      technical_owner: "hr.analytics@company.com",
+      business_criticality: "medium"
+    },
+    MetricQuality {
+      data_sources: List["candidate feedback", "applications", "process tracking"],
+      known_limitations: "Response bias in feedback collection",
+      confidence_level: 75.0
+    }
+  }
+end
+
+@Documented(summary="Productivité des recruteurs")
+metric RecruiterProductivity is
+  source Application
+  
+  aggregation {
+    applications_managed as count(*),
+    successful_hires as count(*) where application_status == ApplicationStatus.hired,
+    avg_time_per_hire as avg(time_to_hire),
+    pipeline_velocity as count(*) / avg(days_in_process),
+    quality_score as avg(final_evaluation_score)
+  }
+  
+  outputs {
+    productivity_index : Float,
+    hires_per_month : Float,
+    pipeline_efficiency : Float,
+    quality_index : Float
+  }
+  
+  dimensions {
+    recruiter from recruiter_assigned,
+    department from related(JobPosting, job_id).department_id,
+    job_complexity from related(JobPosting, job_id).seniority_level,
+    period from date_trunc("month", application_date)
+  }
+  
+  filters {
+    recruiter_assigned is not null,
+    application_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 3 month,
+    refresh_frequency Interval 1 week,
+    lag Interval 1 week
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "recruitment.lead@company.com",
+      technical_owner: "hr.analytics@company.com",
+      data_refresh_frequency: Interval 1 week,
+      business_criticality: "medium",
+      dashboard_visibility: List["hr management", "recruitment team"]
+    },
+    MetricLineage {
+      upstream_dependencies: List["applications", "job postings", "evaluations"],
+      downstream_consumers: List["recruiter performance dashboard", "capacity planning"],
+      impact_analysis: "Used for recruiter performance evaluation and resource allocation"
+    }
+  }
+end

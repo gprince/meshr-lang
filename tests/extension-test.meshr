@@ -1,0 +1,47 @@
+// Test de l'extension v0.2.0 avec les nouvelles fonctionnalités
+
+module test.extension.v2
+
+// Test des nouveaux mots-clés (coloration syntaxique)
+@BusinessCritical(impact="high")
+metric TestMetric is
+  source TestEntity
+  calculation avg(field_name)
+  unit "EUR"
+  
+  outputs {
+    result_value : Float,
+    calculation_timestamp : Timestamp
+  }
+  
+  dimensions {
+    category match status is
+      Status.active or Status.pending -> "operational",
+      Status.inactive -> "non_operational",
+      _ -> "unknown"
+    end
+  }
+  
+  filters {
+    created_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 1 month,
+    refresh_frequency Interval 1 day
+  }
+end
+
+// Test export annoté
+@since("1.0.0")
+export enum Status is (
+  active,
+  pending,
+  inactive
+)
+
+entity TestEntity is
+  field_name : Float
+  status : Status
+  created_date : Date
+end

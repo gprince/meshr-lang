@@ -1,0 +1,335 @@
+// ==============================
+// Processus - Domaine RH Recrutement
+// ==============================
+// Gestion du processus de recrutement et des évaluations
+
+@Version("1.0.0")
+@Author(name="HR Recruitment Team", email="recruitment@company.com")
+@Documented(
+  summary="Processus de recrutement et système d'évaluation",
+  description="Entités pour le suivi du processus, entretiens et évaluations",
+  examples="Utilisé pour le tracking du pipeline de recrutement"
+)
+module hr.recrutement.processus
+
+import { WithSecurity, DataClassification, WithGDPR } from meshr.security
+import { WithStewardship } from meshr.governance
+import { WithLifecycle } from meshr.lifecycle
+import { Status, Priority } from meshr.types
+import { CandidateStatus, InterviewType } from hr.recrutement.candidats
+import { JobPosting } from hr.recrutement.postes
+
+export {
+  Application,
+  Interview,
+  Evaluation,
+  Reference,
+  Offer,
+  ApplicationStatus,
+  InterviewStatus,
+  EvaluationCriteria,
+  OfferStatus,
+  DecisionReason,
+  WithApplicationInfo,
+  WithInterviewInfo,
+  WithEvaluationInfo
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum ApplicationStatus is (
+  submitted,
+  "under review",
+  "screening passed",
+  "screening failed", 
+  "interview scheduled",
+  interviewing,
+  "evaluation pending",
+  "reference check",
+  "offer preparation",
+  "offer extended",
+  hired,
+  rejected,
+  withdrawn
+)
+
+enum InterviewStatus is (
+  scheduled,
+  confirmed,
+  "in progress",
+  completed,
+  rescheduled,
+  cancelled,
+  "no show"
+)
+
+enum EvaluationCriteria is (
+  "technical skills",
+  communication,
+  "problem solving",
+  "cultural fit",
+  "leadership potential",
+  "experience relevance",
+  motivation,
+  adaptability
+)
+
+enum OfferStatus is (
+  draft,
+  "pending approval",
+  approved,
+  extended,
+  negotiating,
+  accepted,
+  declined,
+  expired,
+  withdrawn
+)
+
+enum DecisionReason is (
+  "skills mismatch",
+  "experience insufficient",
+  "cultural misfit",
+  "salary expectations",
+  "location constraints",
+  "availability conflict",
+  "reference issues",
+  "better candidate found",
+  "position cancelled",
+  "candidate withdrew"
+)
+
+// ========== TRAITS ==========
+
+trait WithApplicationInfo is
+  application_date : Date
+  application_source : String
+  cover_letter_provided : Boolean = false
+  portfolio_provided : Boolean = false
+  referral_source : String
+  initial_screening_score : Float
+end
+
+trait WithInterviewInfo is
+  interview_type : InterviewType
+  scheduled_date : Timestamp
+  actual_date : Timestamp
+  duration_minutes : Integer
+  interviewer_names : List of String
+  interview_notes : String length 0..2000
+end
+
+trait WithEvaluationInfo is
+  evaluation_date : Date
+  evaluator_name : String
+  overall_score : Float
+  recommendation : String
+  evaluation_notes : String length 0..1500
+  next_steps : String length 0..500
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Candidature à un poste")
+entity Application with WithSecurity, WithStewardship, WithGDPR, WithLifecycle, WithApplicationInfo is
+  application_id : String
+  candidate_id : String
+  job_id : String
+  application_status : ApplicationStatus
+  current_stage : String
+  stage_start_date : Date
+  recruiter_assigned : String
+  hiring_manager : String
+  priority_level : Priority
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "recruitment@company.com"
+    },
+    DataStewardship {
+      steward: "recruitment.process@company.com",
+      owner: "hiring.manager@company.com",
+      business_domain: "recruitment_process",
+      last_review: "2024-09-01",
+      next_review: "2025-03-01",
+      contact_email: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Entretien de recrutement")
+entity Interview with WithSecurity, WithStewardship, WithGDPR, WithInterviewInfo is
+  interview_id : String
+  application_id : String
+  interview_status : InterviewStatus
+  interview_round : Integer
+  location_type : String
+  meeting_link : String
+  preparation_notes : String length 0..1000
+  technical_assessment : Boolean = false
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 2 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Évaluation d'un candidat")
+entity Evaluation with WithSecurity, WithStewardship, WithGDPR, WithEvaluationInfo is
+  evaluation_id : String
+  application_id : String
+  interview_id : String
+  evaluation_criteria : EvaluationCriteria
+  score : Float
+  weight : Float
+  detailed_feedback : String length 0..2000
+  strengths : List of String
+  areas_for_improvement : List of String
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 2 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Référence professionnelle")
+entity Reference with WithSecurity, WithStewardship, WithGDPR is
+  reference_id : String
+  application_id : String
+  reference_name : String
+  reference_title : String
+  reference_company : String
+  reference_email : String pattern "^[^@]+@[^@]+$"
+  reference_phone : String
+  relationship_to_candidate : String
+  reference_date : Date
+  reference_score : Float
+  reference_notes : String length 0..1500
+  verification_status : String
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 1 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+@Documented(summary="Offre d'emploi")
+entity Offer with WithSecurity, WithStewardship, WithGDPR is
+  offer_id : String
+  application_id : String
+  offer_status : OfferStatus
+  offer_date : Date
+  response_deadline : Date
+  salary_offered : Float
+  currency : String = "EUR"
+  bonus_structure : String
+  benefits_included : List of String
+  start_date_proposed : Date
+  contract_type : ContractType
+  probation_period : Interval
+  offer_notes : String length 0..1000
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based",
+      data_retention: Interval 5 year,
+      steward: "recruitment@company.com"
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+type relation RECRUITMENT_PROCESS with WithStewardship is
+  stage_name : String
+  stage_order : Integer
+  expected_duration : Interval
+  success_rate : Float
+  bottleneck_risk : Priority
+end
+
+type relation EVALUATION_FEEDBACK with WithStewardship is
+  feedback_type : String
+  feedback_date : Date
+  feedback_quality : Float
+  actionable_insights : Boolean = true
+end
+
+// ========== RELATIONS ==========
+
+relation ApplicationForJob is
+  from Application(job_id)
+  to JobPosting(job_id)
+  
+  application_channel : String
+  referral_bonus_eligible : Boolean = false
+end
+
+relation ApplicationByCandidate is
+  from Application(candidate_id)
+  to Candidate(candidate_id)
+  
+  candidate_interest_level : Priority
+  candidate_fit_score : Float
+end
+
+relation InterviewForApplication is
+  from Interview(application_id)
+  to Application(application_id)
+  
+  interview_feedback_quality : Float
+  technical_assessment_passed : Boolean
+end
+
+relation EvaluationOfInterview is
+  from Evaluation(interview_id)
+  to Interview(interview_id)
+  
+  evaluation_consistency : Float
+  bias_risk_assessment : String
+end
+
+relation ReferenceForApplication is
+  from Reference(application_id)
+  to Application(application_id)
+  
+  reference_reliability : Float
+  reference_responsiveness : String
+end
+
+relation OfferForApplication is
+  from Offer(application_id)
+  to Application(application_id)
+  
+  negotiation_rounds : Integer = 0
+  approval_chain_completed : Boolean = false
+end
+
+bidirectional relation RecruitmentPipeline of type RECRUITMENT_PROCESS is
+  from Application(application_id)
+  to Application(application_id)
+  
+  pipeline_efficiency : Float
+  stage_transition_reason : String
+end

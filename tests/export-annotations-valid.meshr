@@ -1,0 +1,70 @@
+// ==============================
+// Tests valides pour export avec annotations
+// ==============================
+
+module testexportannotationsvalid
+
+// Export inline avec une annotation
+@since("1.0.0")
+export enum Status is (
+  active,
+  inactive
+)
+
+// Export inline avec plusieurs annotations
+@since("1.0.0")
+@id("priority-enum")
+@description("Niveaux de priorité")
+export enum Priority is (
+  low,
+  medium,
+  high,
+  critical
+)
+
+// Export inline d'une annotation avec annotations
+@since("1.0.0")
+@id("test-annotation")
+@description("Annotation de test")
+export annotation TestAnnotation is
+  required value : String
+  optional description : String = "Default"
+end
+
+// Export inline d'une entité avec annotations
+@since("1.0.0")
+@id("user-entity")
+@description("Entité utilisateur")
+export entity User is
+  UserId : String
+  Name : String
+end
+
+// Export inline d'un aspect avec annotations
+@since("1.0.0")
+@id("audit-aspect")
+@description("Aspect d'audit")
+export aspect AuditInfo is
+  created_by : String
+  created_at : Timestamp
+end
+
+// Export inline d'une métrique avec annotations
+@since("1.0.0")
+@id("revenue-metric")
+@description("Métrique de revenus")
+export metric TotalRevenue is
+  source Order
+  calculation sum(amount)
+  unit "EUR"
+end
+
+// Export groupé SANS annotations (valide)
+export {
+  Status,
+  Priority,
+  TestAnnotation,
+  User,
+  AuditInfo,
+  TotalRevenue
+}

@@ -28,12 +28,12 @@ importItemsWithOptionalBraces
     ;
 
 importItems
-    : IDENTIFIER (',' IDENTIFIER)+
+    : IDENTIFIER (',' IDENTIFIER)*
     ;
 
 exportDecl
-    : 'export' exportableDecl            # InlineExport
-    | 'export' '{' exportItems '}'       # GroupedExport
+    : annotation* 'export' exportableDecl            # InlineExport
+    | 'export' '{' exportItems '}'                   # GroupedExport
     ;
 
 exportItems
@@ -59,18 +59,29 @@ topLevelDecl
     | sealedTypeRelationDecl
     | annotatedRelationDecl
     | sealedRelationDecl
+    | annotatedMetricDecl
+    | sealedMetricDecl
     ;
 
 // ========== ENUM =============
 exportableDecl
-    : enumDecl
+    : annotatedAnnotationDecl
+    | annotatedEnumDecl
     | sealedEnumDecl
-    | entityDecl
+    | annotatedEntityDecl
     | sealedEntityDecl
-    | typeRelationDecl
+    | annotatedTypeRelationDecl
     | sealedTypeRelationDecl
-    | relationDecl
+    | annotatedRelationDecl
     | sealedRelationDecl
+    | recordDecl
+    | sealedRecordDecl
+    | traitDecl
+    | sealedTraitDecl
+    | annotatedAspectDecl
+    | sealedAspectDecl
+    | annotatedMetricDecl
+    | sealedMetricDecl
     ;
 
 annotatedEnumDecl
@@ -555,6 +566,19 @@ BIDIRECTIONAL: 'bidirectional';
 FROM: 'from';
 TO: 'to';
 ASPECTS: 'aspects';
+METRIC: 'metric';
+SOURCE: 'source';
+CALCULATION: 'calculation';
+AGGREGATION: 'aggregation';
+UNIT: 'unit';
+OUTPUTS: 'outputs';
+DIMENSIONS: 'dimensions';
+FILTERS: 'filters';
+TEMPORAL: 'temporal';
+MATCH: 'match';
+WINDOW: 'window';
+REFRESH_FREQUENCY: 'refresh_frequency';
+HISTORICAL_DEPTH: 'historical_depth';
 
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?
@@ -563,6 +587,210 @@ NUMBER_LITERAL
 
 BOOLEAN_LITERAL
     : 'true' | 'false'
+    ;
+
+// ========== EXPRESSIONS ==========
+expression
+    : expression ('*' | '/' | '%') expression                      # MultiplicativeExpr
+    | expression ('+' | '-') expression                            # AdditiveExpr
+    | expression ('==' | '!=' | '<' | '<=' | '>' | '>=') expression # ComparisonExpr
+    | expression ('and' | 'or') expression                         # LogicalExpr
+    | expression 'in' expression                                   # InExpr
+    | expression 'where' expression                                # WhereExpr
+    | functionCall                                                  # FunctionCallExpr
+    | fieldReference                                                # FieldReferenceExpr
+    | enumReference                                                 # EnumReferenceExpr
+    | literal                                                       # LiteralExpr
+    | '(' expression ')'                                            # ParenthesizedExpr
+    ;
+
+functionCall
+    : IDENTIFIER '(' (expression (',' expression)*)? ')'
+    ;
+
+fieldReference
+    : IDENTIFIER ('.' IDENTIFIER)*
+    ;
+
+enumReference
+    : qualifiedName '.' (IDENTIFIER | STRING_LITERAL)
+    ;
+
+literal
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | dateLiteral
+    | timeLiteral
+    | timestampLiteral
+    | datetimeLiteral
+    | intervalLiteral
+    | listLiteral
+    | mapLiteral
+    | recordLiteral
+    | rangeLiteral
+    | jsonLiteral
+    | geographyLiteral
+    | bytesLiteral
+    | sqlLiteral
+    ;
+
+// ========== METRIC DECLARATION ==========
+annotatedMetricDecl
+    : annotation* metricDecl
+    ;
+
+sealedMetricDecl
+    : SEALED metricDecl
+    ;
+
+metricDecl
+    : METRIC IDENTIFIER withClause? 'is'
+      metricSource
+      (metricCalculation | metricAggregation)
+      metricUnit?
+      metricOutputs?
+      metricDimensions?
+      metricFilters?
+      metricTemporal?
+      metricAspects?
+      'end'
+    ;
+
+metricSource
+    : SOURCE qualifiedName
+    ;
+
+metricCalculation
+    : CALCULATION expression
+    ;
+
+metricAggregation
+    : AGGREGATION '{' aggregationFieldList '}'
+    ;
+
+aggregationFieldList
+    : aggregationField (',' aggregationField)*
+    ;
+
+aggregationField
+    : IDENTIFIER 'as' expression
+    ;
+
+metricUnit
+    : UNIT STRING_LITERAL
+    ;
+
+metricOutputs
+    : OUTPUTS '{' outputFieldList '}'
+    ;
+
+outputFieldList
+    : outputField (',' outputField)*
+    ;
+
+outputField
+    : IDENTIFIER ':' typeRef
+    ;
+
+metricDimensions
+    : DIMENSIONS '{' dimensionList '}'
+    ;
+
+dimensionList
+    : dimension (',' dimension)*
+    ;
+
+dimension
+    : IDENTIFIER expression
+    | IDENTIFIER matchExpression
+    ;
+
+matchExpression
+    : MATCH expression 'is' matchArms 'end'
+    ;
+
+matchArms
+    : matchArm (',' matchArm)*
+    ;
+
+matchArm
+    : pattern '->' matchResult
+    ;
+
+pattern
+    : orPattern
+    ;
+
+orPattern
+    : basicPattern ('or' basicPattern)*
+    ;
+
+basicPattern
+    : literalPattern
+    | rangePattern
+    | enumPattern
+    | wildcardPattern
+    ;
+
+literalPattern
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    ;
+
+rangePattern
+    : NUMBER_LITERAL '..' NUMBER_LITERAL?
+    | dateLiteral '..' dateLiteral?
+    ;
+
+enumPattern
+    : qualifiedName
+    ;
+
+wildcardPattern
+    : '_'
+    ;
+
+matchResult
+    : STRING_LITERAL
+    | NUMBER_LITERAL
+    | BOOLEAN_LITERAL
+    | qualifiedName
+    ;
+
+metricFilters
+    : FILTERS '{' filterList '}'
+    ;
+
+filterList
+    : filterExpression (',' filterExpression)*
+    ;
+
+filterExpression
+    : expression
+    ;
+
+metricTemporal
+    : TEMPORAL '{' temporalConfigList '}'
+    ;
+
+temporalConfigList
+    : temporalConfig (',' temporalConfig)*
+    ;
+
+temporalConfig
+    : temporalField intervalLiteral
+    ;
+
+temporalField
+    : WINDOW
+    | REFRESH_FREQUENCY
+    | HISTORICAL_DEPTH
+    ;
+
+metricAspects
+    : 'aspects' '{' aspectInstanceList '}'
     ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;

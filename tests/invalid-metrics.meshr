@@ -1,0 +1,79 @@
+// ==============================
+// Tests invalides pour les métriques
+// ==============================
+
+module metrics.invalid.tests
+
+// ERREUR: Métrique sans source
+metric NoSource is
+  calculation sum(total_amount)
+  unit "EUR"
+end
+
+// ERREUR: Métrique sans calculation ni aggregation
+metric NoCalculation is
+  source Order
+  unit "EUR"
+end
+
+// ERREUR: Métrique avec calculation ET aggregation
+metric BothCalculationAndAggregation is
+  source Order
+  calculation sum(total_amount)
+  aggregation {
+    total as sum(amount)
+  }
+  unit "EUR"
+end
+
+// ERREUR: Aggregation vide
+metric EmptyAggregation is
+  source Order
+  aggregation {
+  }
+  unit "EUR"
+end
+
+// ERREUR: Pattern matching sans match result
+metric IncompletePatternMatch is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  dimensions {
+    segment match customer_type is
+      CustomerType.premium -> 
+    end
+  }
+end
+
+// ERREUR: Pattern matching sans patterns
+metric EmptyPatternMatch is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  dimensions {
+    segment match customer_type is
+    end
+  }
+end
+
+// ERREUR: Syntaxe d'expression invalide
+metric InvalidExpression is
+  source Order
+  calculation sum(total_amount +)
+  unit "EUR"
+end
+
+// ERREUR: Temporal avec valeurs invalides
+metric InvalidTemporal is
+  source Order
+  calculation sum(total_amount)
+  unit "EUR"
+  
+  temporal {
+    window "invalid",
+    refresh_frequency 123
+  }
+end

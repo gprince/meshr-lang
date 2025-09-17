@@ -78,7 +78,7 @@ relation CustomerOrder is
   to Order(CustomerId)
   
   coupon_code : String length 0..30
-  source : String length 0..50
+  data_source : String length 0..50
 end
 
 // ========== RELATIONS TYPÉES ==========

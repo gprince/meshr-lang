@@ -20,7 +20,7 @@ export {
 }
 
 // ========== ENUMS ==========
-
+@since("1.0.0")
 export enum DataQualityLevel is (
   "excellent",
   "good",
@@ -59,7 +59,7 @@ end
 aspect DataLineage is
   source_systems : List of String
   transformations : List of String
-  refresh_frequency : Interval
+  data_refresh_frequency : Interval
   sla : Interval
   last_updated : Timestamp
   lineage_quality : DataQualityLevel

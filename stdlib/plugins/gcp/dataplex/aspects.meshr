@@ -3,7 +3,7 @@
 
 @Version("1.0.0")
 @Documented(summary="Aspects prédéfinis pour Dataplex Universal Catalog")
-module stdlib.plugins.gcp.dataplex.aspects
+module stdlib.plugins.gcp.dataplex.aspect_defs
 
 // Import des annotations de base
 import { Version, Documented, since, id, display_name, description } from meshr.core

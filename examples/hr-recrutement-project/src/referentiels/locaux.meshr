@@ -1,0 +1,211 @@
+// ==============================
+// Référentiel Locaux - Domaine RH Recrutement  
+// ==============================
+// Gestion des sites, bureaux et lieux d'affectation
+
+@Version("1.0.0")
+@Author(name="HR Data Architecture Team", email="hr.data@company.com")
+@Documented(
+  summary="Référentiel des locaux et lieux d'affectation",
+  description="Définit les sites, bureaux, espaces de travail et modalités",
+  examples="Utilisé pour l'affectation géographique des postes"
+)
+module hr.referentiels.locaux
+
+import { WithSecurity, DataClassification } from meshr.security
+import { WithStewardship } from meshr.governance
+import { Address, WithContactInfo } from meshr.types
+
+export {
+  Site,
+  Building, 
+  Office,
+  WorkSpace,
+  WorkingMode,
+  SiteType,
+  OfficeType,
+  WithLocationInfo,
+  WithCapacityInfo,
+  WithAccessibilityInfo
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum SiteType is (
+  headquarters,
+  "regional office",
+  "branch office", 
+  "coworking space",
+  "client site",
+  "remote hub"
+)
+
+enum OfficeType is (
+  "private office",
+  "open space",
+  "meeting room",
+  "collaboration space",
+  "hot desk",
+  "phone booth"
+)
+
+enum WorkingMode is (
+  "on site",
+  remote,
+  hybrid,
+  flexible,
+  "client site"
+)
+
+enum AccessibilityLevel is (
+  "fully accessible",
+  "partially accessible", 
+  "limited accessibility",
+  "not accessible"
+)
+
+// ========== TRAITS ==========
+
+trait WithLocationInfo is
+  address : Address
+  timezone : String
+  coordinates : Geography
+  public_transport_access : Boolean
+  parking_available : Boolean
+end
+
+trait WithCapacityInfo is
+  total_capacity : Integer
+  current_occupancy : Integer
+  max_capacity : Integer
+  utilization_rate : Float
+end
+
+trait WithAccessibilityInfo is
+  accessibility_level : AccessibilityLevel
+  wheelchair_accessible : Boolean
+  elevator_access : Boolean
+  accessibility_features : List of String
+end
+
+trait WithSecurityInfo is
+  security_level : String
+  access_control_required : Boolean
+  badge_access : Boolean
+  visitor_policy : String
+  security_contact : String
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Site géographique de l'entreprise")
+entity Site with WithSecurity, WithStewardship, WithLocationInfo, WithCapacityInfo, WithContactInfo, WithSecurityInfo is
+  site_id : String
+  name : String length 1..100
+  site_type : SiteType
+  site_manager : String
+  operational_status : String
+  opening_date : Date
+  lease_expiry_date : Date
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 15 year,
+      steward: "facilities@company.com"
+    }
+  }
+end
+
+@Documented(summary="Bâtiment au sein d'un site")
+entity Building with WithSecurity, WithStewardship, WithCapacityInfo, WithAccessibilityInfo, WithSecurityInfo is
+  building_id : String
+  name : String length 1..100
+  site_id : String
+  floor_count : Integer
+  construction_year : Integer
+  renovation_date : Date
+  building_manager : String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based", 
+      data_retention: Interval 10 year,
+      steward: "facilities@company.com"
+    }
+  }
+end
+
+@Documented(summary="Bureau ou espace de travail")
+entity Office with WithSecurity, WithStewardship, WithCapacityInfo, WithAccessibilityInfo is
+  office_id : String
+  name : String length 1..100
+  building_id : String
+  floor_number : Integer
+  office_type : OfficeType
+  room_number : String
+  square_meters : Float
+  equipment_list : List of String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 5 year, 
+      steward: "facilities@company.com"
+    }
+  }
+end
+
+@Documented(summary="Espace de travail assignable")
+entity WorkSpace with WithSecurity, WithStewardship is
+  workspace_id : String
+  name : String length 1..100
+  office_id : String
+  desk_number : String
+  working_mode : WorkingMode
+  equipment_provided : List of String
+  assignment_status : String
+  monthly_cost : Float
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 3 year,
+      steward: "facilities@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation SiteContainsBuildings is
+  from Site(site_id)
+  to Building(site_id)
+  
+  primary_building : Boolean = false
+  construction_phase : String
+end
+
+relation BuildingContainsOffices is
+  from Building(building_id)
+  to Office(building_id)
+  
+  floor_plan_reference : String
+  accessibility_route : String
+end
+
+relation OfficeContainsWorkspaces is
+  from Office(office_id)
+  to WorkSpace(office_id)
+  
+  workspace_layout : String
+  shared_resources : List of String
+end

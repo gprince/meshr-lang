@@ -1,4 +1,4 @@
-@Sample(title="OK", retention=Interval 12 month, window=Interval "2024-01" year to month)
+@Sample(title="OK", retention=Interval 12 month, time_window=Interval "2024-01" year to month)
 module test.literals
 
 annotation Sample is
@@ -8,7 +8,7 @@ annotation Sample is
   optional ratio : Float = 3.14
   optional color : Integer = 0xFF00FF
   optional retention : Interval
-  optional window : Interval
+  optional time_window : Interval
 end
 
 enum Color(value: Integer, label: String, enabled: Boolean = true, duration: Interval) is (

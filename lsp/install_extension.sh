@@ -8,7 +8,7 @@ echo "========================================"
 # Vérifier si code (VSCode CLI) est disponible
 if command -v code &> /dev/null; then
     echo "📦 Installation dans VSCode..."
-    code --install-extension meshr-lang-0.1.0.vsix
+    code --install-extension meshr-lang-0.2.0.vsix
     echo "✅ Extension installée dans VSCode"
 else
     echo "⚠️  VSCode CLI (code) non trouvé"
@@ -17,7 +17,7 @@ fi
 # Vérifier si cursor CLI est disponible
 if command -v cursor &> /dev/null; then
     echo "📦 Installation dans Cursor..."
-    cursor --install-extension meshr-lang-0.1.0.vsix
+    cursor --install-extension meshr-lang-0.2.0.vsix
     echo "✅ Extension installée dans Cursor"
 else
     echo "⚠️  Cursor CLI non trouvé"

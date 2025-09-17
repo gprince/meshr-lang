@@ -22,6 +22,9 @@ class MeshrCompletion:
         self.keywords = {
             'module', 'import', 'entity', 'enum', 'trait', 'aspect',
             'relation', 'sealed', 'export', 'of', 'extends', 'implements',
+            'metric', 'source', 'calculation', 'aggregation', 'unit', 
+            'outputs', 'dimensions', 'filters', 'temporal', 'window',
+            'refresh_frequency', 'historical_depth', 'match', 'or',
             'String', 'Number', 'Boolean', 'Bytes', 'List', 'Map',
             'true', 'false', 'null'
         }

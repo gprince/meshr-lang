@@ -75,6 +75,18 @@ cd lsp/client
 npm run compile
 ```
 
+## 🆕 Nouvelles fonctionnalités (v0.2.0)
+
+### 📊 Support des métriques
+- ✅ **Coloration syntaxique** : `metric`, `source`, `calculation`, `aggregation`, etc.
+- ✅ **Snippets** : Templates pour métriques simples et complexes
+- ✅ **Pattern matching** : Support de `match...is...end` avec `or`
+- ✅ **Validation** : Détection des erreurs de syntaxe métrique
+
+### 📝 Exports annotés
+- ✅ **Export inline** : `@annotation export enum MyEnum`
+- ✅ **Validation** : Rejet des annotations sur exports groupés
+
 ## 📚 Ressources
 
 - [Language Server Protocol](https://microsoft.github.io/language-server-protocol/)

@@ -1,6 +1,6 @@
 # Meshr-Lang
 
-> A DSL to describe the components of a modern Data-as-a-Product architecture (domains, products, contracts, aspects, policies, teams…).
+> A DSL to describe the components of a modern Data-as-a-Product architecture (domains, products, contracts, aspects, policies, teams, **metrics**…).
 
 ## Structure
 

@@ -41,7 +41,7 @@ test-stdlib:
 
 test-examples:
 	@echo "Testing example modules:"
-	@PYTHONPATH=. python3 test_examples.py
+	@PYTHONPATH=. python3 dev_tests/test_examples.py
 
 test-failures:
 	@echo "Identifying failed tests:"

@@ -122,5 +122,81 @@
       "// TODO: ${1:Description de la tâche}"
     ],
     "description": "Commentaire TODO"
+  },
+  "Metric Declaration": {
+    "prefix": "metric",
+    "body": [
+      "metric ${1:MetricName} is",
+      "  source ${2:EntityName}",
+      "  calculation ${3:avg(field_name)}",
+      "  unit \"${4:EUR}\"",
+      "end"
+    ],
+    "description": "Déclaration de métrique simple"
+  },
+  "Metric with Dimensions": {
+    "prefix": "metric-dimensions",
+    "body": [
+      "metric ${1:MetricName} is",
+      "  source ${2:EntityName}",
+      "  calculation ${3:sum(field_name)}",
+      "  unit \"${4:EUR}\"",
+      "  ",
+      "  dimensions {",
+      "    ${5:dimension_name} ${6:field_name}",
+      "  }",
+      "end"
+    ],
+    "description": "Métrique avec dimensions"
+  },
+  "Metric with Pattern Matching": {
+    "prefix": "metric-pattern",
+    "body": [
+      "metric ${1:MetricName} is",
+      "  source ${2:EntityName}",
+      "  calculation ${3:avg(field_name)}",
+      "  unit \"${4:days}\"",
+      "  ",
+      "  dimensions {",
+      "    ${5:category} match ${6:field_name} is",
+      "      ${7:EnumType}.${8:value1} -> \"${9:result1}\",",
+      "      ${10:EnumType}.${11:value2} -> \"${12:result2}\",",
+      "      _ -> \"${13:other}\"",
+      "    end",
+      "  }",
+      "end"
+    ],
+    "description": "Métrique avec pattern matching"
+  },
+  "Metric Complete": {
+    "prefix": "metric-complete",
+    "body": [
+      "@${1:BusinessCritical}(impact=\"high\")",
+      "metric ${2:MetricName} is",
+      "  source ${3:EntityName}",
+      "  calculation ${4:avg(field_name)}",
+      "  unit \"${5:EUR}\"",
+      "  ",
+      "  outputs {",
+      "    ${6:result_value} : ${7:Float},",
+      "    calculation_timestamp : Timestamp",
+      "  }",
+      "  ",
+      "  dimensions {",
+      "    ${8:dimension_name} ${9:field_name}",
+      "  }",
+      "  ",
+      "  filters {",
+      "    ${10:status} == ${11:EnumType}.${12:value}",
+      "  }",
+      "  ",
+      "  aspects {",
+      "    MetricGovernance {",
+      "      business_owner: \"${13:owner@company.com}\"",
+      "    }",
+      "  }",
+      "end"
+    ],
+    "description": "Métrique complète avec tous les éléments"
   }
 }

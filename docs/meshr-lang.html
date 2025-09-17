@@ -6,6 +6,151 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
   <title>meshr-lang</title>
   <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -22,9 +167,413 @@
     }
     .display.math{display: block; text-align: center; margin: 0.5rem auto;}
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown-light.min.css" />
 </head>
 <body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#meshr-lang-documentation-du-langage"
+id="toc-meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
+du langage</a>
+<ul>
+<li><a href="#introduction" id="toc-introduction">🎯 Introduction</a>
+<ul>
+<li><a href="#contexte-et-motivation" id="toc-contexte-et-motivation">🧭
+Contexte et motivation</a></li>
+<li><a href="#philosophie-du-langage" id="toc-philosophie-du-langage">🎨
+Philosophie du langage</a></li>
+<li><a href="#valeur-ajoutée" id="toc-valeur-ajoutée">🚀 Valeur
+ajoutée</a></li>
+<li><a href="#public-cible" id="toc-public-cible">🎯 Public
+cible</a></li>
+<li><a href="#vision-à-long-terme" id="toc-vision-à-long-terme">🌟
+Vision à long terme</a></li>
+</ul></li>
+<li><a href="#table-des-matières" id="toc-table-des-matières">📑 Table
+des matières</a>
+<ul>
+<li><a href="#introduction-1" id="toc-introduction-1">🎯
+Introduction</a></li>
+<li><a href="#syntaxe-et-concepts-de-base"
+id="toc-syntaxe-et-concepts-de-base">🔤 Syntaxe et concepts de
+base</a></li>
+<li><a href="#organisation-du-code" id="toc-organisation-du-code">📦
+Organisation du code</a></li>
+<li><a href="#métadonnées-et-annotations"
+id="toc-métadonnées-et-annotations">🏷️ Métadonnées et
+annotations</a></li>
+<li><a href="#types-de-données" id="toc-types-de-données">🔢 Types de
+données</a></li>
+<li><a href="#métriques-et-kpis" id="toc-métriques-et-kpis">📊 Métriques
+et KPIs</a></li>
+<li><a href="#contrôles-avancés" id="toc-contrôles-avancés">🔒 Contrôles
+avancés</a></li>
+<li><a href="#ressources-et-bonnes-pratiques"
+id="toc-ressources-et-bonnes-pratiques">📚 Ressources et bonnes
+pratiques</a></li>
+<li><a href="#annexes" id="toc-annexes">📖 Annexes</a></li>
+</ul></li>
+<li><a href="#objectif-du-langage" id="toc-objectif-du-langage">🧭
+Objectif du langage</a>
+<ul>
+<li><a href="#vision-et-philosophie" id="toc-vision-et-philosophie">🎯
+Vision et philosophie</a></li>
+<li><a href="#rationnel-du-langage" id="toc-rationnel-du-langage">🧠
+Rationnel du langage</a></li>
+<li><a href="#objectifs-principaux" id="toc-objectifs-principaux">🚀
+Objectifs principaux</a></li>
+<li><a href="#avantages-clés" id="toc-avantages-clés">🌟 Avantages
+clés</a></li>
+</ul></li>
+<li><a href="#syntaxe-de-base" id="toc-syntaxe-de-base">🔤 Syntaxe de
+base</a>
+<ul>
+<li><a href="#structure-des-fichiers" id="toc-structure-des-fichiers">📄
+Structure des fichiers</a></li>
+<li><a href="#style-déclaratif" id="toc-style-déclaratif">🎨 Style
+déclaratif</a></li>
+<li><a href="#mots-clés-réservés" id="toc-mots-clés-réservés">⚠️
+Mots-clés réservés</a></li>
+<li><a href="#commentaires" id="toc-commentaires">💬
+Commentaires</a></li>
+<li><a href="#types-de-valeurs-primitives"
+id="toc-types-de-valeurs-primitives">🔢 Types de valeurs
+primitives</a></li>
+<li><a href="#structure-dun-module" id="toc-structure-dun-module">🏗️
+Structure d’un module</a></li>
+</ul></li>
+<li><a href="#déclaration-des-modules-et-imports"
+id="toc-déclaration-des-modules-et-imports">📦 Déclaration des modules
+et imports</a>
+<ul>
+<li><a href="#concept-et-objectifs" id="toc-concept-et-objectifs">🎯
+Concept et objectifs</a></li>
+<li><a href="#architecture-modulaire" id="toc-architecture-modulaire">🏗️
+Architecture modulaire</a></li>
+<li><a href="#syntaxe" id="toc-syntaxe">📐 Syntaxe</a></li>
+<li><a href="#sémantique" id="toc-sémantique">📚 Sémantique</a></li>
+<li><a href="#types-dimports-supportés"
+id="toc-types-dimports-supportés">🔧 Types d’imports supportés</a></li>
+<li><a href="#ordre-des-déclarations" id="toc-ordre-des-déclarations">📋
+Ordre des déclarations</a></li>
+<li><a href="#export-des-déclarations"
+id="toc-export-des-déclarations">📤 Export des déclarations</a></li>
+<li><a href="#convention-darborescence"
+id="toc-convention-darborescence">📁 Convention d’arborescence</a></li>
+</ul></li>
+<li><a href="#annotations" id="toc-annotations">🏷️ Annotations</a>
+<ul>
+<li><a href="#syntaxe-1" id="toc-syntaxe-1">📐 Syntaxe</a></li>
+<li><a href="#règles" id="toc-règles">🧠 Règles</a></li>
+<li><a href="#annotations-avec-arguments-typés"
+id="toc-annotations-avec-arguments-typés">🧩 [2025-09-10] — Annotations
+avec arguments typés</a></li>
+<li><a href="#déclaration-des-types-dannotations"
+id="toc-déclaration-des-types-dannotations">✍️ Déclaration des types
+d’annotations</a></li>
+<li><a href="#types-de-base-autorisés-pour-les-annotations"
+id="toc-types-de-base-autorisés-pour-les-annotations">🔤 Types de base
+autorisés pour les annotations</a></li>
+<li><a href="#contraintes-sur-les-types-string"
+id="toc-contraintes-sur-les-types-string">🎯 Contraintes sur les types
+String</a></li>
+<li><a href="#annotations-standard-stdlib"
+id="toc-annotations-standard-stdlib">🏷️ Annotations Standard
+(StdLib)</a></li>
+</ul></li>
+<li><a href="#énumérations" id="toc-énumérations">🔢 Énumérations</a>
+<ul>
+<li><a href="#concept-et-objectifs-1" id="toc-concept-et-objectifs-1">🎯
+Concept et objectifs</a></li>
+<li><a href="#types-dénumérations" id="toc-types-dénumérations">🏗️ Types
+d’énumérations</a></li>
+<li><a href="#syntaxe-simple-inline" id="toc-syntaxe-simple-inline">📐
+Syntaxe simple (inline)</a></li>
+<li><a href="#export-groupé" id="toc-export-groupé">📤 Export
+groupé</a></li>
+<li><a href="#règles-1" id="toc-règles-1">🧠 Règles</a></li>
+<li><a href="#syntaxe-de-référence-des-valeurs-enum"
+id="toc-syntaxe-de-référence-des-valeurs-enum">🎯 Syntaxe de référence
+des valeurs enum</a></li>
+<li><a href="#enums-avec-attributs-typés"
+id="toc-enums-avec-attributs-typés">🧩 [2025-09-10] — Enums avec
+attributs typés</a></li>
+<li><a href="#syntaxe-enrichie" id="toc-syntaxe-enrichie">🧬 Syntaxe
+enrichie</a></li>
+<li><a href="#règles-2" id="toc-règles-2">🔎 Règles</a></li>
+<li><a href="#intervalles-interval" id="toc-intervalles-interval">⏱️
+Intervalles (Interval)</a></li>
+<li><a href="#types-composites-list-map-range-record"
+id="toc-types-composites-list-map-range-record">🧩 Types composites:
+List, Map, Range, Record</a></li>
+</ul></li>
+<li><a href="#records-et-collections" id="toc-records-et-collections">📋
+Records et Collections</a>
+<ul>
+<li><a href="#syntaxe-des-records" id="toc-syntaxe-des-records">📐
+Syntaxe des Records</a></li>
+<li><a href="#types-de-collections" id="toc-types-de-collections">🧩
+Types de Collections</a></li>
+<li><a href="#collections-imbriquées" id="toc-collections-imbriquées">🔗
+Collections imbriquées</a></li>
+<li><a href="#usage-dans-tous-les-contextes"
+id="toc-usage-dans-tous-les-contextes">🎯 Usage dans tous les
+contextes</a></li>
+<li><a href="#règles-sémantiques-1" id="toc-règles-sémantiques-1">🧠
+Règles sémantiques</a></li>
+</ul></li>
+<li><a href="#entités-et-relations" id="toc-entités-et-relations">🏗️
+Entités et Relations</a>
+<ul>
+<li><a href="#entités" id="toc-entités">🏢 Entités</a></li>
+<li><a href="#types-de-relations" id="toc-types-de-relations">🔗 Types
+de Relations</a></li>
+<li><a href="#relations" id="toc-relations">🔗 Relations</a></li>
+<li><a href="#caractéristiques-des-entités-et-relations"
+id="toc-caractéristiques-des-entités-et-relations">🎯 Caractéristiques
+des Entités et Relations</a></li>
+</ul></li>
+<li><a href="#traits" id="toc-traits">🧩 Traits</a>
+<ul>
+<li><a href="#concept-et-rôle-1" id="toc-concept-et-rôle-1">🎯 Concept
+et rôle</a></li>
+<li><a href="#caractéristiques-des-traits"
+id="toc-caractéristiques-des-traits">🏗️ Caractéristiques des
+traits</a></li>
+<li><a href="#différence-avec-les-aspects"
+id="toc-différence-avec-les-aspects">🔄 Différence avec les
+aspects</a></li>
+<li><a href="#syntaxe-3" id="toc-syntaxe-3">📐 Syntaxe</a></li>
+<li><a href="#injection-via-with" id="toc-injection-via-with">🔗
+Injection via <code>with</code></a></li>
+<li><a href="#aspects-dans-les-traits"
+id="toc-aspects-dans-les-traits">🎭 Aspects dans les Traits</a></li>
+<li><a href="#règles-de-composition-sémantique"
+id="toc-règles-de-composition-sémantique">🧠 Règles de composition
+(sémantique)</a></li>
+<li><a href="#module-unité-namespace-et-fichier-unique"
+id="toc-module-unité-namespace-et-fichier-unique">🧩 [2025-09-09] —
+Module = unité, namespace et fichier unique</a></li>
+</ul></li>
+<li><a href="#aspects" id="toc-aspects">🎭 Aspects</a>
+<ul>
+<li><a href="#concept-et-rôle-2" id="toc-concept-et-rôle-2">🎯 Concept
+et rôle</a></li>
+<li><a href="#caractéristiques-des-aspects"
+id="toc-caractéristiques-des-aspects">🏗️ Caractéristiques des
+aspects</a></li>
+<li><a href="#syntaxe-de-base-1" id="toc-syntaxe-de-base-1">🔧 Syntaxe
+de base</a></li>
+<li><a href="#héritage-et-composition"
+id="toc-héritage-et-composition">🏗️ Héritage et composition</a></li>
+<li><a href="#types-daspects" id="toc-types-daspects">🎯 Types
+d’Aspects</a></li>
+<li><a href="#champs-et-contraintes" id="toc-champs-et-contraintes">📝
+Champs et contraintes</a></li>
+<li><a href="#annotations-sur-les-aspects"
+id="toc-annotations-sur-les-aspects">🏷️ Annotations sur les
+Aspects</a></li>
+<li><a href="#règles-de-composition" id="toc-règles-de-composition">🧠
+Règles de composition</a></li>
+<li><a href="#instanciation-future" id="toc-instanciation-future">🔮
+Instanciation (future)</a></li>
+</ul></li>
+<li><a href="#modificateur-sealed" id="toc-modificateur-sealed">🔒
+Modificateur <code>sealed</code></a>
+<ul>
+<li><a href="#syntaxe-4" id="toc-syntaxe-4">📐 Syntaxe</a></li>
+<li><a href="#règles-dhéritage-et-dextension"
+id="toc-règles-dhéritage-et-dextension">🔒 Règles d’héritage et
+d’extension</a></li>
+<li><a href="#exemples-valides" id="toc-exemples-valides">📝 Exemples
+valides</a></li>
+<li><a href="#exemples-invalides" id="toc-exemples-invalides">❌
+Exemples invalides</a></li>
+<li><a href="#règles-sémantiques-2" id="toc-règles-sémantiques-2">🧠
+Règles sémantiques</a></li>
+</ul></li>
+</ul></li>
+<li><a href="#métriques-metrics" id="toc-métriques-metrics">📊 Métriques
+(Metrics)</a>
+<ul>
+<li><a href="#introduction-2" id="toc-introduction-2">🎯
+Introduction</a>
+<ul>
+<li><a href="#philosophie" id="toc-philosophie">🧭 Philosophie</a></li>
+</ul></li>
+<li><a href="#syntaxe-de-base-2" id="toc-syntaxe-de-base-2">🏗️ Syntaxe
+de base</a>
+<ul>
+<li><a href="#structure-minimale" id="toc-structure-minimale">📐
+Structure minimale</a></li>
+<li><a href="#exemple-simple" id="toc-exemple-simple">📋 Exemple
+simple</a></li>
+</ul></li>
+<li><a href="#composants-détaillés" id="toc-composants-détaillés">🧩
+Composants détaillés</a>
+<ul>
+<li><a href="#source-de-données" id="toc-source-de-données">1. Source de
+données</a></li>
+<li><a href="#calcul-principal" id="toc-calcul-principal">2. Calcul
+principal</a></li>
+<li><a href="#unité-de-mesure" id="toc-unité-de-mesure">3. Unité de
+mesure</a></li>
+<li><a href="#outputs-optionnel" id="toc-outputs-optionnel">4. Outputs
+(optionnel)</a></li>
+<li><a href="#dimensions-optionnel" id="toc-dimensions-optionnel">5.
+Dimensions (optionnel)</a></li>
+<li><a href="#filtres-optionnel" id="toc-filtres-optionnel">6. Filtres
+(optionnel)</a></li>
+<li><a href="#agrégation-avancée-optionnel"
+id="toc-agrégation-avancée-optionnel">7. Agrégation avancée
+(optionnel)</a></li>
+<li><a href="#configuration-temporelle-optionnel"
+id="toc-configuration-temporelle-optionnel">8. Configuration temporelle
+(optionnel)</a></li>
+<li><a href="#aspects-optionnel" id="toc-aspects-optionnel">9. Aspects
+(optionnel)</a></li>
+</ul></li>
+<li><a href="#exemple-complet" id="toc-exemple-complet">📦 Exemple
+complet</a></li>
+<li><a href="#règles-sémantiques-3" id="toc-règles-sémantiques-3">✅
+Règles sémantiques</a>
+<ul>
+<li><a href="#obligatoires" id="toc-obligatoires">Obligatoires</a></li>
+<li><a href="#optionnels" id="toc-optionnels">Optionnels</a></li>
+<li><a href="#validation" id="toc-validation">Validation</a></li>
+</ul></li>
+<li><a href="#artefacts-définissables"
+id="toc-artefacts-définissables">🧱 Artefacts définissables</a>
+<ul>
+<li><a href="#domain" id="toc-domain">1. <code>domain</code></a></li>
+<li><a href="#product" id="toc-product">2. <code>product</code></a></li>
+<li><a href="#contract" id="toc-contract">3.
+<code>contract</code></a></li>
+<li><a href="#aspect-1" id="toc-aspect-1">4.
+<code>aspect</code></a></li>
+<li><a href="#team" id="toc-team">5. <code>team</code></a></li>
+<li><a href="#policy" id="toc-policy">6. <code>policy</code></a></li>
+</ul></li>
+<li><a href="#décisions-de-conception"
+id="toc-décisions-de-conception">📘 Décisions de conception</a>
+<ul>
+<li><a href="#syntaxe-déclarative-avec-blocs"
+id="toc-syntaxe-déclarative-avec-blocs">🧩 [2025-09-09] — Syntaxe
+déclarative avec blocs <code>{}</code></a></li>
+<li><a href="#visibilité-par-export-explicite"
+id="toc-visibilité-par-export-explicite">🧩 [2025-09-10] — Visibilité
+par export explicite</a></li>
+<li><a href="#deux-formes-dexport-inline-ou-groupé"
+id="toc-deux-formes-dexport-inline-ou-groupé">🧩 [2025-09-10] — Deux
+formes d’export : inline ou groupé</a></li>
+<li><a href="#modificateur-sealed-pour-contrôler-lextensibilité"
+id="toc-modificateur-sealed-pour-contrôler-lextensibilité">🧩
+[2025-09-12] — Modificateur <code>sealed</code> pour contrôler
+l’extensibilité</a></li>
+<li><a href="#types-de-collections-typés-et-littéraux"
+id="toc-types-de-collections-typés-et-littéraux">🧩 [2025-09-12] — Types
+de collections typés et littéraux</a></li>
+<li><a href="#entités-et-relations-pour-la-modélisation-de-données"
+id="toc-entités-et-relations-pour-la-modélisation-de-données">🧩
+[2025-09-12] — Entités et Relations pour la modélisation de
+données</a></li>
+</ul></li>
+<li><a href="#bibliothèque-standard-stdlib"
+id="toc-bibliothèque-standard-stdlib">📚 Bibliothèque Standard
+(StdLib)</a>
+<ul>
+<li><a href="#objectifs" id="toc-objectifs">🎯 Objectifs</a></li>
+<li><a href="#modules-disponibles" id="toc-modules-disponibles">📦
+Modules disponibles</a></li>
+<li><a href="#structure-actuelle" id="toc-structure-actuelle">🏗️
+Structure actuelle</a></li>
+<li><a href="#cas-dusage" id="toc-cas-dusage">🎯 Cas d’usage</a></li>
+<li><a href="#roadmap" id="toc-roadmap">📋 Roadmap</a></li>
+</ul></li>
+<li><a href="#à-venir" id="toc-à-venir">🚧 À venir</a></li>
+<li><a href="#exemples-pratiques-et-cas-dusage"
+id="toc-exemples-pratiques-et-cas-dusage">🚀 Exemples pratiques et cas
+d’usage</a>
+<ul>
+<li><a href="#cas-dusage-1-e-commerce-et-gestion-des-commandes"
+id="toc-cas-dusage-1-e-commerce-et-gestion-des-commandes">🛒 Cas d’usage
+1 : E-commerce et gestion des commandes</a></li>
+<li><a href="#cas-dusage-2-architecture-data-mesh---domaine-rh"
+id="toc-cas-dusage-2-architecture-data-mesh---domaine-rh">🏢 Cas d’usage
+2 : Architecture Data Mesh - Domaine RH</a></li>
+<li><a href="#cas-dusage-3-secteur-financier---gestion-des-comptes"
+id="toc-cas-dusage-3-secteur-financier---gestion-des-comptes">🏦 Cas
+d’usage 3 : Secteur financier - Gestion des comptes</a></li>
+<li><a
+href="#cas-dusage-4-intégration-technique---apis-et-microservices"
+id="toc-cas-dusage-4-intégration-technique---apis-et-microservices">🔧
+Cas d’usage 4 : Intégration technique - APIs et microservices</a></li>
+</ul></li>
+<li><a href="#bonnes-pratiques-et-conventions"
+id="toc-bonnes-pratiques-et-conventions">🎯 Bonnes pratiques et
+conventions</a>
+<ul>
+<li><a href="#conventions-de-nommage" id="toc-conventions-de-nommage">📝
+Conventions de nommage</a></li>
+<li><a href="#organisation-des-modules"
+id="toc-organisation-des-modules">🏗️ Organisation des modules</a></li>
+<li><a href="#utilisation-des-traits-et-aspects"
+id="toc-utilisation-des-traits-et-aspects">🔧 Utilisation des traits et
+aspects</a></li>
+<li><a href="#documentation-et-commentaires"
+id="toc-documentation-et-commentaires">📋 Documentation et
+commentaires</a></li>
+<li><a href="#gestion-des-erreurs-et-validation"
+id="toc-gestion-des-erreurs-et-validation">🚨 Gestion des erreurs et
+validation</a></li>
+<li><a href="#sécurité-et-conformité" id="toc-sécurité-et-conformité">🔒
+Sécurité et conformité</a></li>
+<li><a href="#tests-et-validation" id="toc-tests-et-validation">🧪 Tests
+et validation</a></li>
+</ul></li>
+<li><a href="#annexes-1" id="toc-annexes-1">Annexes</a>
+<ul>
+<li><a href="#annexe-a-grammaire-ebnf-référence"
+id="toc-annexe-a-grammaire-ebnf-référence">Annexe A — Grammaire EBNF
+(référence)</a></li>
+<li><a href="#annexe-b-grammaire-antlr-référence-python-target"
+id="toc-annexe-b-grammaire-antlr-référence-python-target">Annexe B —
+Grammaire ANTLR (référence, Python target)</a></li>
+</ul></li>
+<li><a href="#annexe-c-guide-complet-des-littéraux"
+id="toc-annexe-c-guide-complet-des-littéraux">📚 <strong>Annexe C :
+Guide complet des littéraux</strong></a>
+<ul>
+<li><a href="#littéraux-primitifs" id="toc-littéraux-primitifs">🔤
+<strong>Littéraux primitifs</strong></a></li>
+<li><a href="#littéraux-composites" id="toc-littéraux-composites">📦
+<strong>Littéraux composites</strong></a></li>
+<li><a href="#littéraux-spécialisés" id="toc-littéraux-spécialisés">🌍
+<strong>Littéraux spécialisés</strong></a></li>
+<li><a href="#littéraux-temporels" id="toc-littéraux-temporels">⏰
+<strong>Littéraux temporels</strong></a></li>
+<li><a href="#littéraux-sql" id="toc-littéraux-sql">🗄️ <strong>Littéraux
+SQL</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-annotations"
+id="toc-exemples-dusage-dans-les-annotations">🎯 <strong>Exemples
+d’usage dans les annotations</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-enums"
+id="toc-exemples-dusage-dans-les-enums">🔧 <strong>Exemples d’usage dans
+les enums</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-records"
+id="toc-exemples-dusage-dans-les-records">📋 <strong>Exemples d’usage
+dans les records</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-aspects"
+id="toc-exemples-dusage-dans-les-aspects">🎨 <strong>Exemples d’usage
+dans les aspects</strong></a></li>
+<li><a href="#exemples-dusage-dans-les-entités"
+id="toc-exemples-dusage-dans-les-entités">🏗️ <strong>Exemples d’usage
+dans les entités</strong></a></li>
+<li><a href="#conseils-dutilisation" id="toc-conseils-dutilisation">💡
+<strong>Conseils d’utilisation</strong></a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
 <h1 id="meshr-lang-documentation-du-langage">Meshr-Lang — Documentation
 du langage</h1>
 <div data-align="center">
@@ -234,6 +783,17 @@ Collections</a></li>
 <li><a href="#-traits">🧩 Traits</a></li>
 <li><a href="#-aspects">🎭 Aspects</a></li>
 </ul>
+<h3 id="métriques-et-kpis">📊 Métriques et KPIs</h3>
+<ul>
+<li><a href="#-métriques-metrics">📊 Métriques (Metrics)</a>
+<ul>
+<li><a href="#-introduction-1">🎯 Introduction</a></li>
+<li><a href="#️-syntaxe-de-base-1">🏗️ Syntaxe de base</a></li>
+<li><a href="#-composants-détaillés">🧩 Composants détaillés</a></li>
+<li><a href="#-exemple-complet">📦 Exemple complet</a></li>
+<li><a href="#-règles-sémantiques">✅ Règles sémantiques</a></li>
+</ul></li>
+</ul>
 <h3 id="contrôles-avancés">🔒 Contrôles avancés</h3>
 <ul>
 <li><a href="#-modificateur-sealed">🔒 Modificateur
@@ -416,6 +976,68 @@ explicites et de ponctuation minimale</li>
 <li><strong>Lisibilité</strong> : Structure qui reflète naturellement la
 hiérarchie des concepts métier</li>
 </ul>
+<h3 id="mots-clés-réservés">⚠️ Mots-clés réservés</h3>
+<p>Les mots suivants sont <strong>réservés</strong> par le langage et
+<strong>ne peuvent pas être utilisés</strong> comme identifiants de
+champs, variables ou noms d’entités :</p>
+<h4 id="déclarations-principales">🏗️ <strong>Déclarations
+principales</strong></h4>
+<ul>
+<li><code>module</code>, <code>import</code>, <code>export</code></li>
+<li><code>entity</code>, <code>enum</code>, <code>trait</code>,
+<code>aspect</code>, <code>annotation</code>, <code>record</code>,
+<code>relation</code></li>
+<li><code>type</code>, <code>sealed</code>,
+<code>bidirectional</code></li>
+</ul>
+<h4 id="métriques-nouveauté-v0.2.0">📊 <strong>Métriques</strong>
+(nouveauté v0.2.0)</h4>
+<ul>
+<li><code>metric</code>, <code>source</code>, <code>calculation</code>,
+<code>aggregation</code>, <code>unit</code></li>
+<li><code>outputs</code>, <code>dimensions</code>, <code>filters</code>,
+<code>temporal</code></li>
+<li><code>window</code>, <code>refresh_frequency</code>,
+<code>historical_depth</code></li>
+<li><code>match</code>, <code>or</code> (pattern matching)</li>
+</ul>
+<h4 id="relations-et-composition">🔗 <strong>Relations et
+composition</strong></h4>
+<ul>
+<li><code>from</code>, <code>to</code>, <code>with</code>,
+<code>extends</code>, <code>implements</code></li>
+<li><code>of</code>, <code>is</code>, <code>end</code>,
+<code>aspects</code></li>
+</ul>
+<h4 id="annotations-et-modificateurs">📝 <strong>Annotations et
+modificateurs</strong></h4>
+<ul>
+<li><code>required</code>, <code>optional</code>,
+<code>abstract</code></li>
+</ul>
+<h4 id="exemples-de-conflits-à-éviter">⚠️ <strong>Exemples de conflits à
+éviter</strong></h4>
+<pre class="meshr"><code>// ❌ INCORRECT - &#39;dimensions&#39; est un mot-clé réservé
+entity Product is
+  dimensions : String  // Erreur de compilation !
+end
+
+// ✅ CORRECT - Utiliser un nom différent
+entity Product is
+  product_dimensions : String  // OK
+end
+
+// ❌ INCORRECT - &#39;source&#39; est réservé pour les métriques
+relation DataFlow is
+  from Source(id) to Target(id)
+  source : String  // Erreur de compilation !
+end
+
+// ✅ CORRECT
+relation DataFlow is
+  from Source(id) to Target(id)
+  data_source : String  // OK
+end</code></pre>
 <h3 id="commentaires">💬 Commentaires</h3>
 <p>Les commentaires permettent d’ajouter des explications et de la
 documentation directement dans le code source :</p>
@@ -1196,6 +1818,40 @@ des <strong>chaînes</strong> (ex: <code>"export"</code>).</li>
 casse.</li>
 <li>Une énumération peut être annotée, comme tout autre artefact.</li>
 <li>Le nom de l’énumération doit être un identifiant valide.</li>
+</ul>
+<h3 id="syntaxe-de-référence-des-valeurs-enum">🎯 Syntaxe de référence
+des valeurs enum</h3>
+<p>Les valeurs d’énumération sont référencées avec la <strong>notation
+pointée</strong> <code>EnumName.value</code> :</p>
+<h4 id="exemples-de-déclaration-et-référence">Exemples de déclaration et
+référence</h4>
+<pre class="meshr"><code>// Déclaration avec syntaxe mixte (identifiants + chaînes)
+enum ApplicationStatus is (
+  submitted,                    // Identifiant simple
+  &quot;under review&quot;,              // Chaîne avec espace
+  &quot;screening passed&quot;,          // Espace au lieu d&#39;underscore
+  interviewing,                // Identifiant simple
+  hired,                       // Identifiant simple
+  &quot;offer extended&quot;             // Chaîne avec espace
+)
+
+// Référence uniforme avec notation pointée
+filters {
+  status == ApplicationStatus.submitted,           // Référence identifiant
+  status == ApplicationStatus.&quot;under review&quot;,      // Référence chaîne
+  status == ApplicationStatus.hired               // Référence identifiant
+}</code></pre>
+<h4 id="avantages-de-cette-approche">Avantages de cette approche</h4>
+<ul>
+<li>✅ <strong>Lisibilité métier</strong> : Valeurs naturelles
+(<code>"under review"</code> vs <code>under_review</code>)</li>
+<li>✅ <strong>Flexibilité</strong> : Mélange identifiants/chaînes selon
+les besoins<br />
+</li>
+<li>✅ <strong>Cohérence</strong> : Syntaxe de référence uniforme avec
+<code>.</code></li>
+<li>✅ <strong>Évolution</strong> : Ajout facile de nouvelles valeurs
+complexes</li>
 </ul>
 <h3 id="enums-avec-attributs-typés">🧩 [2025-09-10] — Enums avec
 attributs typés</h3>
@@ -2188,6 +2844,207 @@ dans des blocs <code>aspects</code></li>
 <li>Les <strong>annotations ne peuvent jamais être sealed</strong></li>
 <li>L’ordre des modificateurs est : <code>sealed abstract aspect</code>
 (pas <code>abstract sealed</code>)</li>
+</ul>
+<hr />
+<h1 id="métriques-metrics">📊 Métriques (Metrics)</h1>
+<h2 id="introduction-2">🎯 Introduction</h2>
+<p>Les <strong>métriques</strong> permettent de définir des KPIs (Key
+Performance Indicators) et des mesures métier directement dans le modèle
+sémantique. Elles s’intègrent naturellement avec les entités, relations
+et aspects existants pour générer automatiquement des tableaux de bord,
+des requêtes SQL et des pipelines de données.</p>
+<blockquote>
+<p>⚠️ <strong>Important</strong> : Les mots-clés des métriques
+(<code>metric</code>, <code>source</code>, <code>calculation</code>,
+<code>aggregation</code>, <code>unit</code>, <code>outputs</code>,
+<code>dimensions</code>, <code>filters</code>, <code>temporal</code>,
+<code>window</code>, <code>refresh_frequency</code>,
+<code>historical_depth</code>, <code>match</code>, <code>or</code>) sont
+<strong>réservés</strong> et ne peuvent pas être utilisés comme noms de
+champs. Voir la <a href="#️-mots-clés-réservés">section des mots-clés
+réservés</a> pour la liste complète.</p>
+</blockquote>
+<h3 id="philosophie">🧭 Philosophie</h3>
+<ul>
+<li><strong>Déclaratif</strong> : Décrire QUOI mesurer, pas COMMENT
+l’implémenter</li>
+<li><strong>Réutilisable</strong> : S’appuie sur le modèle sémantique
+existant</li>
+<li><strong>Gouverné</strong> : Aspects de qualité, sécurité et lineage
+intégrés</li>
+<li><strong>Portable</strong> : Génération vers BigQuery, Snowflake,
+dbt, etc.</li>
+</ul>
+<h2 id="syntaxe-de-base-2">🏗️ Syntaxe de base</h2>
+<h3 id="structure-minimale">📐 Structure minimale</h3>
+<pre class="meshr"><code>metric MetricName is
+  source EntityName
+  calculation expression
+  unit &quot;unit_string&quot;
+end</code></pre>
+<h3 id="exemple-simple">📋 Exemple simple</h3>
+<pre class="meshr"><code>@Documented(summary=&quot;Temps moyen de recrutement&quot;)
+metric TimeToHire is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit &quot;days&quot;
+end</code></pre>
+<h2 id="composants-détaillés">🧩 Composants détaillés</h2>
+<h3 id="source-de-données">1. Source de données</h3>
+<p><strong>Syntaxe :</strong> <code>source EntityName</code></p>
+<pre class="meshr"><code>source Application    // Entité source des données
+source Customer      // Autre exemple</code></pre>
+<p>La source doit être une entité déclarée dans le modèle.</p>
+<h3 id="calcul-principal">2. Calcul principal</h3>
+<p><strong>Syntaxe :</strong> <code>calculation expression</code></p>
+<pre class="meshr"><code>calculation avg(offer_date - application_date)
+calculation sum(related(Order).total_amount)
+calculation count(*) where status == ApplicationStatus.hired</code></pre>
+<p><strong>Fonctions supportées :</strong> - <strong>Agrégation</strong>
+: <code>avg()</code>, <code>sum()</code>, <code>count()</code>,
+<code>min()</code>, <code>max()</code> - <strong>Temporelles</strong> :
+<code>date_trunc()</code>, <code>date_part()</code> -
+<strong>Relationnelles</strong> :
+<code>related(Entity, field)</code></p>
+<h3 id="unité-de-mesure">3. Unité de mesure</h3>
+<p><strong>Syntaxe :</strong> <code>unit "string"</code></p>
+<pre class="meshr"><code>unit &quot;days&quot;
+unit &quot;EUR&quot;
+unit &quot;percentage&quot;
+unit &quot;score&quot;</code></pre>
+<h3 id="outputs-optionnel">4. Outputs (optionnel)</h3>
+<p>Définit les champs de sortie de la métrique :</p>
+<pre class="meshr"><code>outputs {
+  average_days : Float,
+  median_days : Float,
+  sample_size : Integer,
+  calculation_timestamp : Timestamp
+}</code></pre>
+<h3 id="dimensions-optionnel">5. Dimensions (optionnel)</h3>
+<p>Définit les axes d’analyse pour la métrique :</p>
+<pre class="meshr"><code>dimensions {
+  department related(JobPosting, job_id).department_id,
+  period date_trunc(&quot;month&quot;, application_date)
+}</code></pre>
+<h4 id="pattern-matching-pour-dimensions">Pattern matching pour
+dimensions</h4>
+<pre class="meshr"><code>dimensions {
+  salary_tier match salary_offered is
+    0..49999 -&gt; &quot;entry level&quot;,
+    50000..79999 -&gt; &quot;mid level&quot;,
+    80000.. -&gt; &quot;senior level&quot;
+  end,
+  
+  channel_type match source_channel is
+    SourceChannel.linkedin or SourceChannel.&quot;social media&quot; -&gt; &quot;digital&quot;,
+    SourceChannel.&quot;internal referral&quot; -&gt; &quot;internal&quot;,
+    _ -&gt; &quot;external&quot;
+  end
+}</code></pre>
+<p><strong>Patterns supportés :</strong> - <strong>Ranges</strong> :
+<code>0..49999</code>, <code>50000..</code> (open-ended) -
+<strong>Enums</strong> : <code>ApplicationStatus.hired</code> -
+<strong>OR patterns</strong> : <code>pattern1 or pattern2</code> -
+<strong>Wildcard</strong> : <code>_</code> (catch-all)</p>
+<h3 id="filtres-optionnel">6. Filtres (optionnel)</h3>
+<p>Conditions de filtrage des données :</p>
+<pre class="meshr"><code>filters {
+  application_status == ApplicationStatus.hired,
+  application_date &gt;= Date &quot;2024-01-01&quot;,
+  department_id in List[&quot;eng&quot;, &quot;product&quot;]
+}</code></pre>
+<h3 id="agrégation-avancée-optionnel">7. Agrégation avancée
+(optionnel)</h3>
+<p>Pour des métriques complexes avec plusieurs calculs :</p>
+<pre class="meshr"><code>aggregation {
+  recruitment_costs as sum(related(RecruitmentCost, application_id).amount),
+  total_hires as count(*) where application_status == ApplicationStatus.hired,
+  cost_per_hire as recruitment_costs / total_hires
+}</code></pre>
+<h3 id="configuration-temporelle-optionnel">8. Configuration temporelle
+(optionnel)</h3>
+<pre class="meshr"><code>temporal {
+  window Interval 6 month,
+  refresh_frequency Interval 1 day,
+  historical_depth Interval 2 year
+}</code></pre>
+<h3 id="aspects-optionnel">9. Aspects (optionnel)</h3>
+<p>Métadonnées de gouvernance :</p>
+<pre class="meshr"><code>aspects {
+  MetricGovernance {
+    business_owner: &quot;hr.director@company.com&quot;,
+    business_criticality: &quot;high&quot;
+  },
+  DataClassification {
+    level: &quot;internal&quot;,
+    access_control: &quot;role-based&quot;
+  }
+}</code></pre>
+<h2 id="exemple-complet">📦 Exemple complet</h2>
+<pre class="meshr"><code>@BusinessCritical(impact=&quot;high&quot;, stakeholders=[&quot;hr director&quot;, &quot;ceo&quot;])
+@Documented(summary=&quot;Temps moyen de recrutement par département&quot;)
+metric TimeToHireByDepartment is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit &quot;days&quot;
+  
+  outputs {
+    average_days : Float,
+    median_days : Float,
+    sample_size : Integer
+  }
+  
+  dimensions {
+    department related(JobPosting, job_id).department_id,
+    seniority_tier match related(JobPosting, job_id).seniority_level is
+      SeniorityLevel.intern or SeniorityLevel.junior -&gt; &quot;junior&quot;,
+      SeniorityLevel.senior or SeniorityLevel.lead -&gt; &quot;senior&quot;,
+      _ -&gt; &quot;executive&quot;
+    end,
+    period date_trunc(&quot;month&quot;, application_date)
+  }
+  
+  filters {
+    application_status == ApplicationStatus.hired,
+    application_date &gt;= Date &quot;2024-01-01&quot;
+  }
+  
+  temporal {
+    window Interval 6 month,
+    refresh_frequency Interval 1 day
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: &quot;hr.director@company.com&quot;,
+      technical_owner: &quot;hr.analytics@company.com&quot;,
+      business_criticality: &quot;high&quot;
+    }
+  }
+end</code></pre>
+<h2 id="règles-sémantiques-3">✅ Règles sémantiques</h2>
+<h3 id="obligatoires">Obligatoires</h3>
+<ul>
+<li><strong><code>source</code></strong> : Entité source (doit exister
+dans le modèle)</li>
+<li><strong><code>calculation</code> OU
+<code>aggregation</code></strong> : Au moins un des deux</li>
+<li><strong><code>unit</code></strong> : Unité de mesure</li>
+</ul>
+<h3 id="optionnels">Optionnels</h3>
+<ul>
+<li>Tous les autres blocs peuvent être omis</li>
+</ul>
+<h3 id="validation">Validation</h3>
+<ul>
+<li><strong>Types</strong> : Cohérence des types dans les
+expressions</li>
+<li><strong>Relations</strong> : Validation des chemins
+<code>related(Entity, field)</code></li>
+<li><strong>Enums</strong> : Validation des valeurs
+<code>EnumName.value</code></li>
+<li><strong>Patterns</strong> : Exhaustivité recommandée (warning si pas
+de <code>_</code>)</li>
 </ul>
 <hr />
 <h2 id="artefacts-définissables">🧱 Artefacts définissables</h2>
@@ -3343,7 +4200,7 @@ documentation</li>
 (référence)</h3>
 <pre class="ebnf"><code>(* ==============================
    Meshr-Lang — Grammaire EBNF (alignée ANTLR)
-   Mise à jour: 2025-09-12
+   Mise à jour: 2025-09-17 - Version 0.2.0 avec métriques
    ============================== *)
 
 compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
@@ -3359,8 +4216,8 @@ import-item         = identifier ;
 export-decl         = &quot;export&quot;, ( export-items | exportable-decl ) ;
 export-items        = &quot;{&quot;, identifier, { &quot;,&quot;, identifier }, &quot;}&quot; ;
 
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
-exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
 
 enum-decl           = { annotation }, [ &quot;sealed&quot; ], &quot;enum&quot;, identifier, [ enum-signature ], &quot;is&quot;, &quot;(&quot;, enum-values, &quot;)&quot; ;
 enum-signature      = &quot;(&quot;, enum-attribute, { &quot;,&quot;, enum-attribute }, &quot;)&quot; ;
@@ -3489,12 +4346,78 @@ bytes-literal       = &quot;Bytes&quot;, string-literal
 bytes-array-content = bytes-value, { &quot;,&quot;, bytes-value } ;
 bytes-value         = signed-number ;
 
+(* ========== METRIC DECLARATION ============ *)
+metric-decl         = { annotation }, [ &quot;sealed&quot; ], &quot;metric&quot;, identifier, [ with-clause ], &quot;is&quot;,
+                      metric-source,
+                      ( metric-calculation | metric-aggregation ),
+                      [ metric-unit ],
+                      [ metric-outputs ],
+                      [ metric-dimensions ],
+                      [ metric-filters ],
+                      [ metric-temporal ],
+                      [ metric-aspects ],
+                      &quot;end&quot; ;
+
+metric-source       = &quot;source&quot;, qualified-name ;
+metric-calculation  = &quot;calculation&quot;, expression ;
+metric-aggregation  = &quot;aggregation&quot;, &quot;{&quot;, aggregation-field-list, &quot;}&quot; ;
+aggregation-field-list = aggregation-field, { &quot;,&quot;, aggregation-field } ;
+aggregation-field   = identifier, &quot;as&quot;, expression ;
+
+metric-unit         = &quot;unit&quot;, string-literal ;
+metric-outputs      = &quot;outputs&quot;, &quot;{&quot;, output-field-list, &quot;}&quot; ;
+output-field-list   = output-field, { &quot;,&quot;, output-field } ;
+output-field        = identifier, &quot;:&quot;, type-ref ;
+
+metric-dimensions   = &quot;dimensions&quot;, &quot;{&quot;, dimension-list, &quot;}&quot; ;
+dimension-list      = dimension, { &quot;,&quot;, dimension } ;
+dimension           = identifier, ( expression | match-expression ) ;
+
+match-expression    = &quot;match&quot;, expression, &quot;is&quot;, match-arms, &quot;end&quot; ;
+match-arms          = match-arm, { &quot;,&quot;, match-arm } ;
+match-arm           = pattern, &quot;-&gt;&quot;, match-result ;
+
+pattern             = literal-pattern | range-pattern | enum-pattern | wildcard-pattern | or-pattern ;
+literal-pattern     = string-literal | number-literal | boolean-literal ;
+range-pattern       = number-literal, &quot;..&quot;, [ number-literal ] ;
+enum-pattern        = qualified-name ;
+wildcard-pattern    = &quot;_&quot; ;
+or-pattern          = pattern, { &quot;or&quot;, pattern } ;
+match-result        = string-literal | number-literal | boolean-literal | qualified-name ;
+
+metric-filters      = &quot;filters&quot;, &quot;{&quot;, filter-list, &quot;}&quot; ;
+filter-list         = filter-expression, { &quot;,&quot;, filter-expression } ;
+filter-expression   = expression ;
+
+metric-temporal     = &quot;temporal&quot;, &quot;{&quot;, temporal-config-list, &quot;}&quot; ;
+temporal-config-list = temporal-config, { &quot;,&quot;, temporal-config } ;
+temporal-config     = temporal-field, interval-literal ;
+temporal-field      = &quot;window&quot; | &quot;refresh_frequency&quot; | &quot;historical_depth&quot; ;
+
+metric-aspects      = &quot;aspects&quot;, &quot;{&quot;, aspect-instance-list, &quot;}&quot; ;
+
+(* ========== EXPRESSIONS ============ *)
+expression          = arithmetic-expr | comparison-expr | logical-expr | function-call | field-reference | enum-reference | literal ;
+
+(* ========== TERMINAUX ============ *)
 string-literal      = &#39;&quot;&#39;, { character - &#39;&quot;&#39; | &#39;\\&quot;&#39; }, &#39;&quot;&#39; ;
 number-literal      = digit, { digit } | &quot;0x&quot;, hex-digit, { hex-digit } ;
 identifier          = letter, { letter | digit | &quot;_&quot; } ;
-NEWLINE             = (&quot;\r&quot;?), &quot;\n&quot;, { (&quot;\r&quot;?), &quot;\n&quot; } ;</code></pre>
+NEWLINE             = (&quot;\r&quot;?), &quot;\n&quot;, { (&quot;\r&quot;?), &quot;\n&quot; } ;
+
+comment             = line-comment | block-comment ;
+line-comment        = &quot;//&quot;, { character - end-of-line } ;
+block-comment       = &quot;/*&quot;, { character - &quot;*/&quot; }, &quot;*/&quot; ;</code></pre>
 <h3 id="annexe-b-grammaire-antlr-référence-python-target">Annexe B —
 Grammaire ANTLR (référence, Python target)</h3>
+<blockquote>
+<p>⚠️ <strong>Note</strong>: Cette annexe contient un extrait de la
+grammaire ANTLR. La <strong>grammaire complète et à jour</strong>
+(incluant les métriques et le pattern matching) se trouve dans le
+fichier <code>/grammar/MeshrModule.g4</code> du projet. Dernière mise à
+jour : <strong>Version 0.2.0 (2025-09-17)</strong> avec support complet
+des métriques.</p>
+</blockquote>
 <pre class="antlr"><code>grammar MeshrModule;
 
 // ==============================

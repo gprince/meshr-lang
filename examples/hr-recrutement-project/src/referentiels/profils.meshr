@@ -1,0 +1,209 @@
+// ==============================
+// Référentiel Profils - Domaine RH Recrutement
+// ==============================
+// Profils de compétences, niveaux et certifications
+
+@Version("1.0.0") 
+@Author(name="HR Data Architecture Team", email="hr.data@company.com")
+@Documented(
+  summary="Référentiel des profils de compétences et certifications",
+  description="Définit les compétences, niveaux d'expertise et certifications métier",
+  examples="Utilisé pour le matching candidat-poste et l'évaluation des compétences"
+)
+module hr.referentiels.profils
+
+import { WithSecurity, DataClassification } from meshr.security
+import { WithStewardship } from meshr.governance
+import { Status, Priority } from meshr.types
+
+export {
+  Skill,
+  SkillCategory, 
+  Certification,
+  ExperienceLevel,
+  SkillType,
+  CertificationStatus,
+  WithSkillInfo,
+  WithCertificationInfo,
+  WithExperienceInfo
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum SkillType is (
+  technical,
+  functional, 
+  behavioral,
+  leadership,
+  language,
+  "industry specific"
+)
+
+enum ExperienceLevel is (
+  "entry level",      // 0-2 ans
+  junior,             // 2-5 ans  
+  "mid level",        // 5-8 ans
+  senior,             // 8-12 ans
+  expert,             // 12+ ans
+  "thought leader"    // Reconnu dans le domaine
+)
+
+enum CertificationStatus is (
+  active,
+  expired,
+  "pending renewal",
+  suspended,
+  revoked
+)
+
+enum SkillProficiencyLevel is (
+  novice,            // 1-2
+  "advanced beginner", // 2-3
+  competent,         // 3-4
+  proficient,        // 4-5
+  expert             // 5
+)
+
+// ========== TRAITS ==========
+
+trait WithSkillInfo is
+  skill_level : SkillProficiencyLevel
+  years_of_experience : Integer
+  last_assessment_date : Date
+  self_assessed : Boolean = false
+  validated_by : String
+end
+
+trait WithCertificationInfo is
+  certification_number : String
+  issuing_authority : String
+  issue_date : Date
+  expiry_date : Date
+  renewal_required : Boolean
+end
+
+trait WithExperienceInfo is
+  total_years_experience : Integer
+  years_in_current_role : Integer
+  years_in_company : Integer
+  previous_companies_count : Integer
+  industry_experience : List of String
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Compétence technique ou fonctionnelle")
+entity Skill with WithSecurity, WithStewardship is
+  skill_id : String
+  name : String length 1..100
+  description : String length 0..500
+  skill_type : SkillType
+  skill_category_id : String
+  market_demand : Priority
+  obsolescence_risk : String
+  learning_curve : String
+  related_skills : List of String
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "hr.skills@company.com"
+    }
+  }
+end
+
+@Documented(summary="Catégorie de compétences")
+entity SkillCategory with WithSecurity, WithStewardship is
+  category_id : String
+  name : String length 1..100
+  description : String length 0..300
+  parent_category_id : String
+  category_owner : String
+  strategic_importance : Priority
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "hr.skills@company.com"
+    }
+  }
+end
+
+@Documented(summary="Certification professionnelle")
+entity Certification with WithSecurity, WithStewardship, WithCertificationInfo is
+  certification_id : String
+  name : String length 1..100
+  description : String length 0..500
+  certification_body : String
+  skill_category_id : String
+  difficulty_level : ExperienceLevel
+  validity_period : Interval
+  renewal_requirements : String length 0..500
+  market_recognition : Priority
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "hr.certifications@company.com"
+    }
+  }
+end
+
+// ========== TYPE RELATIONS ==========
+
+type relation SKILL_DEPENDENCY with WithStewardship is
+  dependency_type : String
+  strength : Float
+  learning_order : Integer
+  prerequisite_level : SkillProficiencyLevel
+end
+
+type relation CERTIFICATION_PATHWAY with WithStewardship is
+  pathway_name : String
+  sequence_order : Integer
+  estimated_duration : Interval
+  success_rate : Float
+end
+
+// ========== RELATIONS ==========
+
+relation SkillBelongsToCategory is
+  from Skill(skill_category_id)
+  to SkillCategory(category_id)
+  
+  primary_category : Boolean = true
+  classification_confidence : Float = 1.0
+end
+
+relation SkillHierarchy of type SKILL_DEPENDENCY is
+  from Skill(skill_id)
+  to Skill(skill_id)
+  
+  mastery_impact : Float
+  learning_efficiency : Float
+end
+
+relation CertificationRequiresSkills is
+  from Certification(certification_id)
+  to Skill(skill_id)
+  
+  required_proficiency : SkillProficiencyLevel
+  weight_in_certification : Float
+end
+
+relation CertificationProgression of type CERTIFICATION_PATHWAY is
+  from Certification(certification_id)
+  to Certification(certification_id)
+  
+  career_advancement_value : Float
+  industry_recognition : Priority
+end

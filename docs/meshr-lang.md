@@ -131,6 +131,14 @@ Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data
 - [🧩 Traits](#-traits)
 - [🎭 Aspects](#-aspects)
 
+### 📊 Métriques et KPIs
+- [📊 Métriques (Metrics)](#-métriques-metrics)
+  - [🎯 Introduction](#-introduction-1)
+  - [🏗️ Syntaxe de base](#️-syntaxe-de-base-1)
+  - [🧩 Composants détaillés](#-composants-détaillés)
+  - [📦 Exemple complet](#-exemple-complet)
+  - [✅ Règles sémantiques](#-règles-sémantiques)
+
 ### 🔒 Contrôles avancés
 - [🔒 Modificateur `sealed`](#-modificateur-sealed)
 - [🧱 Artefacts définissables](#-artefacts-définissables)
@@ -281,6 +289,53 @@ Meshr-lang adopte un style **déclaratif à blocs** qui privilégie la lisibilit
 - **Blocs imbriqués** : Les déclarations sont organisées en blocs logiques avec indentation
 - **Syntaxe claire** : Utilisation de mots-clés explicites et de ponctuation minimale
 - **Lisibilité** : Structure qui reflète naturellement la hiérarchie des concepts métier
+
+### ⚠️ Mots-clés réservés
+
+Les mots suivants sont **réservés** par le langage et **ne peuvent pas être utilisés** comme identifiants de champs, variables ou noms d'entités :
+
+#### 🏗️ **Déclarations principales**
+- `module`, `import`, `export`
+- `entity`, `enum`, `trait`, `aspect`, `annotation`, `record`, `relation`
+- `type`, `sealed`, `bidirectional`
+
+#### 📊 **Métriques** (nouveauté v0.2.0)
+- `metric`, `source`, `calculation`, `aggregation`, `unit`
+- `outputs`, `dimensions`, `filters`, `temporal`
+- `window`, `refresh_frequency`, `historical_depth`
+- `match`, `or` (pattern matching)
+
+#### 🔗 **Relations et composition**
+- `from`, `to`, `with`, `extends`, `implements`
+- `of`, `is`, `end`, `aspects`
+
+#### 📝 **Annotations et modificateurs**
+- `required`, `optional`, `abstract`
+
+#### ⚠️ **Exemples de conflits à éviter**
+```meshr
+// ❌ INCORRECT - 'dimensions' est un mot-clé réservé
+entity Product is
+  dimensions : String  // Erreur de compilation !
+end
+
+// ✅ CORRECT - Utiliser un nom différent
+entity Product is
+  product_dimensions : String  // OK
+end
+
+// ❌ INCORRECT - 'source' est réservé pour les métriques
+relation DataFlow is
+  from Source(id) to Target(id)
+  source : String  // Erreur de compilation !
+end
+
+// ✅ CORRECT
+relation DataFlow is
+  from Source(id) to Target(id)
+  data_source : String  // OK
+end
+```
 
 ### 💬 Commentaires
 
@@ -1037,10 +1092,42 @@ enum PIICategory is (contact, identity, financial, health, biometric, location)
 
 ### 🧠 Règles
 
-- Les valeurs d’énum peuvent être des **identifiants** ou des **chaînes** (ex: `"export"`).
+- Les valeurs d'énum peuvent être des **identifiants** ou des **chaînes** (ex: `"export"`).
 - Les identifiants de valeurs doivent être uniques et respectent la casse.
 - Une énumération peut être annotée, comme tout autre artefact.
 - Le nom de l'énumération doit être un identifiant valide.
+
+### 🎯 Syntaxe de référence des valeurs enum
+
+Les valeurs d'énumération sont référencées avec la **notation pointée** `EnumName.value` :
+
+#### Exemples de déclaration et référence
+
+```meshr
+// Déclaration avec syntaxe mixte (identifiants + chaînes)
+enum ApplicationStatus is (
+  submitted,                    // Identifiant simple
+  "under review",              // Chaîne avec espace
+  "screening passed",          // Espace au lieu d'underscore
+  interviewing,                // Identifiant simple
+  hired,                       // Identifiant simple
+  "offer extended"             // Chaîne avec espace
+)
+
+// Référence uniforme avec notation pointée
+filters {
+  status == ApplicationStatus.submitted,           // Référence identifiant
+  status == ApplicationStatus."under review",      // Référence chaîne
+  status == ApplicationStatus.hired               // Référence identifiant
+}
+```
+
+#### Avantages de cette approche
+
+- ✅ **Lisibilité métier** : Valeurs naturelles (`"under review"` vs `under_review`)
+- ✅ **Flexibilité** : Mélange identifiants/chaînes selon les besoins  
+- ✅ **Cohérence** : Syntaxe de référence uniforme avec `.`
+- ✅ **Évolution** : Ajout facile de nouvelles valeurs complexes
 
 ### 🧩 [2025-09-10] — Enums avec attributs typés
 
@@ -1979,6 +2066,246 @@ end
 - Un aspect `sealed` **peut être instancié** dans des blocs `aspects`
 - Les **annotations ne peuvent jamais être sealed**
 - L'ordre des modificateurs est : `sealed abstract aspect` (pas `abstract sealed`)
+
+---
+
+# 📊 Métriques (Metrics)
+
+## 🎯 Introduction
+
+Les **métriques** permettent de définir des KPIs (Key Performance Indicators) et des mesures métier directement dans le modèle sémantique. Elles s'intègrent naturellement avec les entités, relations et aspects existants pour générer automatiquement des tableaux de bord, des requêtes SQL et des pipelines de données.
+
+> ⚠️ **Important** : Les mots-clés des métriques (`metric`, `source`, `calculation`, `aggregation`, `unit`, `outputs`, `dimensions`, `filters`, `temporal`, `window`, `refresh_frequency`, `historical_depth`, `match`, `or`) sont **réservés** et ne peuvent pas être utilisés comme noms de champs. Voir la [section des mots-clés réservés](#️-mots-clés-réservés) pour la liste complète.
+
+### 🧭 Philosophie
+
+- **Déclaratif** : Décrire QUOI mesurer, pas COMMENT l'implémenter
+- **Réutilisable** : S'appuie sur le modèle sémantique existant
+- **Gouverné** : Aspects de qualité, sécurité et lineage intégrés
+- **Portable** : Génération vers BigQuery, Snowflake, dbt, etc.
+
+## 🏗️ Syntaxe de base
+
+### 📐 Structure minimale
+
+```meshr
+metric MetricName is
+  source EntityName
+  calculation expression
+  unit "unit_string"
+end
+```
+
+### 📋 Exemple simple
+
+```meshr
+@Documented(summary="Temps moyen de recrutement")
+metric TimeToHire is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit "days"
+end
+```
+
+## 🧩 Composants détaillés
+
+### 1. Source de données
+
+**Syntaxe :** `source EntityName`
+
+```meshr
+source Application    // Entité source des données
+source Customer      // Autre exemple
+```
+
+La source doit être une entité déclarée dans le modèle.
+
+### 2. Calcul principal
+
+**Syntaxe :** `calculation expression`
+
+```meshr
+calculation avg(offer_date - application_date)
+calculation sum(related(Order).total_amount)
+calculation count(*) where status == ApplicationStatus.hired
+```
+
+**Fonctions supportées :**
+- **Agrégation** : `avg()`, `sum()`, `count()`, `min()`, `max()`
+- **Temporelles** : `date_trunc()`, `date_part()`
+- **Relationnelles** : `related(Entity, field)`
+
+### 3. Unité de mesure
+
+**Syntaxe :** `unit "string"`
+
+```meshr
+unit "days"
+unit "EUR"
+unit "percentage"
+unit "score"
+```
+
+### 4. Outputs (optionnel)
+
+Définit les champs de sortie de la métrique :
+
+```meshr
+outputs {
+  average_days : Float,
+  median_days : Float,
+  sample_size : Integer,
+  calculation_timestamp : Timestamp
+}
+```
+
+### 5. Dimensions (optionnel)
+
+Définit les axes d'analyse pour la métrique :
+
+```meshr
+dimensions {
+  department related(JobPosting, job_id).department_id,
+  period date_trunc("month", application_date)
+}
+```
+
+#### Pattern matching pour dimensions
+
+```meshr
+dimensions {
+  salary_tier match salary_offered is
+    0..49999 -> "entry level",
+    50000..79999 -> "mid level",
+    80000.. -> "senior level"
+  end,
+  
+  channel_type match source_channel is
+    SourceChannel.linkedin or SourceChannel."social media" -> "digital",
+    SourceChannel."internal referral" -> "internal",
+    _ -> "external"
+  end
+}
+```
+
+**Patterns supportés :**
+- **Ranges** : `0..49999`, `50000..` (open-ended)
+- **Enums** : `ApplicationStatus.hired`
+- **OR patterns** : `pattern1 or pattern2`
+- **Wildcard** : `_` (catch-all)
+
+### 6. Filtres (optionnel)
+
+Conditions de filtrage des données :
+
+```meshr
+filters {
+  application_status == ApplicationStatus.hired,
+  application_date >= Date "2024-01-01",
+  department_id in List["eng", "product"]
+}
+```
+
+### 7. Agrégation avancée (optionnel)
+
+Pour des métriques complexes avec plusieurs calculs :
+
+```meshr
+aggregation {
+  recruitment_costs as sum(related(RecruitmentCost, application_id).amount),
+  total_hires as count(*) where application_status == ApplicationStatus.hired,
+  cost_per_hire as recruitment_costs / total_hires
+}
+```
+
+### 8. Configuration temporelle (optionnel)
+
+```meshr
+temporal {
+  window Interval 6 month,
+  refresh_frequency Interval 1 day,
+  historical_depth Interval 2 year
+}
+```
+
+### 9. Aspects (optionnel)
+
+Métadonnées de gouvernance :
+
+```meshr
+aspects {
+  MetricGovernance {
+    business_owner: "hr.director@company.com",
+    business_criticality: "high"
+  },
+  DataClassification {
+    level: "internal",
+    access_control: "role-based"
+  }
+}
+```
+
+## 📦 Exemple complet
+
+```meshr
+@BusinessCritical(impact="high", stakeholders=["hr director", "ceo"])
+@Documented(summary="Temps moyen de recrutement par département")
+metric TimeToHireByDepartment is
+  source Application
+  calculation avg(offer_date - application_date)
+  unit "days"
+  
+  outputs {
+    average_days : Float,
+    median_days : Float,
+    sample_size : Integer
+  }
+  
+  dimensions {
+    department related(JobPosting, job_id).department_id,
+    seniority_tier match related(JobPosting, job_id).seniority_level is
+      SeniorityLevel.intern or SeniorityLevel.junior -> "junior",
+      SeniorityLevel.senior or SeniorityLevel.lead -> "senior",
+      _ -> "executive"
+    end,
+    period date_trunc("month", application_date)
+  }
+  
+  filters {
+    application_status == ApplicationStatus.hired,
+    application_date >= Date "2024-01-01"
+  }
+  
+  temporal {
+    window Interval 6 month,
+    refresh_frequency Interval 1 day
+  }
+  
+  aspects {
+    MetricGovernance {
+      business_owner: "hr.director@company.com",
+      technical_owner: "hr.analytics@company.com",
+      business_criticality: "high"
+    }
+  }
+end
+```
+
+## ✅ Règles sémantiques
+
+### Obligatoires
+- **`source`** : Entité source (doit exister dans le modèle)
+- **`calculation` OU `aggregation`** : Au moins un des deux
+- **`unit`** : Unité de mesure
+
+### Optionnels
+- Tous les autres blocs peuvent être omis
+
+### Validation
+- **Types** : Cohérence des types dans les expressions
+- **Relations** : Validation des chemins `related(Entity, field)`
+- **Enums** : Validation des valeurs `EnumName.value`
+- **Patterns** : Exhaustivité recommandée (warning si pas de `_`)
 
 ---
 
@@ -3094,7 +3421,7 @@ end
 ```ebnf
 (* ==============================
    Meshr-Lang — Grammaire EBNF (alignée ANTLR)
-   Mise à jour: 2025-09-12
+   Mise à jour: 2025-09-17 - Version 0.2.0 avec métriques
    ============================== *)
 
 compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
@@ -3110,8 +3437,8 @@ import-item         = identifier ;
 export-decl         = "export", ( export-items | exportable-decl ) ;
 export-items        = "{", identifier, { ",", identifier }, "}" ;
 
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl ;
-exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
 
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
 enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
@@ -3240,13 +3567,73 @@ bytes-literal       = "Bytes", string-literal
 bytes-array-content = bytes-value, { ",", bytes-value } ;
 bytes-value         = signed-number ;
 
+(* ========== METRIC DECLARATION ============ *)
+metric-decl         = { annotation }, [ "sealed" ], "metric", identifier, [ with-clause ], "is",
+                      metric-source,
+                      ( metric-calculation | metric-aggregation ),
+                      [ metric-unit ],
+                      [ metric-outputs ],
+                      [ metric-dimensions ],
+                      [ metric-filters ],
+                      [ metric-temporal ],
+                      [ metric-aspects ],
+                      "end" ;
+
+metric-source       = "source", qualified-name ;
+metric-calculation  = "calculation", expression ;
+metric-aggregation  = "aggregation", "{", aggregation-field-list, "}" ;
+aggregation-field-list = aggregation-field, { ",", aggregation-field } ;
+aggregation-field   = identifier, "as", expression ;
+
+metric-unit         = "unit", string-literal ;
+metric-outputs      = "outputs", "{", output-field-list, "}" ;
+output-field-list   = output-field, { ",", output-field } ;
+output-field        = identifier, ":", type-ref ;
+
+metric-dimensions   = "dimensions", "{", dimension-list, "}" ;
+dimension-list      = dimension, { ",", dimension } ;
+dimension           = identifier, ( expression | match-expression ) ;
+
+match-expression    = "match", expression, "is", match-arms, "end" ;
+match-arms          = match-arm, { ",", match-arm } ;
+match-arm           = pattern, "->", match-result ;
+
+pattern             = literal-pattern | range-pattern | enum-pattern | wildcard-pattern | or-pattern ;
+literal-pattern     = string-literal | number-literal | boolean-literal ;
+range-pattern       = number-literal, "..", [ number-literal ] ;
+enum-pattern        = qualified-name ;
+wildcard-pattern    = "_" ;
+or-pattern          = pattern, { "or", pattern } ;
+match-result        = string-literal | number-literal | boolean-literal | qualified-name ;
+
+metric-filters      = "filters", "{", filter-list, "}" ;
+filter-list         = filter-expression, { ",", filter-expression } ;
+filter-expression   = expression ;
+
+metric-temporal     = "temporal", "{", temporal-config-list, "}" ;
+temporal-config-list = temporal-config, { ",", temporal-config } ;
+temporal-config     = temporal-field, interval-literal ;
+temporal-field      = "window" | "refresh_frequency" | "historical_depth" ;
+
+metric-aspects      = "aspects", "{", aspect-instance-list, "}" ;
+
+(* ========== EXPRESSIONS ============ *)
+expression          = arithmetic-expr | comparison-expr | logical-expr | function-call | field-reference | enum-reference | literal ;
+
+(* ========== TERMINAUX ============ *)
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;
 number-literal      = digit, { digit } | "0x", hex-digit, { hex-digit } ;
 identifier          = letter, { letter | digit | "_" } ;
 NEWLINE             = ("\r"?), "\n", { ("\r"?), "\n" } ;
+
+comment             = line-comment | block-comment ;
+line-comment        = "//", { character - end-of-line } ;
+block-comment       = "/*", { character - "*/" }, "*/" ;
 ```
 
 ### Annexe B — Grammaire ANTLR (référence, Python target)
+
+> ⚠️ **Note**: Cette annexe contient un extrait de la grammaire ANTLR. La **grammaire complète et à jour** (incluant les métriques et le pattern matching) se trouve dans le fichier `/grammar/MeshrModule.g4` du projet. Dernière mise à jour : **Version 0.2.0 (2025-09-17)** avec support complet des métriques.
 
 ```antlr
 grammar MeshrModule;
@@ -4137,3 +4524,4 @@ end
 6. **JSON** : Utilisez la syntaxe objet `{}` pour les structures, la syntaxe chaîne `""` pour le JSON brut
 
 Cette annexe couvre tous les littéraux supportés par Meshr-lang avec des exemples pratiques et des cas d'usage réels.
+

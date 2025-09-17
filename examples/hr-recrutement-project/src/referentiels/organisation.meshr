@@ -1,0 +1,213 @@
+// ==============================
+// Référentiel Organisation - Domaine RH Recrutement
+// ==============================
+// Structure organisationnelle de l'entreprise pour le recrutement
+
+@Version("1.0.0")
+@Author(name="HR Data Architecture Team", email="hr.data@company.com")
+@Documented(
+  summary="Référentiel de l'organisation d'entreprise pour le recrutement",
+  description="Définit la structure organisationnelle, les BU, départements et hiérarchies",
+  examples="Utilisé pour l'affectation des postes et la gouvernance RH"
+)
+module hr.referentiels.organisation
+
+import { WithSecurity, DataClassification } from meshr.security
+import { WithStewardship, DataStewardship } from meshr.governance
+import { WithLifecycle, DataLifecycle } from meshr.lifecycle
+import { Status, Priority, Address, WithContactInfo } from meshr.types
+
+export { 
+  BusinessUnit, 
+  Department, 
+  Team, 
+  CostCenter, 
+  OrganizationalLevel,
+  BusinessUnitType,
+  DepartmentType,
+  WithOrganizationalInfo,
+  WithBudgetInfo
+}
+
+// ========== ÉNUMÉRATIONS ==========
+
+enum BusinessUnitType is (
+  corporate,
+  division, 
+  subsidiary,
+  "joint venture",
+  "branch office"
+)
+
+enum DepartmentType is (
+  operational,
+  support, 
+  strategic,
+  compliance,
+  innovation
+)
+
+enum OrganizationalLevel is (
+  "c suite",
+  "vp level",
+  "director level", 
+  "manager level",
+  "team lead level",
+  "individual contributor"
+)
+
+// ========== TRAITS ==========
+
+trait WithOrganizationalInfo is
+  org_code : String length 3..10
+  legal_entity : String
+  parent_organization : String
+  organizational_level : OrganizationalLevel
+  effective_date : Date
+  end_date : Date
+end
+
+trait WithBudgetInfo is
+  annual_budget : Float
+  currency : String = "EUR"
+  budget_year : Integer
+  cost_center_code : String
+  budget_owner : String
+end
+
+trait WithHierarchy is
+  parent_id : String
+  hierarchy_path : String
+  depth_level : Integer
+  is_leaf : Boolean = false
+end
+
+// ========== ENTITÉS ==========
+
+@Documented(summary="Unité métier de l'entreprise")
+entity BusinessUnit with WithSecurity, WithStewardship, WithOrganizationalInfo, WithBudgetInfo, WithContactInfo is
+  bu_id : String
+  name : String length 1..100
+  description : String length 0..500
+  bu_type : BusinessUnitType
+  head_of_bu : String
+  employee_count : Integer
+  establishment_date : Date
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "hr.governance@company.com"
+    },
+    DataStewardship {
+      steward: "hr.data@company.com",
+      owner: "hr.director@company.com", 
+      business_domain: "human_resources",
+      last_review: "2024-09-01",
+      next_review: "2025-03-01",
+      contact_email: "hr.governance@company.com"
+    }
+  }
+end
+
+@Documented(summary="Département au sein d'une unité métier")
+entity Department with WithSecurity, WithStewardship, WithOrganizationalInfo, WithBudgetInfo, WithHierarchy is
+  department_id : String
+  name : String length 1..100
+  description : String length 0..500
+  department_type : DepartmentType
+  head_of_department : String
+  business_unit_id : String
+  employee_count : Integer
+  
+  aspects {
+    DataClassification {
+      level: "internal", 
+      encryption_required: false,
+      access_control: "role-based",
+      data_retention: Interval 10 year,
+      steward: "hr.governance@company.com"
+    }
+  }
+end
+
+@Documented(summary="Équipe au sein d'un département")
+entity Team with WithSecurity, WithStewardship, WithHierarchy is
+  team_id : String
+  name : String length 1..100
+  description : String length 0..300
+  team_lead : String
+  department_id : String
+  team_size : Integer
+  formation_date : Date
+  team_purpose : String length 0..200
+  
+  aspects {
+    DataClassification {
+      level: "internal",
+      encryption_required: false, 
+      access_control: "role-based",
+      data_retention: Interval 7 year,
+      steward: "hr.governance@company.com"
+    }
+  }
+end
+
+@Documented(summary="Centre de coût pour la gestion budgétaire")
+entity CostCenter with WithSecurity, WithStewardship, WithBudgetInfo is
+  cost_center_id : String
+  name : String length 1..100
+  description : String length 0..300
+  responsible_manager : String
+  accounting_code : String
+  status : Status
+  
+  aspects {
+    DataClassification {
+      level: "confidential",
+      encryption_required: true,
+      access_control: "role-based", 
+      data_retention: Interval 15 year,
+      steward: "finance.governance@company.com"
+    }
+  }
+end
+
+// ========== RELATIONS ==========
+
+relation BelongsToBusinessUnit is
+  from Department(business_unit_id)
+  to BusinessUnit(bu_id)
+  
+  relationship_type : String = "organizational_hierarchy"
+  effective_date : Date
+end
+
+relation BelongsToDepartment is
+  from Team(department_id) 
+  to Department(department_id)
+  
+  reporting_structure : String = "direct"
+  delegation_level : String
+end
+
+relation ManagedByCostCenter is
+  from Department(cost_center_code)
+  to CostCenter(cost_center_id)
+  
+  budget_allocation_percentage : Float
+  effective_date : Date
+  end_date : Date
+end
+
+bidirectional relation OrganizationalHierarchy is
+  from Department(parent_id)
+  to Department(department_id)
+  
+  hierarchy_type : String = "reporting"
+  authority_level : String
+  delegation_scope : List of String
+end
