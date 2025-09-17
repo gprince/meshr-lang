@@ -1,204 +1,159 @@
-# 📋 Sauvegarde de l'état du projet Meshr-lang
-*Date : 13 septembre 2024*
+# Meshr-Lang - Sauvegarde d'État v0.2.0
 
-## 🎯 Résumé des modifications apportées
-
-Cette sauvegarde documente l'état complet du projet Meshr-lang après l'ajout des nouveaux littéraux temporels et SQL, ainsi que la mise à jour complète de la documentation et des tests.
+> **Date de sauvegarde** : 2025-09-17  
+> **Version** : 0.2.0 - Métriques et Pattern Matching  
+> **Commit** : b314673  
+> **Statut** : Version stable complète
 
 ---
 
-## 🔧 Modifications techniques
+## État actuel du projet
 
-### 1. Grammaire ANTLR mise à jour
-**Fichier :** `grammar/MeshrModule.g4`
+### Fonctionnalités implémentées
 
-#### Ajouts dans `baseType` :
-- Ajout du type `'Sql'` dans la liste des types de base
+#### MÉTRIQUES (Nouvelle fonctionnalité majeure)
+- **Mot-clé `metric`** : Syntaxe complète avec 9 composants
+- **Pattern matching** : `match...is...end` avec `->`, `or`, wildcards, ranges, enums
+- **Composants supportés** :
+  - `source` : Entité source des données
+  - `calculation` : Expression de calcul simple
+  - `aggregation` : Calculs multiples et dérivés
+  - `unit` : Unité de mesure
+  - `outputs` : Champs de sortie typés
+  - `dimensions` : Axes d'analyse avec pattern matching
+  - `filters` : Conditions de filtrage
+  - `temporal` : Configuration temporelle
+  - `aspects` : Métadonnées de gouvernance
 
-#### Ajouts dans `annotationValue` :
-- `datetimeLiteral` : Support des littéraux Datetime
-- `dateLiteral` : Support des littéraux Date  
-- `timeLiteral` : Support des littéraux Time
-- `timestampLiteral` : Support des littéraux Timestamp
-- `sqlLiteral` : Support des littéraux SQL
+#### GRAMMAIRES
+- **ANTLR** (`MeshrModule.g4`) : 801 lignes, support complet métriques
+- **EBNF** (`meshr_module.ebnf`) : 262 lignes, synchronisé avec ANTLR
+- **25+ nouveaux tokens** : METRIC, SOURCE, CALCULATION, etc.
+- **Expressions** : Support complet arithmétique, logique, comparaison
+- **Exports annotés** : Syntaxe inline uniquement
 
-#### Nouvelles règles ajoutées :
-```antlr
-// ========== TEMPORAL LITERALS ==========
-datetimeLiteral : 'Datetime' STRING_LITERAL ;
-dateLiteral : 'Date' STRING_LITERAL ;
-timeLiteral : 'Time' STRING_LITERAL ;
-timestampLiteral : 'Timestamp' STRING_LITERAL ;
+#### EXTENSION LSP v0.2.0
+- **Syntax highlighting** : 25+ nouveaux mots-clés
+- **Snippets** : 4 templates métriques
+- **Language config** : Support indentation metric...is...end
+- **Autocomplétion** : Tous les nouveaux keywords
+- **Package** : Version 0.2.0 mise à jour
 
-// ========== SQL LITERALS ==========
-sqlLiteral : 'Sql' STRING_LITERAL ;
+#### DOCUMENTATION
+- **Documentation principale** : `docs/meshr-lang.md` (4,528 lignes)
+- **Section mots-clés réservés** : Liste complète avec exemples
+- **Section métriques** : Repositionnée dans corps principal
+- **Annexes** : Grammaires EBNF et ANTLR mises à jour
+- **PDF professionnel** : 214K avec page de garde, sans emojis
+
+### Tests et validation
+
+#### Tous les tests passent (7/7 exemples)
+- apis-management.meshr ✅
+- banking-accounts.meshr ✅  
+- dataplex-data-governance.meshr ✅
+- ecommerce-orders.meshr ✅
+- ecommerce-products.meshr ✅
+- hr-employees.meshr ✅
+- simple-dataplex-test.meshr ✅
+
+#### Tests spécialisés
+- **Métriques** : metrics-valid.meshr, invalid-metrics.meshr
+- **Pattern matching** : Ranges, enums, wildcards, OR patterns
+- **Exports annotés** : Inline valides, groupés invalides
+- **Enum syntax** : Mix identifiants/strings avec notation pointée
+
+### Changements depuis v0.1.0
+
+#### Nouvelles fonctionnalités
+1. **Métriques complètes** : Nouveau domaine de modélisation
+2. **Pattern matching** : Syntaxe moderne pour dimensions
+3. **Exports annotés** : Métadonnées sur exports inline
+4. **Enum flexible** : Mix identifiants/strings avec notation pointée
+5. **Mots-clés réservés** : Documentation complète des conflits
+
+#### Améliorations techniques
+1. **Grammaires** : ANTLR et EBNF synchronisées
+2. **Parser** : Support expressions complexes
+3. **LSP** : Extension v0.2.0 complète
+4. **Documentation** : Structure optimisée
+
+#### Nettoyage et organisation
+1. **Fichiers tests** : Organisés dans /tests et /dev_tests
+2. **Stdlib** : Conflits mots-clés résolus
+3. **Exemples** : Projet HR complet
+4. **Documentation** : PDF professionnel
+
+---
+
+## Problèmes résolus
+
+### Conflits mots-clés
+- `dimensions` → `product_dimensions` (ecommerce-products.meshr)
+- `source` → `data_source` (entities-relations-valid.meshr)
+- `window` → `time_window` (types-literals-valid.meshr)
+- `refresh_frequency` → `data_refresh_frequency` (governance.meshr)
+- `aspects` → `aspect_defs` (module dataplex)
+
+### Syntaxe et grammaire
+- **Left-recursion** : Résolu dans pattern et orPattern
+- **Expression rule** : Créée pour supporter métriques
+- **ImportItems** : Support imports simples et groupés
+- **ExportableDecl** : Ajout types pour exports inline
+
+### Extension LSP
+- **Anti-crash** : Protection avec threading.Lock()
+- **TypeScript** : Compilation réussie
+- **Installation** : Script v0.2.0
+
+---
+
+## Prochaines étapes recommandées
+
+### Phase suivante
+1. **Tests d'intégration** : BigQuery/Dataplex réels
+2. **Générateurs de code** : dbt, SQL, Terraform
+3. **CLI avancée** : Validation et génération
+4. **IDE avancé** : Go-to-definition, refactoring
+
+### Évolutions possibles
+1. **UDFs** : User-Defined Functions
+2. **Pattern matching avancé** : Destructuring, guards
+3. **Types union** : Support types composés
+4. **Modules avancés** : Namespaces hiérarchiques
+
+---
+
+## Instructions de récupération
+
+### Pour restaurer cet état
+```bash
+git checkout b314673
+make grammar
+make test-examples
 ```
 
-### 2. Grammaire EBNF mise à jour
-**Fichier :** `grammar/meshr_module.ebnf`
+### Pour continuer le développement
+```bash
+# Extension LSP
+cd lsp/client && npm install && npm run compile
+./lsp/install_extension.sh
 
-#### Ajouts dans `base-type` :
-- Ajout de `"Sql"` dans la liste des types de base
+# Tests
+make test-examples
+python tests/parse_module.py tests/metrics-valid.meshr
 
-#### Ajouts dans `annotation-value` :
-- `datetime-literal` : Support des littéraux Datetime
-- `date-literal` : Support des littéraux Date
-- `time-literal` : Support des littéraux Time
-- `timestamp-literal` : Support des littéraux Timestamp
-- `sql-literal` : Support des littéraux SQL
-
----
-
-## 📚 Documentation mise à jour
-
-### 1. Documentation principale
-**Fichier :** `docs/meshr-lang.md`
-
-#### Sections mises à jour :
-- **Types de base autorisés** : Ajout du type `Sql`
-- **Littéraux composites** : Ajout des nouveaux littéraux temporels et SQL
-- **Annexe C** : Guide complet des littéraux (nouvelle section)
-
-### 2. Versions générées
-- ✅ **HTML** : `docs/meshr-lang.html` (174 KB)
-- ✅ **PDF** : `docs/meshr-lang.pdf` (7.8 MB)
-- ✅ **Word** : `docs/meshr-lang.docx` (64 KB) - **NOUVEAU !**
-
----
-
-## 🧪 Tests créés et validés
-
-### 1. Nouveaux fichiers de test
-- **`tests/temporal-literals-valid.meshr`** : Tests complets pour les littéraux temporels
-- **`tests/sql-literals-valid.meshr`** : Tests complets pour les littéraux SQL
-
-### 2. Fichier de test principal corrigé
-**Fichier :** `test-syntax-complete.meshr`
-- ✅ Syntaxe corrigée pour les imports, annotations, aspects
-- ✅ Tous les nouveaux littéraux testés et validés
-
-### 3. Validation complète
-- ✅ **Parser ANTLR** : Régénéré avec les nouveaux littéraux
-- ✅ **Tests individuels** : Tous les nouveaux fichiers passent
-- ✅ **Test principal** : `test-syntax-complete.meshr` passe
-- ✅ **Tests existants** : Aucune régression détectée
-
----
-
-## 📊 État des fichiers
-
-### Fichiers modifiés :
-```
-grammar/MeshrModule.g4          ✅ Modifié (nouveaux littéraux)
-grammar/meshr_module.ebnf       ✅ Modifié (nouveaux littéraux)
-docs/meshr-lang.md              ✅ Modifié (documentation + annexe)
-test-syntax-complete.meshr      ✅ Corrigé (syntaxe)
+# Documentation
+cd docs && pandoc meshr-lang.md -o meshr-lang.html --standalone --toc
 ```
 
-### Fichiers créés :
-```
-tests/temporal-literals-valid.meshr    ✅ Nouveau (tests temporels)
-tests/sql-literals-valid.meshr         ✅ Nouveau (tests SQL)
-docs/meshr-lang_sauvegarde_etat.md     ✅ Nouveau (cette sauvegarde)
-```
-
-### Fichiers régénérés :
-```
-grammar/generated/              ✅ Régénéré (parser ANTLR)
-docs/meshr-lang.html           ✅ Régénéré
-docs/meshr-lang.pdf            ✅ Régénéré
-docs/meshr-lang.docx           ✅ Nouveau (Word)
-```
+### Fichiers critiques
+- **Grammaire** : `grammar/MeshrModule.g4`
+- **Documentation** : `docs/meshr-lang.md`
+- **Extension** : `lsp/client/package.json`
+- **Tests** : `tests/*.meshr`
+- **Exemples** : `examples/hr-recrutement-project/`
 
 ---
 
-## 🎯 Littéraux supportés (état final)
-
-### Littéraux primitifs :
-- `String` : `"Hello World"`
-- `Integer` : `42`, `0xFF0000`
-- `Float` : `3.14`
-- `Boolean` : `true`, `false`
-
-### Littéraux composites :
-- `List` : `List["item1", "item2"]`
-- `Map` : `Map{"key1": 1, "key2": 2}`
-- `Record` : `Record{name: "Alice", age: 42}`
-- `Range` : `Range 1..100`
-
-### Littéraux spécialisés :
-- `Json` : `Json{"name": "test"}`, `Json"{\"raw\": \"json\"}"`
-- `Geography` : `Geography"POINT(2.3522 48.8566)"`
-- `Bytes` : `Bytes[0, 1, 2, 3]`, `Bytes"deadbeef"`
-
-### Littéraux temporels : ✅ **NOUVEAUX**
-- `Datetime` : `Datetime"2021-01-01T00:00:00Z"`
-- `Date` : `Date"2021-01-01"`
-- `Time` : `Time"00:00:00"`
-- `Timestamp` : `Timestamp"2021-01-01T00:00:00Z"`
-
-### Littéraux SQL : ✅ **NOUVEAUX**
-- `Sql` : `Sql"SELECT * FROM users"`
-
-### Littéraux d'intervalle :
-- `Interval` : `Interval 1 year`, `Interval 6 months`
-
----
-
-## 🚀 Fonctionnalités validées
-
-### 1. Parsing et validation
-- ✅ Tous les nouveaux littéraux sont correctement parsés
-- ✅ La grammaire ANTLR fonctionne sans erreur
-- ✅ Les tests de régression passent
-
-### 2. Documentation
-- ✅ Documentation complète et à jour
-- ✅ Exemples pratiques pour tous les littéraux
-- ✅ Annexes détaillées avec cas d'usage
-- ✅ Versions multiples (HTML, PDF, Word)
-
-### 3. Tests
-- ✅ Couverture complète des nouveaux littéraux
-- ✅ Tests d'intégration fonctionnels
-- ✅ Exemples d'usage réels
-
----
-
-## 📝 Notes importantes
-
-### Compatibilité
-- ✅ **Rétrocompatibilité** : Aucune régression sur les fonctionnalités existantes
-- ✅ **Parser** : Régénération automatique avec ANTLR
-- ✅ **Tests** : Tous les tests existants continuent de passer
-
-### Format des dates
-- **Recommandation** : Utiliser le format ISO 8601 (`YYYY-MM-DDTHH:mm:ssZ`)
-- **Support** : Dates, heures, timestamps avec ou sans timezone
-
-### Format SQL
-- **Sécurité** : Support des paramètres `?` pour éviter les injections
-- **Flexibilité** : Tous types de requêtes SQL supportés
-
----
-
-## 🔄 Prochaines étapes recommandées
-
-1. **Validation utilisateur** : Tester les nouveaux littéraux dans des cas d'usage réels
-2. **Optimisation** : Améliorer les performances du parser si nécessaire
-3. **Extensions** : Considérer d'autres types de littéraux selon les besoins
-4. **Documentation** : Mettre à jour les guides utilisateur si nécessaire
-
----
-
-## 📞 Support
-
-Pour toute question ou problème lié à ces modifications :
-- **Grammaire** : Vérifier les fichiers `grammar/MeshrModule.g4` et `grammar/meshr_module.ebnf`
-- **Tests** : Exécuter `make test` pour valider l'état
-- **Documentation** : Consulter l'Annexe C du guide principal
-
----
-
-*Sauvegarde créée automatiquement le 13 septembre 2024*
-*État du projet : ✅ STABLE - Tous les tests passent*
+**État sauvegardé avec succès - Meshr-Lang v0.2.0 prête pour la suite !**
