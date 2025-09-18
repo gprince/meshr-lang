@@ -23,11 +23,11 @@ entity Product with WithSecurity is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "product@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "product@company.com"
     }
   }
 end

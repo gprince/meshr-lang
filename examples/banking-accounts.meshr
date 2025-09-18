@@ -49,11 +49,11 @@ entity Customer with WithSecurity, WithStewardship, WithCompliance is
   
   aspects {
     DataClassification {
-      level: "restricted",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "compliance@bank.com"
+      level == "restricted",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "compliance@bank.com"
     }
   }
 end
@@ -69,11 +69,11 @@ entity Account with WithSecurity, WithStewardship, WithLifecycle, WithVersioning
   
   aspects {
     DataClassification {
-      level: "restricted",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "banking@bank.com"
+      level == "restricted",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "banking@bank.com"
     }
   }
 end
@@ -90,11 +90,11 @@ entity Transaction with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "restricted",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "banking@bank.com"
+      level == "restricted",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "banking@bank.com"
     }
   }
 end

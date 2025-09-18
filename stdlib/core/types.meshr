@@ -56,10 +56,10 @@ trait WithContactInfo is
   
   aspects {
     ContactInfo {
-      email: email,
-      phone: phone,
-      mobile: "",
-      website: ""
+      email == email,
+      phone == phone,
+      mobile == "",
+      website == ""
     }
   }
 end

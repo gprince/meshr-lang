@@ -49,19 +49,19 @@ entity Customer with WithSecurity, WithGDPR, WithStewardship, WithAudit is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "privacy@ecommerce.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "privacy@ecommerce.com"
     },
     GDPRCompliance {
-      data_subject_rights: List["access", "rectification", "erasure", "portability"],
-      retention_period: Interval 7 year,
-      lawful_basis: "consent",
-      dpo_contact: "dpo@ecommerce.com",
-      consent_required: true,
-      anonymization_required: true
+      data_subject_rights == List["access", "rectification", "erasure", "portability"],
+      retention_period == Interval 7 year,
+      lawful_basis == "consent",
+      dpo_contact == "dpo@ecommerce.com",
+      consent_required == true,
+      anonymization_required == true
     }
   }
 end
@@ -81,11 +81,11 @@ entity Order with WithSecurity, WithStewardship, WithAudit is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "orders@ecommerce.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "orders@ecommerce.com"
     }
   }
 end

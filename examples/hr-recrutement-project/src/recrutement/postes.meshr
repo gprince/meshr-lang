@@ -133,11 +133,11 @@ entity JobPosting with WithSecurity, WithStewardship, WithLifecycle, WithJobInfo
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "recruitment@company.com"
     },
     DataStewardship {
       steward: "recruitment.lead@company.com",
@@ -163,11 +163,11 @@ entity JobSkillRequirement with WithSecurity, WithStewardship, WithSkillInfo is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -185,11 +185,11 @@ entity JobLocation with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -206,11 +206,11 @@ entity JobRequirement with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     }
   }
 end

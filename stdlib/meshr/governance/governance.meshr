@@ -76,12 +76,12 @@ Exemple d'usage :
     
     aspects {
       DataStewardship {
-        steward: "data.steward@company.com",
-        owner: "marketing.team@company.com",
-        business_domain: "marketing",
-        last_review: "2024-01-01",
-        next_review: "2024-12-31",
-        contact_email: "data.steward@company.com"
+        steward == "data.steward@company.com",
+        owner == "marketing.team@company.com",
+        business_domain == "marketing",
+        last_review == Date "2024-01-01",
+        next_review == Date "2024-12-31",
+        contact_email == "data.steward@company.com"
       }
     }
   end
@@ -90,7 +90,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de stewardship des données pour définir la propriété et responsabilité",
   description="Fournit les métadonnées de gouvernance : steward, owner, domaine métier, cycles de review. Essentiel pour l'accountability des Data Products",
-  examples="entity Customer is ... aspects { DataStewardship { steward: \"data.steward@company.com\", owner: \"marketing.team@company.com\" } } end"
+  examples="entity Customer is ... aspects { DataStewardship { steward == \"data.steward@company.com\", owner == \"marketing.team@company.com\" } } end"
 )
 aspect DataStewardship is
   steward : String              // Gestionnaire responsable de la donnée
@@ -113,12 +113,12 @@ Exemple d'usage :
     
     aspects {
       DataQuality {
-        quality_score: 0.95,
-        validation_rules: List["email_format", "required_fields", "uniqueness"],
-        monitoring_frequency: Interval 1 day,
-        alert_threshold: 0.8,
-        last_validation: "2024-03-15T10:30:00Z",
-        quality_issues: List[]
+        quality_score == 0.95,
+        validation_rules == List["email_format", "required_fields", "uniqueness"],
+        monitoring_frequency == Interval 1 day,
+        alert_threshold == 0.8,
+        last_validation == Timestamp "2024-03-15T10:30:00Z",
+        quality_issues == List[]
       }
     }
   end
@@ -127,7 +127,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de qualité des données avec métadonnées de validation et monitoring",
   description="Fournit les métriques de qualité, règles de validation, seuils d'alerte et historique. Critique pour maintenir la confiance dans les Data Products",
-  examples="entity Customer is ... aspects { DataQuality { quality_score: 0.95, validation_rules: List[\"email_format\"] } } end"
+  examples="entity Customer is ... aspects { DataQuality { quality_score == 0.95, validation_rules == List[\"email_format\"] } } end"
 )
 aspect DataQuality is
   quality_score : Float         // Score de qualité (0.0 à 1.0)
@@ -150,12 +150,12 @@ Exemple d'usage :
     
     aspects {
       DataLineage {
-        source_systems: List["CRM", "ERP"],
-        transformations: List["email_normalization", "deduplication"],
-        data_refresh_frequency: Interval 1 hour,
-        sla: Interval 4 hour,
-        last_updated: "2024-03-15T14:30:00Z",
-        lineage_quality: "excellent"
+        source_systems == List["CRM", "ERP"],
+        transformations == List["email_normalization", "deduplication"],
+        data_refresh_frequency == Interval 1 hour,
+        sla == Interval 4 hour,
+        last_updated == Timestamp "2024-03-15T14:30:00Z",
+        lineage_quality == "excellent"
       }
     }
   end
@@ -164,7 +164,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de lineage des données pour tracer l'origine et les transformations",
   description="Fournit la traçabilité complète : systèmes sources, transformations, SLA, fréquence de refresh. Essentiel pour la conformité et le debugging",
-  examples="entity Customer is ... aspects { DataLineage { source_systems: List[\"CRM\"], transformations: List[\"normalization\"] } } end"
+  examples="entity Customer is ... aspects { DataLineage { source_systems == List[\"CRM\"], transformations == List[\"normalization\"] } } end"
 )
 aspect DataLineage is
   source_systems : List of String    // Systèmes sources des données
@@ -199,12 +199,12 @@ trait WithStewardship is
   
   aspects {
     DataStewardship { 
-      steward: steward, 
-      owner: owner, 
-      business_domain: business_domain,
-      last_review: "2024-01-01",              // Date de revue par défaut
-      next_review: "2024-12-31",              // Prochaine revue par défaut
-      contact_email: "steward@company.com"    // Contact par défaut
+      steward == steward, 
+      owner == owner, 
+      business_domain == business_domain,
+      last_review == Date "2024-01-01",              // Date de revue par défaut
+      next_review == Date "2024-12-31",              // Prochaine revue par défaut
+      contact_email == "steward@company.com"    // Contact par défaut
     }
   }
 end
@@ -229,12 +229,12 @@ trait WithQuality is
   
   aspects {
     DataQuality {
-      quality_score: quality_score,
-      validation_rules: List["completeness", "accuracy", "consistency"],  // Règles standard
-      monitoring_frequency: monitoring_frequency,
-      alert_threshold: 0.8,                    // Seuil d'alerte par défaut
-      last_validation: "2024-01-01T00:00:00Z", // Validation par défaut
-      quality_issues: List[]                   // Aucune issue par défaut
+      quality_score == quality_score,
+      validation_rules == List["completeness", "accuracy", "consistency"],  // Règles standard
+      monitoring_frequency == monitoring_frequency,
+      alert_threshold == 0.8,                    // Seuil d'alerte par défaut
+      last_validation == Timestamp "2024-01-01T00:00:00Z", // Validation par défaut
+      quality_issues == List[]                   // Aucune issue par défaut
     }
   }
 end

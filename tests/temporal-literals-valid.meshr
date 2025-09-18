@@ -98,10 +98,10 @@ entity Meeting with WithTimestamps is
   
   aspects {
     TimeTracking {
-      start_time: Datetime"2024-03-15T09:00:00Z",
-      end_time: Datetime"2024-03-15T17:00:00Z",
-      duration: Time"08:00:00",
-      created_timestamp: Timestamp"2024-01-01T00:00:00Z"
+      start_time == Datetime"2024-03-15T09:00:00Z",
+      end_time == Datetime"2024-03-15T17:00:00Z",
+      duration == Time"08:00:00",
+      created_timestamp == Timestamp"2024-01-01T00:00:00Z"
     }
   }
 end
@@ -114,10 +114,10 @@ entity Project with WithSchedule is
   
   aspects {
     ScheduleConstraints {
-      earliest_start: Datetime"2024-01-01T00:00:00Z",
-      latest_end: Datetime"2025-12-31T23:59:59Z",
-      max_duration: Time"8760:00:00",
-      created_date: Date"2024-01-01"
+      earliest_start == Datetime"2024-01-01T00:00:00Z",
+      latest_end == Datetime"2025-12-31T23:59:59Z",
+      max_duration == Time"8760:00:00",
+      created_date == Date"2024-01-01"
     }
   }
 end

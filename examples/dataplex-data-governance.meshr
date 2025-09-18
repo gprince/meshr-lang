@@ -66,16 +66,16 @@ entity CustomerDatabase is
     
     aspects {
         DataGovernance {
-            data_governor: "John Smith",
-            business_owner: "Jane Doe",
-            data_classification: DataClassification.SENSITIVE,
-            approved_by_governance: true,
-            date_of_governance_approval: Datetime"2025-01-15T10:30:00Z",
-            data_lifecycle: DataLifecycle.PRODUCTION,
-            retention_date: Datetime"2030-12-31T23:59:59Z",
-            delete_by_date: Datetime"2030-12-31T23:59:59Z",
-            is_encrypted: true,
-            has_pii: true
+            data_governor == "John Smith",
+            business_owner == "Jane Doe",
+            data_classification == DataClassification.SENSITIVE,
+            approved_by_governance == true,
+            date_of_governance_approval == Datetime"2025-01-15T10:30:00Z",
+            data_lifecycle == DataLifecycle.PRODUCTION,
+            retention_date == Datetime"2030-12-31T23:59:59Z",
+            delete_by_date == Datetime"2030-12-31T23:59:59Z",
+            is_encrypted == true,
+            has_pii == true
         }
     }
 end

@@ -106,11 +106,11 @@ entity Skill with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "hr.skills@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "hr.skills@company.com"
     }
   }
 end
@@ -126,11 +126,11 @@ entity SkillCategory with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr.skills@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr.skills@company.com"
     }
   }
 end
@@ -149,11 +149,11 @@ entity Certification with WithSecurity, WithStewardship, WithCertificationInfo i
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr.certifications@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr.certifications@company.com"
     }
   }
 end

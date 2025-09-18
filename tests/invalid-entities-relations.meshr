@@ -100,7 +100,7 @@ entity InvalidAspectEntity is
   id : String
   
   aspects {
-    InvalidAspect { invalid_field: "value" }
+    InvalidAspect { invalid_field == "value" }
   }
 end
 

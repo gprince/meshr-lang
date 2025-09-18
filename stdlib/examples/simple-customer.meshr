@@ -38,10 +38,10 @@ entity Customer is
   
   aspects {
     CustomerData {
-      created_at: "2024-01-01T00:00:00Z",
-      updated_at: "2024-01-01T00:00:00Z",
-      status: "active",
-      last_login: "2024-01-01T00:00:00Z"
+      created_at == Timestamp "2024-01-01T00:00:00Z",
+      updated_at == Timestamp "2024-01-01T00:00:00Z",
+      status == "active",
+      last_login == Timestamp "2024-01-01T00:00:00Z"
     }
   }
 end

@@ -50,11 +50,11 @@ entity API with WithSecurity, WithStewardship, WithLifecycle, WithVersioning, Wi
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "api@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "api@company.com"
     }
   }
 end
@@ -70,11 +70,11 @@ entity Endpoint with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "api@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "api@company.com"
     }
   }
 end
@@ -90,11 +90,11 @@ entity Service with WithSecurity, WithStewardship, WithLifecycle, WithVersioning
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "devops@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "devops@company.com"
     }
   }
 end

@@ -25,7 +25,7 @@ trait WithAudit is
   updated_at : Timestamp
   
   aspects {
-    AuditTrail { created_by: "system", last_modified_by: "system" }
+    AuditTrail { created_by == "system", last_modified_by == "system" }
   }
 end
 
@@ -35,7 +35,7 @@ trait WithSecurity is
   permissions : List of String
   
   aspects {
-    SecurityLevel { level: "restricted", encryption_required: true }
+    SecurityLevel { level == "restricted", encryption_required == true }
   }
 end
 
@@ -45,7 +45,7 @@ trait WithLifecycle with WithAudit is
   status : String
   
   aspects {
-    DataRetention { retention: Interval 3 year, steward: "lifecycle@example.com" }
+    DataRetention { retention == Interval 3 year, steward == "lifecycle@example.com" }
   }
 end
 
@@ -55,7 +55,7 @@ sealed trait SensitiveData is
   data_type : String
   
   aspects {
-    SecurityLevel { level: "confidential", encryption_required: true },
+    SecurityLevel { level == "confidential", encryption_required == true },
     DataRetention { retention: Interval 7 year, steward: "dpo@example.com" },
     AuditTrail { created_by: "admin", last_modified_by: "admin" }
   }
@@ -83,7 +83,7 @@ entity Customer with WithAudit is
   Phone : String
   
   aspects {
-    DataRetention { retention: Interval 2 year, steward: "customer@example.com" }
+    DataRetention { retention == Interval 2 year, steward == "customer@example.com" }
   }
 end
 

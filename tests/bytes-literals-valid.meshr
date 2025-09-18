@@ -116,9 +116,9 @@ entity Document with WithChecksum is
   
   aspects {
     BinaryIntegrity {
-      expected_checksum: Bytes"00000000000000000000000000000000",
-      verification_key: Bytes"",
-      integrity_metadata: Bytes{"verified": false, "algorithm": "sha256"}
+      expected_checksum == Bytes"00000000000000000000000000000000",
+      verification_key == Bytes"",
+      integrity_metadata == Bytes{"verified": false, "algorithm": "sha256"}
     }
   }
 end
@@ -130,8 +130,8 @@ entity SecureFile with WithEncryption is
   
   aspects {
     DataProtection {
-      encryption_key: Bytes"",
-      access_control: Bytes{"level": "private", "encryption": true},
+      encryption_key == Bytes"",
+      access_control == Bytes{"level": "private", "encryption": true},
       audit_trail: Bytes{"enabled": true, "retention_days": 2555}
     }
   }

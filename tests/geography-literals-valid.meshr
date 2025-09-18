@@ -76,8 +76,8 @@ entity Customer with WithLocation is
   
   aspects {
     GeographicConstraints {
-      allowed_region: Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))",
-      restricted_zones: Geography{"type":"FeatureCollection","features":[]},
+      allowed_region == Geography"POLYGON((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0))",
+      restricted_zones == Geography{"type":"FeatureCollection","features":[]},
       service_boundary: Geography"LINESTRING(0.0 0.0, 1.0 1.0)"
     }
   }

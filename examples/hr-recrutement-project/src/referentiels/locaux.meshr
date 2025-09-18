@@ -110,11 +110,11 @@ entity Site with WithSecurity, WithStewardship, WithLocationInfo, WithCapacityIn
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 15 year,
-      steward: "facilities@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 15 year,
+      steward == "facilities@company.com"
     }
   }
 end
@@ -131,11 +131,11 @@ entity Building with WithSecurity, WithStewardship, WithCapacityInfo, WithAccess
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based", 
-      data_retention: Interval 10 year,
-      steward: "facilities@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based", 
+      data_retention == Interval 10 year,
+      steward == "facilities@company.com"
     }
   }
 end
@@ -153,11 +153,11 @@ entity Office with WithSecurity, WithStewardship, WithCapacityInfo, WithAccessib
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year, 
-      steward: "facilities@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year, 
+      steward == "facilities@company.com"
     }
   }
 end
@@ -175,11 +175,11 @@ entity WorkSpace with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "facilities@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "facilities@company.com"
     }
   }
 end

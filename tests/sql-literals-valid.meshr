@@ -94,9 +94,9 @@ entity UserQuery with WithQueries is
   
   aspects {
     QueryOptimization {
-      optimized_query: Sql"SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
-      explain_query: Sql"EXPLAIN SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
-      analyze_query: Sql"ANALYZE TABLE users"
+      optimized_query == Sql"SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
+      explain_query == Sql"EXPLAIN SELECT u.id, u.name, u.email FROM users u WHERE u.active = true",
+      analyze_query == Sql"ANALYZE TABLE users"
     }
   }
 end
@@ -108,9 +108,9 @@ entity DatabaseSchema with WithSchema is
   
   aspects {
     DataMigration {
-      migration_up: Sql"CREATE TABLE new_table (id INT PRIMARY KEY, name VARCHAR(255))",
-      migration_down: Sql"DROP TABLE new_table",
-      rollback_query: Sql"ROLLBACK"
+      migration_up == Sql"CREATE TABLE new_table (id INT PRIMARY KEY, name VARCHAR(255))",
+      migration_down == Sql"DROP TABLE new_table",
+      rollback_query == Sql"ROLLBACK"
     }
   }
 end

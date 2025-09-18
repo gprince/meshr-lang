@@ -75,13 +75,13 @@ Exemple d'usage :
     
     aspects {
       DataLifecycle {
-        created_at: "2024-01-15T10:30:00Z",
-        updated_at: "2024-03-20T14:45:00Z",
-        version: "2.1.0",
-        status: "active",
-        deprecation_date: "2099-12-31",
-        archive_date: "2099-12-31",
-        lifecycle_stage: "production"
+        created_at == Timestamp "2024-01-15T10:30:00Z",
+        updated_at == Timestamp "2024-03-20T14:45:00Z",
+        version == "2.1.0",
+        status == "active",
+        deprecation_date == Date "2099-12-31",
+        archive_date == Date "2099-12-31",
+        lifecycle_stage == "production"
       }
     }
   end
@@ -90,7 +90,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de cycle de vie des données avec métadonnées essentielles",
   description="Fournit les métadonnées pour tracer l'évolution d'un élément depuis sa création jusqu'à sa suppression. Essentiel pour la gouvernance et la conformité",
-  examples="entity Customer is ... aspects { DataLifecycle { created_at: \"2024-01-15T10:30:00Z\", status: \"active\" } } end"
+  examples="entity Customer is ... aspects { DataLifecycle { created_at == \"2024-01-15T10:30:00Z\", status == \"active\" } } end"
 )
 aspect DataLifecycle is
   created_at : Timestamp        // Date et heure de création
@@ -114,12 +114,12 @@ Exemple d'usage :
     
     aspects {
       VersionControl {
-        version: "2.1.0",
-        previous_version: "2.0.3",
-        version_notes: "Added customer segmentation fields",
-        released_by: "data-team@company.com",
-        release_date: "2024-03-15T09:30:00Z",
-        breaking_changes: false
+        version == "2.1.0",
+        previous_version == "2.0.3",
+        version_notes == "Added customer segmentation fields",
+        released_by == "data-team@company.com",
+        release_date == Timestamp "2024-03-15T09:30:00Z",
+        breaking_changes == false
       }
     }
   end
@@ -128,7 +128,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de contrôle de version avec métadonnées détaillées",
   description="Fournit des métadonnées sur les versions et transitions. Critique pour la traçabilité des changements et la gestion des migrations",
-  examples="entity Customer is ... aspects { VersionControl { version: \"2.1.0\", previous_version: \"2.0.3\", breaking_changes: false } } end"
+  examples="entity Customer is ... aspects { VersionControl { version == \"2.1.0\", previous_version == \"2.0.3\", breaking_changes == false } } end"
 )
 aspect VersionControl is
   version : String              // Version actuelle (SemVer)
@@ -161,13 +161,13 @@ trait WithLifecycle is
   
   aspects {
     DataLifecycle { 
-      created_at: created_at, 
-      updated_at: updated_at, 
-      version: version, 
-      status: status,
-      deprecation_date: "2099-12-31",      // Date lointaine par défaut
-      archive_date: "2099-12-31",          // Date lointaine par défaut
-      lifecycle_stage: "production"        // Étape production par défaut
+      created_at == created_at, 
+      updated_at == updated_at, 
+      version == version, 
+      status == status,
+      deprecation_date == Date "2099-12-31",      // Date lointaine par défaut
+      archive_date == Date "2099-12-31",          // Date lointaine par défaut
+      lifecycle_stage == "production"        // Étape production par défaut
     }
   }
 end
@@ -191,12 +191,12 @@ trait WithVersioning is
   
   aspects {
     VersionControl {
-      version: version,
-      previous_version: "0.0.0",              // Version précédente par défaut
-      version_notes: version_notes,
-      released_by: "system",                  // Auteur par défaut
-      release_date: "2024-01-01T00:00:00Z",  // Date par défaut
-      breaking_changes: false                 // Pas de breaking changes par défaut
+      version == version,
+      previous_version == "0.0.0",              // Version précédente par défaut
+      version_notes == version_notes,
+      released_by == "system",                  // Auteur par défaut
+      release_date == Timestamp "2024-01-01T00:00:00Z",  // Date par défaut
+      breaking_changes == false                 // Pas de breaking changes par défaut
     }
   }
 end

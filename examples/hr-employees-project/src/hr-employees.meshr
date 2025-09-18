@@ -50,11 +50,11 @@ entity Employee with WithSecurity, WithStewardship, WithQuality, WithLifecycle, 
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr@company.com"
     },
     DataStewardship {
       steward: "hr.data@company.com",
@@ -76,11 +76,11 @@ entity Department with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 15 year,
-      steward: "hr@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 15 year,
+      steward == "hr@company.com"
     }
   }
 end
@@ -95,11 +95,11 @@ entity Position with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr@company.com"
     }
   }
 end

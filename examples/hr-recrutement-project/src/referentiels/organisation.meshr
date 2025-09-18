@@ -96,11 +96,11 @@ entity BusinessUnit with WithSecurity, WithStewardship, WithOrganizationalInfo, 
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr.governance@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr.governance@company.com"
     },
     DataStewardship {
       steward: "hr.data@company.com",
@@ -125,11 +125,11 @@ entity Department with WithSecurity, WithStewardship, WithOrganizationalInfo, Wi
   
   aspects {
     DataClassification {
-      level: "internal", 
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "hr.governance@company.com"
+      level == "internal", 
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "hr.governance@company.com"
     }
   }
 end
@@ -147,11 +147,11 @@ entity Team with WithSecurity, WithStewardship, WithHierarchy is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false, 
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "hr.governance@company.com"
+      level == "internal",
+      encryption_required == false, 
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "hr.governance@company.com"
     }
   }
 end
@@ -167,11 +167,11 @@ entity CostCenter with WithSecurity, WithStewardship, WithBudgetInfo is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based", 
-      data_retention: Interval 15 year,
-      steward: "finance.governance@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based", 
+      data_retention == Interval 15 year,
+      steward == "finance.governance@company.com"
     }
   }
 end

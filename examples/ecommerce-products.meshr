@@ -48,19 +48,19 @@ entity Product with WithSecurity, WithStewardship, WithLifecycle, WithVersioning
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 10 year,
-      steward: "product@ecommerce.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 10 year,
+      steward == "product@ecommerce.com"
     },
     DataStewardship {
-      steward: "product.team@ecommerce.com",
-      owner: "business.team@ecommerce.com",
-      business_domain: "product_catalog",
-      last_review: "2024-01-15",
-      next_review: "2024-07-15",
-      contact_email: "product.team@ecommerce.com"
+      steward == "product.team@ecommerce.com",
+      owner == "business.team@ecommerce.com",
+      business_domain == "product_catalog",
+      last_review == Date "2024-01-15",
+      next_review == Date "2024-07-15",
+      contact_email == "product.team@ecommerce.com"
     }
   }
 end
@@ -75,11 +75,11 @@ entity ProductCategory with WithSecurity, WithStewardship is
   
   aspects {
     DataClassification {
-      level: "public",
-      encryption_required: false,
-      access_control: "public",
-      data_retention: Interval 15 year,
-      steward: "product@ecommerce.com"
+      level == "public",
+      encryption_required == false,
+      access_control == "public",
+      data_retention == Interval 15 year,
+      steward == "product@ecommerce.com"
     }
   }
 end

@@ -95,8 +95,8 @@ metric GovernedRevenue is
   
   aspects {
     MetricGovernance {
-      business_owner: "finance@company.com",
-      business_criticality: "high"
+      business_owner == "finance@company.com",
+      business_criticality == "high"
     }
   }
 end
@@ -135,8 +135,8 @@ metric CompleteMetric with DataQuality is
   
   aspects {
     MetricGovernance {
-      business_owner: "hr.director@company.com",
-      technical_owner: "hr.analytics@company.com"
+      business_owner == "hr.director@company.com",
+      technical_owner == "hr.analytics@company.com"
     }
   }
 end

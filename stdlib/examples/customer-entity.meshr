@@ -26,11 +26,11 @@ entity Customer with WithSecurity, WithGDPR, WithStewardship, WithQuality, WithL
   
   aspects {
     DataClassification { 
-      level: "confidential", 
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 7 year,
-      steward: "privacy@company.com"
+      level == "confidential", 
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 7 year,
+      steward == "privacy@company.com"
     },
     GDPRCompliance {
       data_subject_rights: List["access", "rectification", "erasure", "portability"],
@@ -59,11 +59,11 @@ relation CustomerAccess is
   
   aspects {
     DataClassification {
-      level: "restricted",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "security@company.com"
+      level == "restricted",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "security@company.com"
     }
   }
 end

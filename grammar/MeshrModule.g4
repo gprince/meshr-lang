@@ -167,7 +167,7 @@ aspectInstanceFieldList
     ;
 
 aspectInstanceField
-    : IDENTIFIER ':' annotationValue
+    : IDENTIFIER '==' annotationValue
     ;
 
 // ========== TYPE DECLARATION ============

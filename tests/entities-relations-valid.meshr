@@ -121,7 +121,7 @@ relation EmployeeAssignment of type ASSIGNMENT is
   to Customer(CustomerId)
   
   aspects {
-    DataRetention { retention: Interval 7 year, steward: "hr@example.com" }
+    DataRetention { retention == Interval 7 year, steward == "hr@example.com" }
   }
 end
 
@@ -132,7 +132,7 @@ entity SensitiveData with WithAudit is
   Classification : String
   
   aspects {
-    DataRetention { retention: Interval 5 year, steward: "dpo@example.com" }
+    DataRetention { retention == Interval 5 year, steward == "dpo@example.com" }
   }
 end
 

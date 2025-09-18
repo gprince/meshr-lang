@@ -144,11 +144,11 @@ entity Application with WithSecurity, WithStewardship, WithGDPR, WithLifecycle, 
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     },
     DataStewardship {
       steward: "recruitment.process@company.com",
@@ -174,11 +174,11 @@ entity Interview with WithSecurity, WithStewardship, WithGDPR, WithInterviewInfo
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 2 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 2 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -197,11 +197,11 @@ entity Evaluation with WithSecurity, WithStewardship, WithGDPR, WithEvaluationIn
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 2 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 2 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -223,11 +223,11 @@ entity Reference with WithSecurity, WithStewardship, WithGDPR is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 1 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 1 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -250,11 +250,11 @@ entity Offer with WithSecurity, WithStewardship, WithGDPR is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "recruitment@company.com"
     }
   }
 end

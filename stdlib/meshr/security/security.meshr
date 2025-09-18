@@ -75,11 +75,11 @@ Exemple d'usage :
     
     aspects {
       DataClassification {
-        level: "confidential",
-        encryption_required: true,
-        access_control: "role-based",
-        data_retention: Interval 7 year,
-        steward: "privacy@company.com"
+        level == "confidential",
+        encryption_required == true,
+        access_control == "role-based",
+        data_retention == Interval 7 year,
+        steward == "privacy@company.com"
       }
     }
   end
@@ -88,7 +88,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de classification des données pour définir le niveau de sécurité",
   description="Fournit la classification de sécurité, contrôles d'accès, exigences de chiffrement et rétention. Fondamental pour la sécurité des Data Products",
-  examples="entity Customer is ... aspects { DataClassification { level: \"confidential\", encryption_required: true } } end"
+  examples="entity Customer is ... aspects { DataClassification { level == \"confidential\", encryption_required == true } } end"
 )
 aspect DataClassification is
   level : DataClassificationLevel     // Niveau de classification de sécurité
@@ -110,12 +110,12 @@ Exemple d'usage :
     
     aspects {
       GDPRCompliance {
-        data_subject_rights: List["access", "rectification", "erasure", "portability"],
-        retention_period: Interval 7 year,
-        lawful_basis: "consent",
-        dpo_contact: "dpo@company.com",
-        consent_required: true,
-        anonymization_required: true
+        data_subject_rights == List["access", "rectification", "erasure", "portability"],
+        retention_period == Interval 7 year,
+        lawful_basis == "consent",
+        dpo_contact == "dpo@company.com",
+        consent_required == true,
+        anonymization_required == true
       }
     }
   end
@@ -124,7 +124,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de conformité GDPR pour les données personnelles",
   description="Fournit les métadonnées GDPR : droits des personnes, base légale, DPO, consentement, anonymisation. Essentiel pour la conformité réglementaire",
-  examples="entity Customer is ... aspects { GDPRCompliance { data_subject_rights: List[\"access\", \"erasure\"], lawful_basis: \"consent\" } } end"
+  examples="entity Customer is ... aspects { GDPRCompliance { data_subject_rights == List[\"access\", \"erasure\"], lawful_basis == \"consent\" } } end"
 )
 aspect GDPRCompliance is
   data_subject_rights : List of String   // Droits des personnes concernées
@@ -147,11 +147,11 @@ Exemple d'usage :
     
     aspects {
       SecurityControls {
-        encryption_at_rest: true,
-        encryption_in_transit: true,
-        access_logging: true,
-        audit_frequency: Interval 1 month,
-        security_review_date: "2024-12-31"
+        encryption_at_rest == true,
+        encryption_in_transit == true,
+        access_logging == true,
+        audit_frequency == Interval 1 month,
+        security_review_date == Date "2024-12-31"
       }
     }
   end
@@ -160,7 +160,7 @@ Exemple d'usage :
 @Documented(
   summary="Aspect de contrôles de sécurité pour définir les mesures techniques",
   description="Fournit les contrôles techniques : chiffrement, logging, audit, revues. Critique pour la protection des Data Products sensibles",
-  examples="entity Customer is ... aspects { SecurityControls { encryption_at_rest: true, access_logging: true } } end"
+  examples="entity Customer is ... aspects { SecurityControls { encryption_at_rest == true, access_logging == true } } end"
 )
 aspect SecurityControls is
   encryption_at_rest : Boolean = false     // Chiffrement au repos
@@ -192,11 +192,11 @@ trait WithSecurity is
   
   aspects {
     DataClassification { 
-      level: classification, 
-      encryption_required: encryption_required,
-      access_control: "role-based",           // Contrôle d'accès par défaut
-      data_retention: Interval 7 year,       // Rétention par défaut
-      steward: "security@company.com"        // Steward sécurité par défaut
+      level == classification, 
+      encryption_required == encryption_required,
+      access_control == "role-based",           // Contrôle d'accès par défaut
+      data_retention == Interval 7 year,       // Rétention par défaut
+      steward == "security@company.com"        // Steward sécurité par défaut
     }
   }
 end
@@ -221,12 +221,12 @@ trait WithGDPR is
   
   aspects {
     GDPRCompliance {
-      data_subject_rights: List["access", "rectification", "erasure", "portability"],  // Droits standard
-      retention_period: retention_period,
-      lawful_basis: "consent",              // Base légale par défaut
-      dpo_contact: dpo_contact,
-      consent_required: true,               // Consentement requis par défaut
-      anonymization_required: false        // Anonymisation optionnelle
+      data_subject_rights == List["access", "rectification", "erasure", "portability"],  // Droits standard
+      retention_period == retention_period,
+      lawful_basis == "consent",              // Base légale par défaut
+      dpo_contact == dpo_contact,
+      consent_required == true,               // Consentement requis par défaut
+      anonymization_required == false        // Anonymisation optionnelle
     }
   }
 end

@@ -186,7 +186,7 @@ relation-aspects    = "aspects", "{", aspect-instance, { ",", aspect-instance },
 
 (* ========== ASPECT INSTANCES ============= *)
 aspect-instance     = identifier, "{", [ aspect-instance-field, { ",", aspect-instance-field } ], "}" ;
-aspect-instance-field = identifier, ":", annotation-value ;
+aspect-instance-field = identifier, "==", annotation-value ;
 
 (* ========== COLLECTION/COMPOSITE LITTÉRAUX ============ *)
 list-literal        = "List", "[", [ annotation-value, { ",", annotation-value } ], "]" ;

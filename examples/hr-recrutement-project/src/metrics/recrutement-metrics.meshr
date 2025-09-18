@@ -94,13 +94,13 @@ metric TimeToHire is
   
   aspects {
     MetricGovernance {
-      business_owner: "hr.director@company.com",
-      technical_owner: "hr.analytics@company.com",
-      data_refresh_frequency: Interval 1 day,
-      data_freshness_sla: Interval 2 hour,
-      accuracy_threshold: 95.0,
-      business_criticality: "high",
-      dashboard_visibility: List["executive", "hr management", "recruitment team"]
+      business_owner == "hr.director@company.com",
+      technical_owner == "hr.analytics@company.com",
+      data_refresh_frequency == Interval 1 day,
+      data_freshness_sla == Interval 2 hour,
+      accuracy_threshold == 95.0,
+      business_criticality == "high",
+      dashboard_visibility == List["executive", "hr management", "recruitment team"]
     },
     DataClassification {
       level: "internal",
@@ -145,10 +145,10 @@ metric CostPerHire is
   
   aspects {
     MetricGovernance {
-      business_owner: "hr.director@company.com",
-      technical_owner: "hr.analytics@company.com",
-      data_refresh_frequency: Interval 1 week,
-      business_criticality: "medium"
+      business_owner == "hr.director@company.com",
+      technical_owner == "hr.analytics@company.com",
+      data_refresh_frequency == Interval 1 week,
+      business_criticality == "medium"
     },
     MetricQuality {
       data_sources: List["applications", "recruitment costs", "job postings"],
@@ -193,9 +193,9 @@ metric SourceEffectiveness is
   
   aspects {
     MetricGovernance {
-      business_owner: "recruitment.lead@company.com",
-      technical_owner: "hr.analytics@company.com",
-      business_criticality: "high"
+      business_owner == "recruitment.lead@company.com",
+      technical_owner == "hr.analytics@company.com",
+      business_criticality == "high"
     }
   }
 end
@@ -227,10 +227,10 @@ metric InterviewConversionRate is
   
   aspects {
     MetricGovernance {
-      business_owner: "recruitment.lead@company.com",
-      technical_owner: "hr.analytics@company.com",
-      data_refresh_frequency: Interval 1 day,
-      business_criticality: "medium"
+      business_owner == "recruitment.lead@company.com",
+      technical_owner == "hr.analytics@company.com",
+      data_refresh_frequency == Interval 1 day,
+      business_criticality == "medium"
     },
     MetricLineage {
       upstream_dependencies: List["interviews", "applications"],
@@ -278,11 +278,11 @@ metric OfferAcceptanceRate is
   
   aspects {
     MetricGovernance {
-      business_owner: "hr.director@company.com",
-      technical_owner: "hr.analytics@company.com",
-      data_refresh_frequency: Interval 1 day,
-      business_criticality: "high",
-      dashboard_visibility: List["executive", "hr management"]
+      business_owner == "hr.director@company.com",
+      technical_owner == "hr.analytics@company.com",
+      data_refresh_frequency == Interval 1 day,
+      business_criticality == "high",
+      dashboard_visibility == List["executive", "hr management"]
     }
   }
 end
@@ -321,9 +321,9 @@ metric CandidateExperience is
   
   aspects {
     MetricGovernance {
-      business_owner: "recruitment.lead@company.com",
-      technical_owner: "hr.analytics@company.com",
-      business_criticality: "medium"
+      business_owner == "recruitment.lead@company.com",
+      technical_owner == "hr.analytics@company.com",
+      business_criticality == "medium"
     },
     MetricQuality {
       data_sources: List["candidate feedback", "applications", "process tracking"],
@@ -372,11 +372,11 @@ metric RecruiterProductivity is
   
   aspects {
     MetricGovernance {
-      business_owner: "recruitment.lead@company.com",
-      technical_owner: "hr.analytics@company.com",
-      data_refresh_frequency: Interval 1 week,
-      business_criticality: "medium",
-      dashboard_visibility: List["hr management", "recruitment team"]
+      business_owner == "recruitment.lead@company.com",
+      technical_owner == "hr.analytics@company.com",
+      data_refresh_frequency == Interval 1 week,
+      business_criticality == "medium",
+      dashboard_visibility == List["hr management", "recruitment team"]
     },
     MetricLineage {
       upstream_dependencies: List["applications", "job postings", "evaluations"],

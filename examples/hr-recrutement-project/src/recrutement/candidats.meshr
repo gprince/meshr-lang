@@ -133,11 +133,11 @@ entity Candidate with WithSecurity, WithStewardship, WithGDPR, WithLifecycle, Wi
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     },
     DataStewardship {
       steward: "recruitment.lead@company.com",
@@ -164,11 +164,11 @@ entity CandidateProfile with WithSecurity, WithStewardship, WithGDPR is
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based", 
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based", 
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -186,11 +186,11 @@ entity CandidateSkill with WithSecurity, WithStewardship, WithSkillInfo is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 2 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 2 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -210,11 +210,11 @@ entity CandidateExperience with WithSecurity, WithStewardship, WithExperienceInf
   
   aspects {
     DataClassification {
-      level: "confidential",
-      encryption_required: true,
-      access_control: "role-based",
-      data_retention: Interval 3 year,
-      steward: "recruitment@company.com"
+      level == "confidential",
+      encryption_required == true,
+      access_control == "role-based",
+      data_retention == Interval 3 year,
+      steward == "recruitment@company.com"
     }
   }
 end
@@ -234,11 +234,11 @@ entity Education with WithSecurity, WithStewardship, WithEducationInfo is
   
   aspects {
     DataClassification {
-      level: "internal",
-      encryption_required: false,
-      access_control: "role-based",
-      data_retention: Interval 5 year,
-      steward: "recruitment@company.com"
+      level == "internal",
+      encryption_required == false,
+      access_control == "role-based",
+      data_retention == Interval 5 year,
+      steward == "recruitment@company.com"
     }
   }
 end
