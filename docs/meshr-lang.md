@@ -1,21 +1,8 @@
-# Meshr-Lang — Documentation du langage
-
-<div align="center">
-  <img src="assets/meshr-lang-color.svg" alt="Logo Meshr-Lang" width="400" />
-</div>
-
-> **Version :** 0.1.0  
-> **Statut :** En conception active  
-> **Mainteneur :** G. Prince - Architecte Principal
-> **Dernière mise à jour :** 2025-09-15
-
----
-
-## 🎯 Introduction
+# Introduction
 
 **Meshr-Lang** est un langage de modélisation déclaratif conçu spécifiquement pour l'architecture **Data Mesh** et la gouvernance des données à l'échelle de l'entreprise. Il répond aux défis modernes de la gestion des données distribuées en offrant une syntaxe claire, expressive et alignée sur les principes de l'architecture Data Mesh.
 
-### 🧭 Contexte et motivation
+## Contexte et motivation
 
 Dans un monde où les données deviennent le moteur de l'innovation, les organisations font face à des défis croissants :
 
@@ -27,7 +14,7 @@ Dans un monde où les données deviennent le moteur de l'innovation, les organis
 
 L'architecture **Data Mesh** émerge comme une solution à ces défis, mais nécessite des outils et langages adaptés pour être mise en œuvre efficacement.
 
-### 🎨 Philosophie du langage
+## Philosophie du langage
 
 Meshr-Lang s'inspire de plusieurs principes fondamentaux :
 
@@ -46,7 +33,7 @@ Meshr-Lang s'inspire de plusieurs principes fondamentaux :
 - **Extensibilité** via les annotations et aspects
 - **Intégration** avec l'écosystème existant
 
-### 🚀 Valeur ajoutée
+## Valeur ajoutée
 
 Meshr-Lang apporte une **valeur unique** dans l'écosystème des langages de modélisation :
 
@@ -58,7 +45,7 @@ Meshr-Lang apporte une **valeur unique** dans l'écosystème des langages de mod
 | **Annotations riches** | ✅ Expressives | ❌ Basiques |
 | **Évolutivité** | ✅ Modulaire | ❌ Monolithique |
 
-### 🎯 Public cible
+## Public cible
 
 Ce langage s'adresse à :
 
@@ -69,7 +56,7 @@ Ce langage s'adresse à :
 - **📈 Data Analysts** : Compréhension et utilisation des données
 - **⚖️ Compliance Officers** : Conformité et audit
 
-### 🌟 Vision à long terme
+## Vision à long terme
 
 Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data Mesh, en offrant :
 
@@ -1510,9 +1497,254 @@ end
 - Les **références circulaires** sont interdites
 - Les types dans les collections doivent être **définis** ou **importés**
 
----
+\newpage
 
-## 🏗️ Entités et Relations
+# 8
+# Types personnalisés
+
+Les **types personnalisés** permettent de créer des alias de types de base avec des contraintes spécifiques. Ils favorisent la réutilisabilité, la validation centralisée et l'expressivité du modèle de données.
+
+## Concept et objectifs
+
+### Principe de spécialisation
+Les types personnalisés permettent de spécialiser les types de base (String, Integer, Float, etc.) avec des contraintes métier spécifiques, créant ainsi un vocabulaire typé riche et expressif.
+
+### Avantages
+- **Réutilisabilité** : Définir une fois, utiliser partout
+- **Validation centralisée** : Contraintes définies au niveau du type
+- **Documentation intégrée** : Types auto-documentés avec sémantique métier
+- **Sécurité** : Validation automatique des données
+- **Expressivité** : Vocabulaire métier explicite
+
+## Syntaxe de base
+
+### Déclaration générale
+```meshr
+type TypeName is BaseType constraint*
+```
+
+### Types String avec contraintes
+```meshr
+// Email avec pattern de validation
+type Email is String pattern "^[^@]+@[^@]+\\.[a-zA-Z]{2,}$"
+
+// Code produit avec pattern et longueur
+type ProductCode is String pattern "^[A-Z]{2}\\d{6}$" length 8..8
+
+// Nom avec contrainte de longueur uniquement
+type PersonName is String length 1..50
+
+// URL avec pattern complexe
+type URL is String pattern "^https?://[\\w\\.-]+\\.[a-zA-Z]{2,}(/.*)?$"
+```
+
+### Types numériques avec contraintes
+```meshr
+// Age avec range et contrainte de positivité
+type Age is Integer range 0..150 non_negative
+
+// Prix avec range, précision et contrainte positive
+type Price is Float range 0.01..999999.99 precision 2 positive
+
+// Pourcentage avec range
+type Percentage is Float range 0.0..100.0 non_negative
+
+// Score avec range précis
+type Score is Integer range 1..10 positive
+
+// Température (peut être négative)
+type Temperature is Float range -273.15..1000.0
+```
+
+### Types temporels avec contraintes
+```meshr
+// Date future
+type FutureDate is Date after Date "2024-01-01"
+
+// Heure de travail
+type BusinessHour is Time between Time "08:00" and Time "18:00"
+
+// Timestamp récent
+type RecentTimestamp is Timestamp after Timestamp "2024-01-01T00:00:00Z"
+
+// Date avec format personnalisé
+type FormattedDate is Date format "DD/MM/YYYY"
+```
+
+### Autres types spécialisés
+```meshr
+// Données géographiques avec format
+type GeoCoordinate is Geography format "geojson"
+
+// Configuration JSON avec schéma
+type ConfigData is Json schema "config-schema.json"
+
+// Requête SQL formatée
+type PostgreSQLQuery is Sql format "postgresql"
+
+// Données binaires avec taille limitée
+type SmallBinaryData is Bytes size 1..1024
+```
+
+## Contraintes supportées
+
+### Contraintes String
+- `pattern "regex"` : Expression régulière de validation
+- `length min..max` : Contrainte de longueur
+
+### Contraintes numériques
+- `range min..max` : Plage de valeurs autorisées
+- `precision n` : Nombre de décimales (Float/Double uniquement)
+- `positive` : Valeurs strictement positives (> 0)
+- `negative` : Valeurs strictement négatives (< 0)
+- `non_negative` : Valeurs positives ou nulles (>= 0)
+
+### Contraintes temporelles
+- `after date/timestamp` : Postérieur à une date donnée
+- `before date/timestamp` : Antérieur à une date donnée
+- `between date1 and date2` : Dans un intervalle temporel
+- `format "format_string"` : Format de date personnalisé
+
+### Contraintes spécialisées
+- `format "format_string"` : Format spécifique (Geography, Sql, etc.)
+- `size min..max` : Taille en bytes (Bytes uniquement)
+- `schema "schema_file"` : Schéma de validation (Json uniquement)
+
+## Utilisation dans les déclarations
+
+### Dans les entités
+```meshr
+entity Customer is
+  id : String
+  email : Email                    // Validation automatique du pattern
+  name : PersonName               // Contrainte de longueur
+  age : Age                       // Range et non-négatif
+  website : URL                   // Pattern URL valide
+  satisfaction_score : Score      // 1-10
+  discount_rate : Percentage      // 0-100%
+  birth_date : Date
+  next_contact_date : FutureDate  // Doit être dans le futur
+  location : GeoCoordinate
+  preferences : ConfigData
+end
+```
+
+### Dans les records
+```meshr
+record ProductInfo is
+  code : ProductCode              // Pattern et longueur validés
+  name : PersonName
+  price : Price                   // Precision et range
+  discount : Percentage
+  launch_date : FutureDate
+end
+```
+
+### Dans les relations
+```meshr
+relation CustomerProduct is
+  from Customer(id)
+  to Product(id)
+  
+  purchase_date : RecentTimestamp
+  paid_price : Price
+  satisfaction : Score
+end
+```
+
+### Dans les métriques
+```meshr
+metric CustomerSatisfactionAverage is
+  source Customer
+  calculation avg(satisfaction_score)
+  
+  filters {
+    satisfaction_score > 0,
+    age >= 18
+  }
+end
+```
+
+## Types sealed
+
+Les types personnalisés peuvent être marqués comme `sealed` pour empêcher leur extension :
+
+```meshr
+sealed type RestrictedCode is String pattern "^[A-Z]{3}$"
+
+// Dans un autre module, cette extension serait interdite :
+// type ExtendedCode is RestrictedCode length 4..4  // ❌ ERREUR
+```
+
+## Règles sémantiques
+
+### Validation des contraintes
+- Les contraintes doivent être compatibles avec le type de base
+- Les contraintes multiples sont combinées avec un ET logique
+- Les contraintes contradictoires génèrent une erreur de compilation
+
+### Résolution des types
+- Les types personnalisés peuvent être utilisés partout où le type de base est attendu
+- La validation des contraintes est effectuée automatiquement
+- Les types personnalisés peuvent être importés et exportés comme les autres déclarations
+
+### Exemples d'erreurs
+```meshr
+// ❌ ERREUR: Contrainte incompatible (pattern sur Integer)
+type InvalidAge is Integer pattern "\\d+"
+
+// ❌ ERREUR: Range invalide (min > max)  
+type InvalidRange is Integer range 100..50
+
+// ❌ ERREUR: Precision sur Integer (pas supporté)
+type InvalidPrecision is Integer precision 2
+
+// ❌ ERREUR: Constraint temporelle sur String
+type InvalidTemporal is String after Date "2024-01-01"
+```
+
+## Bonnes pratiques
+
+### Nommage
+- Utiliser **PascalCase** pour les noms de types : `Email`, `ProductCode`, `BusinessHour`
+- Choisir des noms expressifs qui reflètent la sémantique métier
+- Éviter les abréviations cryptiques
+
+### Organisation
+- Grouper les types liés dans le même module
+- Exporter les types réutilisables
+- Documenter les types avec `@Documented`
+
+### Contraintes
+- Définir des contraintes réalistes et testables
+- Préférer des contraintes explicites aux contraintes implicites
+- Tester les cas limites des contraintes
+
+### Exemple d'organisation
+```meshr
+@Version("1.0.0")
+@Documented(summary="Common business types for e-commerce domain")
+module ecommerce.types
+
+export { Email, ProductCode, Price, Percentage, Score }
+
+@Documented(
+  summary="Valid email address with domain validation",
+  examples="user@company.com, admin@domain.org"
+)
+type Email is String pattern "^[^@]+@[^@]+\\.[a-zA-Z]{2,}$"
+
+@Documented(
+  summary="Product code with standardized format",
+  examples="AB123456, XY789012"
+)
+type ProductCode is String pattern "^[A-Z]{2}\\d{6}$" length 8..8
+```
+
+\newpage
+
+# 9
+# Entités et Relations
 
 Les **Entités** et **Relations** sont des artefacts déclaratifs pour la modélisation de données dans l'architecture Data-as-a-Product. Elles permettent de définir des structures de données persistantes et leurs interconnexions.
 

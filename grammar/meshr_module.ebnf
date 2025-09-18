@@ -25,8 +25,8 @@ export-items        = "{", identifier, { ",", identifier }, "}" ;
 (* ==============================
    Déclarations de haut niveau
    ============================== *)
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
-exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+top-level-decl      = enum-decl | type-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+exportable-decl     = enum-decl | type-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
 
 (* ========== ENUM ============= *)
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
@@ -36,6 +36,47 @@ enum-values         = enum-value, { ",", enum-value } ;
 enum-value          = (identifier | string-literal), [ "(", enum-value-args, ")" ] ;
 enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
 enum-value-arg      = identifier, "=", annotation-value ;
+
+(* ========== TYPE DECLARATION ============ *)
+type-decl           = { annotation }, [ "sealed" ], "type", identifier, "is", base-type-with-constraints ;
+
+base-type-with-constraints = string-type-with-constraints
+                          | numeric-type-with-constraints  
+                          | temporal-type-with-constraints
+                          | other-type-with-constraints ;
+
+(* Contraintes pour String *)
+string-type-with-constraints = "String", { string-constraint } ;
+
+(* Contraintes pour types numériques *)
+numeric-type-with-constraints = integer-type-with-constraints | float-type-with-constraints ;
+integer-type-with-constraints = "Integer", { numeric-constraint } ;
+float-type-with-constraints   = ( "Float" | "Double" ), { numeric-constraint } ;
+
+numeric-constraint    = "range", signed-number, "..", signed-number
+                      | "precision", number-literal
+                      | "positive"
+                      | "negative" 
+                      | "non_negative" ;
+
+(* Contraintes pour types temporels *)
+temporal-type-with-constraints = temporal-type, { temporal-constraint } ;
+temporal-type         = "Date" | "Timestamp" | "Datetime" | "Time" | "Interval" ;
+
+temporal-constraint   = "after", temporal-literal
+                      | "before", temporal-literal
+                      | "between", temporal-literal, "and", temporal-literal
+                      | "format", string-literal ;
+
+temporal-literal      = date-literal | timestamp-literal | datetime-literal | time-literal ;
+
+(* Contraintes pour autres types *)
+other-type-with-constraints = other-type, { other-constraint } ;
+other-type            = "Boolean" | "Geography" | "Bytes" | "Json" | "Sql" ;
+
+other-constraint      = "format", string-literal
+                      | "size", signed-number, "..", signed-number
+                      | "schema", string-literal ;
 
 (* ========== ANNOTATION DECL ============ *)
 annotation-decl     = { annotation }, "annotation", identifier, "is", annotation-field, { annotation-field }, "end" ;

@@ -1,0 +1,132 @@
+// ==============================
+// Test des types personnalisés valides
+// ==============================
+// Validation des nouvelles fonctionnalités de types avec contraintes
+
+@Version("1.0.0")
+@Author(name="Test Suite", email="test@meshr-lang.org")
+@Documented(summary="Test complet des types personnalisés avec contraintes")
+module test.types.custom
+
+// ========== TYPES STRING AVEC CONTRAINTES ==========
+
+// Email avec pattern de validation
+type Email is String pattern "^[^@]+@[^@]+\\.[a-zA-Z]{2,}$"
+
+// Code produit avec pattern et longueur
+type ProductCode is String pattern "^[A-Z]{2}\\d{6}$" length 8..8
+
+// Nom avec contrainte de longueur uniquement
+type PersonName is String length 1..50
+
+// URL avec pattern complexe
+type URL is String pattern "^https?://[\\w\\.-]+\\.[a-zA-Z]{2,}(/.*)?$"
+
+// ========== TYPES NUMÉRIQUES AVEC CONTRAINTES ==========
+
+// Age avec range
+type Age is Integer range 0..150 non_negative
+
+// Prix avec range et precision
+type Price is Float range 0.01..999999.99 precision 2 positive
+
+// Pourcentage avec range
+type Percentage is Float range 0.0..100.0 non_negative
+
+// Score avec range précis
+type Score is Integer range 1..10 positive
+
+// Température (peut être négative)
+type Temperature is Float range -273.15..1000.0
+
+// ========== TYPES TEMPORELS AVEC CONTRAINTES ==========
+
+// Date future
+type FutureDate is Date after Date "2024-01-01"
+
+// Heure de travail
+type BusinessHour is Time between Time "08:00" and Time "18:00"
+
+// Timestamp récent
+type RecentTimestamp is Timestamp after Timestamp "2024-01-01T00:00:00Z"
+
+// Date avec format personnalisé
+type FormattedDate is Date format "DD/MM/YYYY"
+
+// ========== AUTRES TYPES AVEC CONTRAINTES ==========
+
+// Données géographiques avec format
+type GeoCoordinate is Geography format "geojson"
+
+// Configuration JSON avec schéma
+type ConfigData is Json schema "config-schema.json"
+
+// Requête SQL formatée
+type PostgreSQLQuery is Sql format "postgresql"
+
+// Données binaires avec taille limitée
+type SmallBinaryData is Bytes size 1..1024
+
+// ========== UTILISATION DANS UNE ENTITÉ ==========
+
+entity Customer is
+  // Utilisation des types personnalisés
+  id : String
+  email : Email                    // Validation automatique du pattern
+  name : PersonName               // Contrainte de longueur
+  age : Age                       // Range et non-négatif
+  website : URL                   // Pattern URL valide
+  
+  // Types numériques
+  satisfaction_score : Score      // 1-10
+  discount_rate : Percentage      // 0-100%
+  
+  // Types temporels
+  birth_date : Date
+  next_contact_date : FutureDate  // Doit être dans le futur
+  
+  // Types spécialisés
+  location : GeoCoordinate
+  preferences : ConfigData
+end
+
+// ========== UTILISATION DANS UN RECORD ==========
+
+record ProductInfo is
+  code : ProductCode              // Pattern et longueur validés
+  name : PersonName
+  price : Price                   // Precision et range
+  discount : Percentage
+  launch_date : FutureDate
+end
+
+// ========== UTILISATION DANS UNE ENTITÉ PRODUIT ==========
+
+entity Product is
+  id : String
+  info : ProductInfo              // Utilise le record
+  category : String
+end
+
+// ========== UTILISATION DANS UNE RELATION ==========
+
+relation CustomerProduct is
+  from Customer(id)
+  to Product(id)
+  
+  purchase_date : RecentTimestamp
+  paid_price : Price
+  satisfaction : Score
+end
+
+// ========== UTILISATION DANS UNE MÉTRIQUE ==========
+
+metric CustomerSatisfactionAverage is
+  source Customer
+  calculation avg(satisfaction_score)
+  
+  filters {
+    satisfaction_score > 0,
+    age >= 18
+  }
+end

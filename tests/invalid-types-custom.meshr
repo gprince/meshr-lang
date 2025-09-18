@@ -1,0 +1,82 @@
+// ==============================
+// Test des types personnalisés INVALIDES
+// ==============================
+// Validation des erreurs de syntaxe et contraintes
+
+@Version("1.0.0")
+@Author(name="Test Suite", email="test@meshr-lang.org")
+@Documented(summary="Test des erreurs de types personnalisés")
+module test.types.custom.invalid
+
+// ========== ERREURS DE SYNTAXE ==========
+
+// ERREUR: Mot-clé manquant 'is'
+type InvalidEmail String pattern "^[^@]+@[^@]+$"
+
+// ERREUR: Type de base inexistant
+type InvalidType is UnknownType range 0..10
+
+// ERREUR: Contrainte incompatible (pattern sur Integer)
+type InvalidAge is Integer pattern "\\d+"
+
+// ERREUR: Range invalide (min > max)
+type InvalidRange is Integer range 100..50
+
+// ERREUR: Precision sur Integer (pas supporté)
+type InvalidPrecision is Integer precision 2
+
+// ERREUR: Constraint temporelle sur String
+type InvalidTemporal is String after Date "2024-01-01"
+
+// ========== ERREURS DE CONTRAINTES ==========
+
+// ERREUR: Range négatif pour type non_negative
+type ConflictingAge is Integer range -10..150 non_negative
+
+// ERREUR: Precision négative
+type InvalidPrecisionValue is Float precision -2
+
+// ERREUR: Date malformée
+type InvalidDate is Date after Date "invalid-date"
+
+// ERREUR: Pattern regex invalide
+type InvalidPattern is String pattern "[unclosed"
+
+// ERREUR: Length avec valeurs négatives
+type InvalidLength is String length -5..10
+
+// ========== ERREURS D'UTILISATION ==========
+
+// Types corrects pour les tests d'utilisation
+type ValidEmail is String pattern "^[^@]+@[^@]+$"
+type ValidAge is Integer range 0..150
+
+entity InvalidUsage is
+  // ERREUR: Utilisation d'un type non défini
+  email : UndefinedEmailType
+  
+  // ERREUR: Contraintes redondantes (déjà dans le type)
+  age : ValidAge range 0..100        // Contrainte en double
+  
+  // ERREUR: Type personnalisé avec contrainte incompatible
+  name : ValidEmail length 1..50     // Email n'est pas un nom
+end
+
+// ========== ERREURS DE SEALED ==========
+
+// Type sealed correct
+sealed type RestrictedCode is String pattern "^[A-Z]{3}$"
+
+// ERREUR: Extension d'un type sealed (dans un autre module)
+// type ExtendedCode is RestrictedCode length 4..4
+
+// ========== ERREURS DE RÉFÉRENCES CIRCULAIRES ==========
+
+// ERREUR: Référence circulaire directe
+// type TypeA is TypeB
+// type TypeB is TypeA
+
+// ERREUR: Référence circulaire indirecte
+// type TypeX is TypeY
+// type TypeY is TypeZ  
+// type TypeZ is TypeX

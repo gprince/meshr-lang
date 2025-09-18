@@ -296,6 +296,150 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#annotatedTypeDecl.
+    def enterAnnotatedTypeDecl(self, ctx:MeshrModuleParser.AnnotatedTypeDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#annotatedTypeDecl.
+    def exitAnnotatedTypeDecl(self, ctx:MeshrModuleParser.AnnotatedTypeDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#sealedTypeDecl.
+    def enterSealedTypeDecl(self, ctx:MeshrModuleParser.SealedTypeDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#sealedTypeDecl.
+    def exitSealedTypeDecl(self, ctx:MeshrModuleParser.SealedTypeDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#typeDecl.
+    def enterTypeDecl(self, ctx:MeshrModuleParser.TypeDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#typeDecl.
+    def exitTypeDecl(self, ctx:MeshrModuleParser.TypeDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#baseTypeWithConstraints.
+    def enterBaseTypeWithConstraints(self, ctx:MeshrModuleParser.BaseTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#baseTypeWithConstraints.
+    def exitBaseTypeWithConstraints(self, ctx:MeshrModuleParser.BaseTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#stringTypeWithConstraints.
+    def enterStringTypeWithConstraints(self, ctx:MeshrModuleParser.StringTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#stringTypeWithConstraints.
+    def exitStringTypeWithConstraints(self, ctx:MeshrModuleParser.StringTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#numericTypeWithConstraints.
+    def enterNumericTypeWithConstraints(self, ctx:MeshrModuleParser.NumericTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#numericTypeWithConstraints.
+    def exitNumericTypeWithConstraints(self, ctx:MeshrModuleParser.NumericTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#integerTypeWithConstraints.
+    def enterIntegerTypeWithConstraints(self, ctx:MeshrModuleParser.IntegerTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#integerTypeWithConstraints.
+    def exitIntegerTypeWithConstraints(self, ctx:MeshrModuleParser.IntegerTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#floatTypeWithConstraints.
+    def enterFloatTypeWithConstraints(self, ctx:MeshrModuleParser.FloatTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#floatTypeWithConstraints.
+    def exitFloatTypeWithConstraints(self, ctx:MeshrModuleParser.FloatTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#numericConstraint.
+    def enterNumericConstraint(self, ctx:MeshrModuleParser.NumericConstraintContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#numericConstraint.
+    def exitNumericConstraint(self, ctx:MeshrModuleParser.NumericConstraintContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#temporalTypeWithConstraints.
+    def enterTemporalTypeWithConstraints(self, ctx:MeshrModuleParser.TemporalTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#temporalTypeWithConstraints.
+    def exitTemporalTypeWithConstraints(self, ctx:MeshrModuleParser.TemporalTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#temporalType.
+    def enterTemporalType(self, ctx:MeshrModuleParser.TemporalTypeContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#temporalType.
+    def exitTemporalType(self, ctx:MeshrModuleParser.TemporalTypeContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#temporalConstraint.
+    def enterTemporalConstraint(self, ctx:MeshrModuleParser.TemporalConstraintContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#temporalConstraint.
+    def exitTemporalConstraint(self, ctx:MeshrModuleParser.TemporalConstraintContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#temporalLiteral.
+    def enterTemporalLiteral(self, ctx:MeshrModuleParser.TemporalLiteralContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#temporalLiteral.
+    def exitTemporalLiteral(self, ctx:MeshrModuleParser.TemporalLiteralContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#otherTypeWithConstraints.
+    def enterOtherTypeWithConstraints(self, ctx:MeshrModuleParser.OtherTypeWithConstraintsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#otherTypeWithConstraints.
+    def exitOtherTypeWithConstraints(self, ctx:MeshrModuleParser.OtherTypeWithConstraintsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#otherType.
+    def enterOtherType(self, ctx:MeshrModuleParser.OtherTypeContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#otherType.
+    def exitOtherType(self, ctx:MeshrModuleParser.OtherTypeContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#otherConstraint.
+    def enterOtherConstraint(self, ctx:MeshrModuleParser.OtherConstraintContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#otherConstraint.
+    def exitOtherConstraint(self, ctx:MeshrModuleParser.OtherConstraintContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#annotatedTypeRelationDecl.
     def enterAnnotatedTypeRelationDecl(self, ctx:MeshrModuleParser.AnnotatedTypeRelationDeclContext):
         pass

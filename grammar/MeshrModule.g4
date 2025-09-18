@@ -46,6 +46,8 @@ exportItems
 topLevelDecl
     : annotatedEnumDecl
     | sealedEnumDecl
+    | annotatedTypeDecl
+    | sealedTypeDecl
     | annotatedAnnotationDecl
     | sealedRecordDecl
     | recordDecl
@@ -68,6 +70,8 @@ exportableDecl
     : annotatedAnnotationDecl
     | annotatedEnumDecl
     | sealedEnumDecl
+    | annotatedTypeDecl
+    | sealedTypeDecl
     | annotatedEntityDecl
     | sealedEntityDecl
     | annotatedTypeRelationDecl
@@ -164,6 +168,89 @@ aspectInstanceFieldList
 
 aspectInstanceField
     : IDENTIFIER ':' annotationValue
+    ;
+
+// ========== TYPE DECLARATION ============
+annotatedTypeDecl
+    : annotation* typeDecl
+    ;
+
+sealedTypeDecl
+    : SEALED typeDecl
+    ;
+
+typeDecl
+    : TYPE IDENTIFIER 'is' baseTypeWithConstraints
+    ;
+
+// Extension des types de base avec contraintes
+baseTypeWithConstraints
+    : stringTypeWithConstraints
+    | numericTypeWithConstraints
+    | temporalTypeWithConstraints
+    | otherTypeWithConstraints
+    ;
+
+// ========== CONTRAINTES STRING ============
+stringTypeWithConstraints
+    : 'String' stringConstraint*
+    ;
+
+// ========== CONTRAINTES NUMÉRIQUES ============
+numericTypeWithConstraints
+    : integerTypeWithConstraints
+    | floatTypeWithConstraints
+    ;
+
+integerTypeWithConstraints
+    : 'Integer' numericConstraint*
+    ;
+
+floatTypeWithConstraints
+    : ('Float' | 'Double') numericConstraint*
+    ;
+
+numericConstraint
+    : 'range' signedNumber '..' signedNumber
+    | 'precision' NUMBER_LITERAL
+    | 'positive'
+    | 'negative'
+    | 'non_negative'
+    ;
+
+// ========== CONTRAINTES TEMPORELLES ============
+temporalTypeWithConstraints
+    : temporalType temporalConstraint*
+    ;
+
+temporalType
+    : 'Date' | 'Timestamp' | 'Datetime' | 'Time' | 'Interval'
+    ;
+
+temporalConstraint
+    : 'after' temporalLiteral
+    | 'before' temporalLiteral
+    | 'between' temporalLiteral 'and' temporalLiteral
+    | 'format' STRING_LITERAL
+    ;
+
+temporalLiteral
+    : dateLiteral | timestampLiteral | datetimeLiteral | timeLiteral
+    ;
+
+// ========== AUTRES TYPES ============
+otherTypeWithConstraints
+    : otherType otherConstraint*
+    ;
+
+otherType
+    : 'Boolean' | 'Geography' | 'Bytes' | 'Json' | 'Sql'
+    ;
+
+otherConstraint
+    : 'format' STRING_LITERAL
+    | 'size' signedNumber '..' signedNumber
+    | 'schema' STRING_LITERAL
     ;
 
 // ========== TYPE RELATION DECLARATION ============
@@ -579,6 +666,19 @@ MATCH: 'match';
 WINDOW: 'window';
 REFRESH_FREQUENCY: 'refresh_frequency';
 HISTORICAL_DEPTH: 'historical_depth';
+
+// Nouveaux tokens pour contraintes de types
+RANGE: 'range';
+PRECISION: 'precision';
+POSITIVE: 'positive';
+NEGATIVE: 'negative';
+NON_NEGATIVE: 'non_negative';
+AFTER: 'after';
+BEFORE: 'before';
+BETWEEN: 'between';
+FORMAT: 'format';
+SIZE: 'size';
+SCHEMA: 'schema';
 
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?

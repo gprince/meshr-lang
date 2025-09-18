@@ -169,6 +169,86 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#annotatedTypeDecl.
+    def visitAnnotatedTypeDecl(self, ctx:MeshrModuleParser.AnnotatedTypeDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#sealedTypeDecl.
+    def visitSealedTypeDecl(self, ctx:MeshrModuleParser.SealedTypeDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#typeDecl.
+    def visitTypeDecl(self, ctx:MeshrModuleParser.TypeDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#baseTypeWithConstraints.
+    def visitBaseTypeWithConstraints(self, ctx:MeshrModuleParser.BaseTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#stringTypeWithConstraints.
+    def visitStringTypeWithConstraints(self, ctx:MeshrModuleParser.StringTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#numericTypeWithConstraints.
+    def visitNumericTypeWithConstraints(self, ctx:MeshrModuleParser.NumericTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#integerTypeWithConstraints.
+    def visitIntegerTypeWithConstraints(self, ctx:MeshrModuleParser.IntegerTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#floatTypeWithConstraints.
+    def visitFloatTypeWithConstraints(self, ctx:MeshrModuleParser.FloatTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#numericConstraint.
+    def visitNumericConstraint(self, ctx:MeshrModuleParser.NumericConstraintContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#temporalTypeWithConstraints.
+    def visitTemporalTypeWithConstraints(self, ctx:MeshrModuleParser.TemporalTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#temporalType.
+    def visitTemporalType(self, ctx:MeshrModuleParser.TemporalTypeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#temporalConstraint.
+    def visitTemporalConstraint(self, ctx:MeshrModuleParser.TemporalConstraintContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#temporalLiteral.
+    def visitTemporalLiteral(self, ctx:MeshrModuleParser.TemporalLiteralContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#otherTypeWithConstraints.
+    def visitOtherTypeWithConstraints(self, ctx:MeshrModuleParser.OtherTypeWithConstraintsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#otherType.
+    def visitOtherType(self, ctx:MeshrModuleParser.OtherTypeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#otherConstraint.
+    def visitOtherConstraint(self, ctx:MeshrModuleParser.OtherConstraintContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#annotatedTypeRelationDecl.
     def visitAnnotatedTypeRelationDecl(self, ctx:MeshrModuleParser.AnnotatedTypeRelationDeclContext):
         return self.visitChildren(ctx)

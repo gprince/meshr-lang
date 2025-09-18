@@ -1,0 +1,144 @@
+// ==============================
+// PROPOSITION D'EXTENSION GRAMMAIRE ANTLR
+// Support des types personnalisés avec contraintes
+// ==============================
+
+// Ajouter dans topLevelDecl
+topLevelDecl
+    : annotatedEnumDecl
+    | sealedEnumDecl
+    | annotatedTypeDecl        // ← NOUVEAU
+    | sealedTypeDecl           // ← NOUVEAU
+    | annotatedAnnotationDecl
+    | sealedRecordDecl
+    | recordDecl
+    | sealedTraitDecl
+    | traitDecl
+    | annotatedAspectDecl
+    | sealedAspectDecl
+    | annotatedEntityDecl
+    | sealedEntityDecl
+    | annotatedTypeRelationDecl
+    | sealedTypeRelationDecl
+    | annotatedRelationDecl
+    | sealedRelationDecl
+    | annotatedMetricDecl
+    | sealedMetricDecl
+    ;
+
+// ========== TYPE DECLARATION ============
+annotatedTypeDecl
+    : annotation* typeDecl
+    ;
+
+sealedTypeDecl
+    : SEALED typeDecl
+    ;
+
+typeDecl
+    : TYPE IDENTIFIER 'is' baseTypeWithConstraints
+    ;
+
+// Extension des types de base avec contraintes
+baseTypeWithConstraints
+    : stringTypeWithConstraints
+    | numericTypeWithConstraints
+    | temporalTypeWithConstraints
+    | otherTypeWithConstraints
+    ;
+
+// ========== CONTRAINTES STRING ============
+stringTypeWithConstraints
+    : 'String' stringConstraint*
+    ;
+
+// ========== CONTRAINTES NUMÉRIQUES ============
+numericTypeWithConstraints
+    : integerTypeWithConstraints
+    | floatTypeWithConstraints
+    ;
+
+integerTypeWithConstraints
+    : 'Integer' numericConstraint*
+    ;
+
+floatTypeWithConstraints
+    : ('Float' | 'Double') numericConstraint*
+    ;
+
+numericConstraint
+    : 'range' signedNumber '..' signedNumber
+    | 'precision' NUMBER_LITERAL              // Pour Float/Double
+    | 'positive'                              // > 0
+    | 'negative'                              // < 0
+    | 'non_negative'                          // >= 0
+    ;
+
+// ========== CONTRAINTES TEMPORELLES ============
+temporalTypeWithConstraints
+    : temporalType temporalConstraint*
+    ;
+
+temporalType
+    : 'Date' | 'Timestamp' | 'Datetime' | 'Time' | 'Interval'
+    ;
+
+temporalConstraint
+    : 'after' temporalLiteral
+    | 'before' temporalLiteral
+    | 'between' temporalLiteral 'and' temporalLiteral
+    | 'format' STRING_LITERAL                 // Format de date personnalisé
+    ;
+
+temporalLiteral
+    : dateLiteral | timestampLiteral | datetimeLiteral | timeLiteral
+    ;
+
+// ========== AUTRES TYPES ============
+otherTypeWithConstraints
+    : otherType constraint*
+    ;
+
+otherType
+    : 'Boolean' | 'Geography' | 'Bytes' | 'Json' | 'Sql'
+    ;
+
+constraint
+    : 'format' STRING_LITERAL                // Format personnalisé
+    | 'size' signedNumber '..' signedNumber  // Taille en bytes pour Bytes
+    | 'schema' STRING_LITERAL                // Schéma JSON pour Json
+    ;
+
+// ========== EXEMPLES D'USAGE ============
+/*
+// Types alias simples
+type Email is String pattern "^[^@]+@[^@]+$"
+type Age is Integer range 0..150 non_negative
+type Price is Float range 0.01..999999.99 precision 2 positive
+type ProductCode is String pattern "^[A-Z]{2}\\d{6}$" length 8..8
+
+// Types temporels
+type FutureDate is Date after Date "2024-01-01"
+type BusinessHours is Time between Time "08:00" and Time "18:00"
+type RecentTimestamp is Timestamp after Timestamp "2024-01-01T00:00:00Z"
+
+// Types spécialisés
+type GeoCoordinate is Geography format "geojson"
+type ConfigData is Json schema "config-schema.json"
+type QueryText is Sql format "postgresql"
+
+// Utilisation dans les entités
+entity Customer is
+  id : String
+  email : Email                    // Utilise le type personnalisé
+  age : Age                        // Contraintes automatiques
+  registration_date : FutureDate   // Validation temporelle
+end
+
+// Utilisation dans les records
+record PriceInfo is
+  base_price : Price
+  discount : Price
+  final_price : Price
+end
+*/
