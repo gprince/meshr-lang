@@ -1,69 +1,10 @@
-# Introduction
+# Meshr-lang
 
-**Meshr-Lang** est un langage de modélisation déclaratif conçu spécifiquement pour l'architecture **Data Mesh** et la gouvernance des données à l'échelle de l'entreprise. Il répond aux défis modernes de la gestion des données distribuées en offrant une syntaxe claire, expressive et alignée sur les principes de l'architecture Data Mesh.
+**Documentation du langage**
 
-## Contexte et motivation
+G. Prince - Architecte Principal
 
-Dans un monde où les données deviennent le moteur de l'innovation, les organisations font face à des défis croissants :
-
-- **📊 Explosion du volume de données** : Multiplication des sources et formats
-- **🏢 Complexité organisationnelle** : Données dispersées dans des silos métier
-- **🔒 Exigences de conformité** : RGPD, SOX, HIPAA et autres réglementations
-- **⚡ Besoin d'agilité** : Time-to-market critique pour les produits data
-- **🎯 Qualité et fiabilité** : Confiance dans les données pour la prise de décision
-
-L'architecture **Data Mesh** émerge comme une solution à ces défis, mais nécessite des outils et langages adaptés pour être mise en œuvre efficacement.
-
-## Philosophie du langage
-
-Meshr-Lang s'inspire de plusieurs principes fondamentaux :
-
-#### 🏗️ **Déclaratif avant tout**
-- **Ce que vous voulez**, pas comment l'obtenir
-- Focus sur la **sémantique métier** plutôt que l'implémentation technique
-- **Lisibilité** et **expressivité** au cœur du design
-
-#### 🌐 **Data Mesh Native**
-- **Domaine-centré** : Chaque module représente un domaine métier
-- **Décentralisé** : Pas de dépendance à une architecture centralisée
-- **Self-serve** : Outils et patterns intégrés pour l'autonomie des équipes
-
-#### 🔧 **Pragmatique et évolutif**
-- **Syntaxe simple** mais **puissante**
-- **Extensibilité** via les annotations et aspects
-- **Intégration** avec l'écosystème existant
-
-## Valeur ajoutée
-
-Meshr-Lang apporte une **valeur unique** dans l'écosystème des langages de modélisation :
-
-| Aspect | Meshr-Lang | Alternatives |
-|--------|------------|--------------|
-| **Focus Data Mesh** | ✅ Natif | ❌ Générique |
-| **Gouvernance intégrée** | ✅ Built-in | ❌ Externe |
-| **Syntaxe déclarative** | ✅ Simple | ❌ Complexe |
-| **Annotations riches** | ✅ Expressives | ❌ Basiques |
-| **Évolutivité** | ✅ Modulaire | ❌ Monolithique |
-
-## Public cible
-
-Ce langage s'adresse à :
-
-- **🏢 Data Architects** : Conception d'architectures Data Mesh
-- **📊 Data Product Owners** : Définition de produits de données
-- **🔒 Data Stewards** : Gouvernance et qualité des données
-- **👨‍💻 Data Engineers** : Implémentation et intégration
-- **📈 Data Analysts** : Compréhension et utilisation des données
-- **⚖️ Compliance Officers** : Conformité et audit
-
-## Vision à long terme
-
-Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data Mesh, en offrant :
-
-- **🌍 Adoption large** dans l'industrie
-- **🔧 Écosystème riche** d'outils et intégrations
-- **📚 Communauté active** de contributeurs
-- **🎓 Formation et certification** pour les professionnels
+Version 0.3.0 - Septembre 2025
 
 ---
 
@@ -143,6 +84,73 @@ Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data
   - [Annexe B — Grammaire ANTLR (référence, Python target)](#annexe-b--grammaire-antlr-référence-python-target)
 
 ---
+
+# Introduction
+
+**Meshr-Lang** est un langage de modélisation déclaratif conçu spécifiquement pour l'architecture **Data Mesh** et la gouvernance des données à l'échelle de l'entreprise. Il répond aux défis modernes de la gestion des données distribuées en offrant une syntaxe claire, expressive et alignée sur les principes de l'architecture Data Mesh.
+
+## Contexte et motivation
+
+Dans un monde où les données deviennent le moteur de l'innovation, les organisations font face à des défis croissants :
+
+- **📊 Explosion du volume de données** : Multiplication des sources et formats
+- **🏢 Complexité organisationnelle** : Données dispersées dans des silos métier
+- **🔒 Exigences de conformité** : RGPD, SOX, HIPAA et autres réglementations
+- **⚡ Besoin d'agilité** : Time-to-market critique pour les produits data
+- **🎯 Qualité et fiabilité** : Confiance dans les données pour la prise de décision
+
+L'architecture **Data Mesh** émerge comme une solution à ces défis, mais nécessite des outils et langages adaptés pour être mise en œuvre efficacement.
+
+## Philosophie du langage
+
+Meshr-Lang s'inspire de plusieurs principes fondamentaux :
+
+#### 🏗️ **Déclaratif avant tout**
+- **Ce que vous voulez**, pas comment l'obtenir
+- Focus sur la **sémantique métier** plutôt que l'implémentation technique
+- **Lisibilité** et **expressivité** au cœur du design
+
+#### 🌐 **Data Mesh Native**
+- **Domaine-centré** : Chaque module représente un domaine métier
+- **Décentralisé** : Pas de dépendance à une architecture centralisée
+- **Self-serve** : Outils et patterns intégrés pour l'autonomie des équipes
+
+#### 🔧 **Pragmatique et évolutif**
+- **Syntaxe simple** mais **puissante**
+- **Extensibilité** via les annotations et aspects
+- **Intégration** avec l'écosystème existant
+
+## Valeur ajoutée
+
+Meshr-Lang apporte une **valeur unique** dans l'écosystème des langages de modélisation :
+
+| Aspect | Meshr-Lang | Alternatives |
+|--------|------------|--------------|
+| **Focus Data Mesh** | ✅ Natif | ❌ Générique |
+| **Gouvernance intégrée** | ✅ Built-in | ❌ Externe |
+| **Syntaxe déclarative** | ✅ Simple | ❌ Complexe |
+| **Annotations riches** | ✅ Expressives | ❌ Basiques |
+| **Évolutivité** | ✅ Modulaire | ❌ Monolithique |
+
+## Public cible
+
+Ce langage s'adresse à :
+
+- **🏢 Data Architects** : Conception d'architectures Data Mesh
+- **📊 Data Product Owners** : Définition de produits de données
+- **🔒 Data Stewards** : Gouvernance et qualité des données
+- **👨‍💻 Data Engineers** : Implémentation et intégration
+- **📈 Data Analysts** : Compréhension et utilisation des données
+- **⚖️ Compliance Officers** : Conformité et audit
+
+## Vision à long terme
+
+Meshr-Lang aspire à devenir **le standard de facto** pour la modélisation Data Mesh, en offrant :
+
+- **🌍 Adoption large** dans l'industrie
+- **🔧 Écosystème riche** d'outils et intégrations
+- **📚 Communauté active** de contributeurs
+- **🎓 Formation et certification** pour les professionnels
 
 ## 🧭 Objectif du langage
 

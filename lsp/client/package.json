@@ -2,7 +2,7 @@
   "name": "meshr-lang",
   "displayName": "Meshr-Lang Language Support",
   "description": "Meshr-Lang language support with IntelliSense, Go to Definition, and Hover for data mesh modeling with metrics framework",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "meshr-lang",
   "license": "MIT",
   "icon": "images/icon.png",

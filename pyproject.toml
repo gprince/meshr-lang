@@ -1,6 +1,6 @@
 [project]
 name = "meshr-lang"
-version = "0.1.0"
+version = "0.3.0"
 description = "Meshr as a DSL for Data-as-a-Product architecture"
 requires-python = ">=3.10"
 

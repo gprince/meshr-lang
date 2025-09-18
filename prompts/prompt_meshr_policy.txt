@@ -1,0 +1,151 @@
+Prompt pour Cursor – Implémentation des `policy`
+
+Contexte :
+Tu es un expert ANTLR et language engineer.
+Tu dois implémenter le support des politiques (`policy`) dans Meshr-Lang (version 0.2.0 → 0.3.0 draft) en respectant la syntaxe décidée.
+
+---
+
+🎯 Objectifs
+
+1. Grammaire ANTLR (`MeshrModule.g4`)
+   - Ajouter une règle `policyDecl` cohérente avec les autres blocs (`metric`, `match`, etc.).
+   - Supporter la syntaxe :
+     - `policy PolicyName is … end`
+     - `verbatim "..."` (optionnel, une seule fois, immédiatement après `is`)
+     - `scope <type> [where <expr>]`
+     - `condition <expr>` (facultatif)
+     - `match <scope> is { … } -> actions { … } … end` (facultatif)
+     - `actions { … }` avec plusieurs actions possibles (`deny`, `warn`, `notify`, `patch`).
+
+2. Tests exhaustifs
+   - Ajouter des fichiers `tests/policies-valid.meshr` et `tests/policies-invalid.meshr`.
+   - Cas valides à couvrir :
+     - Policy simple avec `scope` + `condition`.
+     - Policy avec bloc `actions { … }` multiple.
+     - Policy avec `match … is … end`.
+     - Policy avec `scope … where …`.
+     - Policy avec et sans `verbatim`.
+   - Cas invalides à couvrir :
+     - `policy` sans `end`.
+     - `actions` sans accolades.
+     - `verbatim` dupliqué.
+     - `verbatim` placé après `scope`.
+     - Conditions avec opérateurs invalides (`==`).
+
+3. Documentation (`meshr-lang.md`)
+   - Ajouter une nouvelle section POLICIES.
+   - Décrire la syntaxe officielle : `policy Name is … end`.
+   - Indiquer que `verbatim` est optionnel et sert uniquement de documentation libre.
+   - Fournir plusieurs exemples en balises.
+
+---
+
+✅ Exemples valides à inclure
+
+```meshr
+policy RequireOwnerLabel is
+  verbatim "Every dataset must have an 'owner' label defined."
+
+  scope dataset
+  condition not exists label "owner"
+
+  actions {
+    deny with message "Dataset must include an 'owner' label."
+    notify channel "slack://governance"
+  }
+end
+```
+
+```meshr
+policy TableGovernance is
+  verbatim "Tables must be partitioned and have expiration."
+
+  scope table
+
+  match table is
+    { partitioning is null } or { expiration is null } ->
+      actions {
+        deny with message "Table must have partitioning AND expiration."
+        notify channel "teams://governance"
+      }
+  end
+end
+```
+
+```meshr
+policy SensitiveColumns is
+  verbatim "Sensitive columns like SSN or IBAN must always be tagged."
+
+  scope column where name like "ssn" or name like "iban"
+  condition not exists policy_tag
+
+  actions {
+    deny with message "Sensitive columns must be tagged."
+    patch add policy_tag "pii.sensitive"
+  }
+end
+```
+
+---
+
+❌ Exemples invalides à inclure
+
+```meshr
+policy MissingEnd is
+  scope dataset
+  condition not exists label "owner"
+  actions {
+    deny with message "Dataset must include an 'owner' label."
+  }
+```
+
+```meshr
+policy BadActions is
+  scope dataset
+  actions
+    deny with message "Invalid syntax: missing braces"
+end
+```
+
+```meshr
+policy WrongCondition is
+  scope table
+  condition partitioning == null   # invalid operator
+  actions { warn with message "Invalid operator" }
+end
+```
+
+```meshr
+policy WrongVerbatim is
+  scope dataset
+  verbatim "Placed after scope = invalid"
+  actions { deny with message "bad order" }
+end
+```
+
+---
+
+📌 Étapes attendues dans le commit
+
+1. Mise à jour `MeshrModule.g4` avec `policyDecl`.
+2. Ajout des tests valides et invalides.
+3. Exécution de `make test-examples` → tous les tests doivent passer.
+4. Mise à jour `docs/meshr-lang.md` avec la section POLICIES.
+5. Génération PDF/HTML de la doc à jour.
+
+---
+
+⚙️ Style à respecter :
+- Syntaxe en blocs (`… is … end`).
+- Expressions = mêmes opérateurs logiques, pattern matching, wildcards, ranges.
+- `verbatim` en premier après `is`, optionnel.
+- `actions { … }` avec plusieurs actions autorisées.
+
+---
+
+👉 Avec ce prompt, Cursor aura tout le nécessaire pour :
+- étendre la grammaire,
+- ajouter les tests,
+- mettre à jour la documentation,
+- garder la cohérence stylistique avec Meshr-Lang v0.2.0.
