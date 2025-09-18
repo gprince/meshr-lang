@@ -4,7 +4,7 @@
 
 G. Prince - Architecte Principal
 
-Version 0.3.0 - Septembre 2025
+Version 0.4.0 - Septembre 2025
 
 ---
 
