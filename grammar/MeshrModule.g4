@@ -63,6 +63,8 @@ topLevelDecl
     | sealedRelationDecl
     | annotatedMetricDecl
     | sealedMetricDecl
+    | annotatedPolicyDecl
+    | sealedPolicyDecl
     ;
 
 // ========== ENUM =============
@@ -86,6 +88,8 @@ exportableDecl
     | sealedAspectDecl
     | annotatedMetricDecl
     | sealedMetricDecl
+    | annotatedPolicyDecl
+    | sealedPolicyDecl
     ;
 
 annotatedEnumDecl
@@ -680,6 +684,27 @@ FORMAT: 'format';
 SIZE: 'size';
 SCHEMA: 'schema';
 
+// Nouveaux tokens pour policies
+POLICY: 'policy';
+VERBATIM: 'verbatim';
+SCOPE: 'scope';
+CONDITION: 'condition';
+ACTIONS: 'actions';
+MISSING: 'missing';
+EXISTS: 'exists';
+DENY: 'deny';
+WARN: 'warn';
+NOTIFY: 'notify';
+PATCH: 'patch';
+ADD: 'add';
+MODIFY: 'modify';
+REMOVE: 'remove';
+WITH: 'with';
+MESSAGE: 'message';
+WHERE: 'where';
+LIKE: 'like';
+ASPECT: 'aspect';
+
 NUMBER_LITERAL
     : [0-9]+ ('.' [0-9]+)?
     | '0' [xX] [0-9a-fA-F]+
@@ -891,6 +916,93 @@ temporalField
 
 metricAspects
     : 'aspects' '{' aspectInstanceList '}'
+    ;
+
+// ========== POLICY DECLARATION ==========
+annotatedPolicyDecl
+    : annotation* policyDecl
+    ;
+
+sealedPolicyDecl
+    : SEALED policyDecl
+    ;
+
+policyDecl
+    : POLICY IDENTIFIER 'is'
+      policyVerbatim?
+      policyScope
+      (policyCondition policyActions | policyMatch)
+      'end'
+    ;
+
+policyVerbatim
+    : VERBATIM STRING_LITERAL
+    ;
+
+policyScope
+    : SCOPE STRING_LITERAL (WHERE expression)?
+    ;
+
+policyCondition
+    : CONDITION policyExpression
+    ;
+
+policyMatch
+    : MATCH qualifiedName 'is' policyMatchArm+ 'end'
+    ;
+
+policyMatchArm
+    : policyPattern '->' policyActions
+    ;
+
+policyPattern
+    : '{' policyPatternExpression '}' ('or' '{' policyPatternExpression '}')*
+    | '_'
+    ;
+
+policyPatternExpression
+    : expression
+    | IDENTIFIER 'is' 'null'
+    | IDENTIFIER 'in' (rangeLiteral | listLiteral | '{' STRING_LITERAL (',' STRING_LITERAL)* '}')
+    | IDENTIFIER 'like' STRING_LITERAL
+    | 'not' 'exists' IDENTIFIER
+    | '_'
+    ;
+
+policyExpression
+    : MISSING ASPECT '{' aspectList '}'
+    | EXISTS ASPECT '{' aspectList '}'
+    | ASPECTS '.' IDENTIFIER '.' IDENTIFIER ('==' | '!=' | '<' | '<=' | '>' | '>=') annotationValue
+    | expression
+    ;
+
+aspectList
+    : IDENTIFIER (',' IDENTIFIER)*
+    ;
+
+policyActions
+    : ACTIONS '{' policyActionList '}'
+    ;
+
+policyActionList
+    : policyAction (',' policyAction)*
+    ;
+
+policyAction
+    : DENY (WITH MESSAGE STRING_LITERAL)?
+    | WARN (WITH MESSAGE STRING_LITERAL)?
+    | NOTIFY STRING_LITERAL (WITH MESSAGE STRING_LITERAL)?
+    | patchAction
+    ;
+
+patchAction
+    : PATCH patchOperation (WITH MESSAGE STRING_LITERAL)?
+    ;
+
+patchOperation
+    : ADD ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
+    | MODIFY ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
+    | REMOVE ASPECT IDENTIFIER
     ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;

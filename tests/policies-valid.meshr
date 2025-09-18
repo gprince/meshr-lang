@@ -1,0 +1,241 @@
+// ==============================
+// Test des policies VALIDES
+// ==============================
+// Validation de la syntaxe des policies avec pattern matching et conditions
+
+@Version("1.0.0")
+@Author(name="Test Suite", email="test@meshr-lang.org")
+@Documented(summary="Test complet des policies valides")
+module test.policies.valid
+
+// ========== POLICY SIMPLE AVEC CONDITION ==========
+
+policy RequireDataClassification is
+  verbatim "All entities must have data classification for governance"
+  
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny with message "Entity must have DataClassification aspect"
+  }
+end
+
+// ========== POLICY AVEC MULTIPLE ASPECTS ==========
+
+policy RequireGDPRAndSecurity is
+  scope "entity"
+  condition missing aspect { GDPRCompliance, DataClassification }
+  
+  actions {
+    deny with message "Entity must have both GDPR compliance and data classification",
+    notify "dpo@company.com" with message "Entity missing required aspects"
+  }
+end
+
+// ========== POLICY AVEC CONDITION SUR PROPRIÉTÉ D'ASPECT ==========
+
+policy ValidateRetentionPeriod is
+  scope "entity"
+  condition aspects.GDPRCompliance.retention_period > Interval 10 year
+  
+  actions {
+    warn with message "Retention period exceeds recommended maximum",
+    patch modify aspect GDPRCompliance {
+      retention_period == Interval 7 year
+    } with message "Reduced retention period to comply with policy"
+  }
+end
+
+// ========== POLICY AVEC PATTERN MATCHING SIMPLE ==========
+
+policy RequirePartitioning is
+  verbatim "Tables must have partitioning defined for performance"
+  
+  scope "table"
+  
+  match table is
+    { partitioning is null } ->
+      actions {
+        deny with message "Partitioning is required for all tables"
+      }
+  end
+end
+
+// ========== POLICY AVEC PATTERN MATCHING OR ==========
+
+policy RequirePartitioningAndExpiration is
+  verbatim "Tables must have both partitioning and expiration"
+  
+  scope "table"
+  
+  match table is
+    { partitioning is null } or { expiration is null } ->
+      actions {
+        deny with message "Tables must have partitioning AND expiration"
+      }
+  end
+end
+
+// ========== POLICY AVEC WILDCARD ==========
+
+policy CatchAllDatasets is
+  verbatim "Apply audit requirements to all datasets"
+  
+  scope "dataset"
+  
+  match dataset is
+    { _ } ->
+      actions {
+        warn with message "All datasets are subject to audit requirements"
+      }
+  end
+end
+
+// ========== POLICY AVEC RANGES NUMÉRIQUES ==========
+
+policy RetentionWithinBounds is
+  verbatim "Validate retention period is within acceptable bounds"
+  
+  scope "dataset"
+  
+  match dataset is
+    { expiration in 30..365 } ->
+      actions {
+        warn with message "Expiration between 30 and 365 days is acceptable"
+      },
+    { expiration < 30 } ->
+      actions {
+        deny with message "Expiration too short (<30 days)"
+      },
+    { expiration > 365 } ->
+      actions {
+        deny with message "Expiration too long (>365 days)"
+      }
+  end
+end
+
+// ========== POLICY AVEC ENUMS/ENSEMBLES ==========
+
+policy EnvironmentSpecific is
+  verbatim "Apply different rules based on environment"
+  
+  scope "dataset"
+  
+  match dataset is
+    { label "env" in { "dev", "staging" } } ->
+      actions {
+        warn with message "Dataset in non-production environment"
+      },
+    { label "env" == "prod" } ->
+      actions {
+        deny with message "Production datasets require manual approval"
+      }
+  end
+end
+
+// ========== POLICY AVEC COMBINAISONS LOGIQUES ==========
+
+policy SensitiveColumnsValidation is
+  verbatim "Sensitive columns must be properly tagged"
+  
+  scope "column"
+  
+  match column is
+    { (name like "ssn" or name like "iban") and not exists policy_tag } ->
+      actions {
+        deny with message "Sensitive columns must be tagged",
+        patch add policy_tag "pii.sensitive" with message "Auto-tagged sensitive column"
+      }
+  end
+end
+
+// ========== POLICY MULTI-BRANCHES ==========
+
+policy TableSizeGovernance is
+  verbatim "Apply governance rules based on table size"
+  
+  scope "table"
+  
+  match table is
+    { rows < 1000000 } ->
+      actions {
+        warn with message "Small table: partitioning optional"
+      },
+    { rows >= 1000000 and rows < 100000000 } ->
+      actions {
+        warn with message "Medium table: partitioning recommended"
+      },
+    { rows >= 100000000 } ->
+      actions {
+        deny with message "Large table: partitioning is mandatory"
+      }
+  end
+end
+
+// ========== POLICY AVEC BINDING EXPLICITE ==========
+
+policy OwnerLabelCheck is
+  verbatim "Datasets must have owner labels for accountability"
+  
+  scope "dataset"
+  
+  match dataset is
+    { _.labels.owner is null } ->
+      actions {
+        deny with message "Dataset must have an owner label"
+      }
+  end
+end
+
+// ========== POLICY AVEC SCOPE WHERE ==========
+
+policy EntityWithPersonalData is
+  verbatim "Entities containing personal data need special handling"
+  
+  scope "entity" where contains_personal_data == true
+  condition missing aspect { GDPRCompliance }
+  
+  actions {
+    patch add aspect GDPRCompliance {
+      lawful_basis == "consent",
+      retention_period == Interval 7 year,
+      data_subject_rights == List["access", "rectification", "erasure"]
+    } with message "Auto-added GDPR compliance for personal data entity"
+  }
+end
+
+// ========== POLICY SANS VERBATIM ==========
+
+policy QuickValidation is
+  scope "metric"
+  condition missing aspect { MetricGovernance }
+  
+  actions {
+    warn with message "Metrics should have governance metadata"
+  }
+end
+
+// ========== POLICY AVEC PATCH MULTIPLE ==========
+
+policy ComprehensiveDataGovernance is
+  verbatim "Ensure comprehensive data governance on all entities"
+  
+  scope "entity"
+  condition missing aspect { DataClassification, DataStewardship }
+  
+  actions {
+    patch add aspect DataClassification {
+      level == "internal",
+      steward == "data.team@company.com"
+    } with message "Added default data classification",
+    
+    patch add aspect DataStewardship {
+      steward == "data.team@company.com",
+      business_domain == "default",
+      last_review == Date "2025-09-18"
+    } with message "Added default data stewardship",
+    
+    notify "governance@company.com" with message "Auto-added governance aspects to entity"
+  }
+end

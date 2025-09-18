@@ -1,0 +1,211 @@
+// ==============================
+// Test des policies INVALIDES
+// ==============================
+// Validation des erreurs de syntaxe et contraintes des policies
+
+@Version("1.0.0")
+@Author(name="Test Suite", email="test@meshr-lang.org")
+@Documented(summary="Test des erreurs de policies")
+module test.policies.invalid
+
+// ========== ERREURS DE STRUCTURE ==========
+
+// ERREUR: Policy sans 'end'
+policy MissingEnd is
+  scope "entity"
+  condition missing aspect { DataClassification }
+  actions {
+    deny with message "Missing end keyword"
+  }
+
+// ERREUR: Policy sans 'is'
+policy MissingIs
+  scope "entity"
+  actions { warn }
+end
+
+// ERREUR: Actions sans accolades
+policy BadActionsNoBraces is
+  scope "entity"
+  condition missing aspect { DataClassification }
+  actions
+    deny with message "Actions must be in braces"
+end
+
+// ========== ERREURS DE VERBATIM ==========
+
+// ERREUR: Verbatim dupliqué
+policy DuplicateVerbatim is
+  verbatim "First description"
+  verbatim "Second description"  // ERREUR: Dupliqué
+  
+  scope "entity"
+  actions { warn }
+end
+
+// ERREUR: Verbatim après scope
+policy VerbatimAfterScope is
+  scope "entity"
+  verbatim "Verbatim must come before scope"  // ERREUR: Mauvais ordre
+  
+  actions { warn }
+end
+
+// ========== ERREURS DE SCOPE ==========
+
+// ERREUR: Scope sans guillemets
+policy InvalidScopeNoQuotes is
+  scope entity  // ERREUR: Manque les guillemets
+  actions { warn }
+end
+
+// ERREUR: Scope inexistant
+policy InvalidScopeType is
+  scope "unknown_type"  // ERREUR: Type de scope inexistant
+  actions { warn }
+end
+
+// ========== ERREURS DE CONDITIONS ==========
+
+// ERREUR: Condition avec opérateur invalide
+policy InvalidConditionOperator is
+  scope "entity"
+  condition aspects.DataClassification.level === "confidential"  // ERREUR: === au lieu de ==
+  
+  actions { warn }
+end
+
+// ERREUR: Aspect inexistant dans condition
+policy InvalidAspectReference is
+  scope "entity"
+  condition missing aspect { UnknownAspect }  // ERREUR: Aspect non défini
+  
+  actions { warn }
+end
+
+// ERREUR: Syntaxe condition malformée
+policy MalformedCondition is
+  scope "entity"
+  condition missing aspect DataClassification  // ERREUR: Manque les accolades
+  
+  actions { warn }
+end
+
+// ========== ERREURS DE PATTERN MATCHING ==========
+
+// ERREUR: Match sans 'end'
+policy MatchMissingEnd is
+  scope "table"
+  
+  match table is
+    { partitioning is null } ->
+      actions { deny }
+  // ERREUR: Manque 'end'
+end
+
+// ERREUR: Pattern malformé
+policy InvalidPattern is
+  scope "table"
+  
+  match table is
+    partitioning is null ->  // ERREUR: Manque les accolades
+      actions { deny }
+  end
+end
+
+// ERREUR: Actions dans match sans accolades
+policy MatchActionsNoBraces is
+  scope "table"
+  
+  match table is
+    { partitioning is null } ->
+      deny with message "Bad syntax"  // ERREUR: Actions sans accolades
+  end
+end
+
+// ========== ERREURS D'ACTIONS ==========
+
+// ERREUR: Action deny sans message
+policy DenyWithoutMessage is
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny  // ERREUR: deny doit avoir un message
+  }
+end
+
+// ERREUR: Patch sans type d'opération
+policy InvalidPatch is
+  scope "entity"
+  actions {
+    patch DataClassification { level == "internal" }  // ERREUR: Manque add/modify/remove
+  }
+end
+
+// ERREUR: Patch add sans champs
+policy PatchAddEmpty is
+  scope "entity"
+  actions {
+    patch add aspect DataClassification { }  // ERREUR: Aspect vide
+  }
+end
+
+// ERREUR: Patch modify aspect inexistant
+policy PatchModifyNonExistent is
+  scope "entity"
+  actions {
+    patch modify aspect UnknownAspect {
+      property == "value"
+    }  // ERREUR: Aspect non défini
+  }
+end
+
+// ERREUR: Notify sans adresse
+policy NotifyWithoutAddress is
+  scope "entity"
+  actions {
+    notify with message "Missing email address"  // ERREUR: Manque l'adresse
+  }
+end
+
+// ========== ERREURS DE SYNTAXE MIXTE ==========
+
+// ERREUR: Condition ET match (mutuellement exclusifs)
+policy ConditionAndMatch is
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  match entity is
+    { _ } -> actions { warn }
+  end
+  
+  actions { deny }  // ERREUR: Condition et match en même temps
+end
+
+// ERREUR: Ni condition ni match
+policy NoConditionOrMatch is
+  scope "entity"
+  
+  actions {
+    warn with message "Must have either condition or match"
+  }
+end
+
+// ========== ERREURS DE RÉFÉRENCES ==========
+
+// ERREUR: Référence à un champ inexistant
+policy InvalidFieldReference is
+  scope "entity"
+  condition aspects.DataClassification.unknown_field == "value"  // ERREUR: Champ inexistant
+  
+  actions { warn }
+end
+
+// ERREUR: Opérateur incompatible avec type
+policy InvalidOperatorType is
+  scope "entity"
+  condition aspects.DataClassification.encryption_required > "text"  // ERREUR: > sur Boolean vs String
+  
+  actions { warn }
+end

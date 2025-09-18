@@ -1547,5 +1547,158 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#annotatedPolicyDecl.
+    def enterAnnotatedPolicyDecl(self, ctx:MeshrModuleParser.AnnotatedPolicyDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#annotatedPolicyDecl.
+    def exitAnnotatedPolicyDecl(self, ctx:MeshrModuleParser.AnnotatedPolicyDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#sealedPolicyDecl.
+    def enterSealedPolicyDecl(self, ctx:MeshrModuleParser.SealedPolicyDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#sealedPolicyDecl.
+    def exitSealedPolicyDecl(self, ctx:MeshrModuleParser.SealedPolicyDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyDecl.
+    def enterPolicyDecl(self, ctx:MeshrModuleParser.PolicyDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyDecl.
+    def exitPolicyDecl(self, ctx:MeshrModuleParser.PolicyDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyVerbatim.
+    def enterPolicyVerbatim(self, ctx:MeshrModuleParser.PolicyVerbatimContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyVerbatim.
+    def exitPolicyVerbatim(self, ctx:MeshrModuleParser.PolicyVerbatimContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyScope.
+    def enterPolicyScope(self, ctx:MeshrModuleParser.PolicyScopeContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyScope.
+    def exitPolicyScope(self, ctx:MeshrModuleParser.PolicyScopeContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyCondition.
+    def enterPolicyCondition(self, ctx:MeshrModuleParser.PolicyConditionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyCondition.
+    def exitPolicyCondition(self, ctx:MeshrModuleParser.PolicyConditionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyMatch.
+    def enterPolicyMatch(self, ctx:MeshrModuleParser.PolicyMatchContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyMatch.
+    def exitPolicyMatch(self, ctx:MeshrModuleParser.PolicyMatchContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyMatchArm.
+    def enterPolicyMatchArm(self, ctx:MeshrModuleParser.PolicyMatchArmContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyMatchArm.
+    def exitPolicyMatchArm(self, ctx:MeshrModuleParser.PolicyMatchArmContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyPattern.
+    def enterPolicyPattern(self, ctx:MeshrModuleParser.PolicyPatternContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyPattern.
+    def exitPolicyPattern(self, ctx:MeshrModuleParser.PolicyPatternContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyPatternExpression.
+    def enterPolicyPatternExpression(self, ctx:MeshrModuleParser.PolicyPatternExpressionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyPatternExpression.
+    def exitPolicyPatternExpression(self, ctx:MeshrModuleParser.PolicyPatternExpressionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyExpression.
+    def enterPolicyExpression(self, ctx:MeshrModuleParser.PolicyExpressionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyExpression.
+    def exitPolicyExpression(self, ctx:MeshrModuleParser.PolicyExpressionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#aspectList.
+    def enterAspectList(self, ctx:MeshrModuleParser.AspectListContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#aspectList.
+    def exitAspectList(self, ctx:MeshrModuleParser.AspectListContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyActions.
+    def enterPolicyActions(self, ctx:MeshrModuleParser.PolicyActionsContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyActions.
+    def exitPolicyActions(self, ctx:MeshrModuleParser.PolicyActionsContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyActionList.
+    def enterPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyActionList.
+    def exitPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#policyAction.
+    def enterPolicyAction(self, ctx:MeshrModuleParser.PolicyActionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#policyAction.
+    def exitPolicyAction(self, ctx:MeshrModuleParser.PolicyActionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#patchAction.
+    def enterPatchAction(self, ctx:MeshrModuleParser.PatchActionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#patchAction.
+    def exitPatchAction(self, ctx:MeshrModuleParser.PatchActionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#patchOperation.
+    def enterPatchOperation(self, ctx:MeshrModuleParser.PatchOperationContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#patchOperation.
+    def exitPatchOperation(self, ctx:MeshrModuleParser.PatchOperationContext):
+        pass
+
+
 
 del MeshrModuleParser

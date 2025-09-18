@@ -1,0 +1,98 @@
+// ==============================
+// Test des policies SIMPLES valides
+// ==============================
+// Tests de base pour valider la structure des policies
+
+@Version("1.0.0")
+@Author(name="Test Suite", email="test@meshr-lang.org")
+@Documented(summary="Test des policies simples")
+module test.policies.simple
+
+// ========== POLICY SIMPLE AVEC CONDITION ==========
+
+policy RequireDataClassification is
+  verbatim "All entities must have data classification"
+  
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny with message "Entity must have DataClassification aspect"
+  }
+end
+
+// ========== POLICY SANS VERBATIM ==========
+
+policy SimpleWarning is
+  scope "entity"
+  condition missing aspect { GDPRCompliance }
+  
+  actions {
+    warn with message "Entity should have GDPR compliance"
+  }
+end
+
+// ========== POLICY AVEC EXISTS ==========
+
+policy ValidateExistingAspect is
+  scope "entity"
+  condition exists aspect { DataClassification }
+  
+  actions {
+    notify "admin@company.com" with message "Entity has data classification"
+  }
+end
+
+// ========== POLICY AVEC PATCH ADD ==========
+
+policy AddMissingAspect is
+  scope "entity"
+  condition missing aspect { DataStewardship }
+  
+  actions {
+    patch add aspect DataStewardship {
+      steward == "default@company.com",
+      business_domain == "default"
+    } with message "Added default stewardship"
+  }
+end
+
+// ========== POLICY AVEC PATCH MODIFY ==========
+
+policy UpdateAspectProperty is
+  scope "entity"
+  condition exists aspect { DataClassification }
+  
+  actions {
+    patch modify aspect DataClassification {
+      level == "internal"
+    } with message "Updated classification level"
+  }
+end
+
+// ========== POLICY AVEC PATCH REMOVE ==========
+
+policy RemoveDeprecatedAspect is
+  scope "entity"
+  condition exists aspect { DeprecatedAspect }
+  
+  actions {
+    patch remove aspect DeprecatedAspect with message "Removed deprecated aspect"
+  }
+end
+
+// ========== POLICY AVEC ACTIONS MULTIPLES ==========
+
+policy ComprehensiveValidation is
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny with message "Missing data classification",
+    notify "governance@company.com" with message "Governance violation detected",
+    patch add aspect DataClassification {
+      level == "internal",
+      steward == "data.team@company.com"
+    } with message "Auto-added classification"
+  }
+end

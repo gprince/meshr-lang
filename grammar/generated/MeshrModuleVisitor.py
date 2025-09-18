@@ -864,5 +864,90 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#annotatedPolicyDecl.
+    def visitAnnotatedPolicyDecl(self, ctx:MeshrModuleParser.AnnotatedPolicyDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#sealedPolicyDecl.
+    def visitSealedPolicyDecl(self, ctx:MeshrModuleParser.SealedPolicyDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyDecl.
+    def visitPolicyDecl(self, ctx:MeshrModuleParser.PolicyDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyVerbatim.
+    def visitPolicyVerbatim(self, ctx:MeshrModuleParser.PolicyVerbatimContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyScope.
+    def visitPolicyScope(self, ctx:MeshrModuleParser.PolicyScopeContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyCondition.
+    def visitPolicyCondition(self, ctx:MeshrModuleParser.PolicyConditionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyMatch.
+    def visitPolicyMatch(self, ctx:MeshrModuleParser.PolicyMatchContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyMatchArm.
+    def visitPolicyMatchArm(self, ctx:MeshrModuleParser.PolicyMatchArmContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyPattern.
+    def visitPolicyPattern(self, ctx:MeshrModuleParser.PolicyPatternContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyPatternExpression.
+    def visitPolicyPatternExpression(self, ctx:MeshrModuleParser.PolicyPatternExpressionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyExpression.
+    def visitPolicyExpression(self, ctx:MeshrModuleParser.PolicyExpressionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#aspectList.
+    def visitAspectList(self, ctx:MeshrModuleParser.AspectListContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyActions.
+    def visitPolicyActions(self, ctx:MeshrModuleParser.PolicyActionsContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyActionList.
+    def visitPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#policyAction.
+    def visitPolicyAction(self, ctx:MeshrModuleParser.PolicyActionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#patchAction.
+    def visitPatchAction(self, ctx:MeshrModuleParser.PatchActionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#patchOperation.
+    def visitPatchOperation(self, ctx:MeshrModuleParser.PatchOperationContext):
+        return self.visitChildren(ctx)
+
+
 
 del MeshrModuleParser

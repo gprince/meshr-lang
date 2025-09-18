@@ -25,8 +25,8 @@ export-items        = "{", identifier, { ",", identifier }, "}" ;
 (* ==============================
    Déclarations de haut niveau
    ============================== *)
-top-level-decl      = enum-decl | type-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
-exportable-decl     = enum-decl | type-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+top-level-decl      = enum-decl | type-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl | policy-decl ;
+exportable-decl     = enum-decl | type-decl | entity-decl | type-relation-decl | relation-decl | metric-decl | policy-decl ;
 
 (* ========== ENUM ============= *)
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
@@ -293,6 +293,52 @@ temporal-config     = temporal-field, interval-literal ;
 temporal-field      = "window" | "refresh_frequency" | "historical_depth" ;
 
 metric-aspects      = "aspects", "{", aspect-instance-list, "}" ;
+
+(* ========== POLICY DECLARATION ============ *)
+policy-decl         = { annotation }, [ "sealed" ], "policy", identifier, "is",
+                      [ policy-verbatim ],
+                      policy-scope,
+                      ( policy-condition | policy-match ),
+                      policy-actions,
+                      "end" ;
+
+policy-verbatim     = "verbatim", string-literal ;
+policy-scope        = "scope", string-literal, [ "where", expression ] ;
+policy-condition    = "condition", policy-expression ;
+
+policy-match        = "match", qualified-name, "is", { policy-match-arm }, "end" ;
+policy-match-arm    = policy-pattern, "->", policy-actions ;
+
+policy-pattern      = "{", policy-pattern-expr, "}", { "or", "{", policy-pattern-expr, "}" }
+                    | "_" ;
+
+policy-pattern-expr = expression
+                    | identifier, "is", "null"
+                    | identifier, "in", ( range-literal | list-literal | "{", string-literal, { ",", string-literal }, "}" )
+                    | identifier, "like", string-literal
+                    | "not", "exists", identifier
+                    | "_" ;
+
+policy-expression   = "missing", "aspect", "{", aspect-list, "}"
+                    | "exists", "aspect", "{", aspect-list, "}"
+                    | "aspects", ".", identifier, ".", identifier, ( "==" | "!=" | "<" | "<=" | ">" | ">=" ), annotation-value
+                    | expression ;
+
+aspect-list         = identifier, { ",", identifier } ;
+
+policy-actions      = "actions", "{", policy-action-list, "}" ;
+policy-action-list  = policy-action, { ",", policy-action } ;
+
+policy-action       = "deny", [ "with", "message", string-literal ]
+                    | "warn", [ "with", "message", string-literal ]
+                    | "notify", string-literal, [ "with", "message", string-literal ]
+                    | patch-action ;
+
+patch-action        = "patch", patch-operation, [ "with", "message", string-literal ] ;
+
+patch-operation     = "add", "aspect", identifier, "{", aspect-instance-field-list, "}"
+                    | "modify", "aspect", identifier, "{", aspect-instance-field-list, "}"
+                    | "remove", "aspect", identifier ;
 
 comment             = line-comment | block-comment ;
 line-comment        = "//", { character - end-of-line } ;

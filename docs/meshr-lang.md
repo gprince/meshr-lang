@@ -2185,9 +2185,319 @@ entity Customer is
 end
 ```
 
----
+\newpage
 
-## 🔒 Modificateur `sealed`
+# 12
+# Policies
+
+Les **policies** (politiques) permettent de définir des règles de gouvernance et de validation automatiques sur les déclarations Meshr-Lang. Elles constituent un mécanisme puissant pour assurer la conformité, la qualité et la cohérence des modèles de données.
+
+## Concept et objectifs
+
+### Principe de gouvernance déclarative
+Les policies permettent d'exprimer des règles métier et de conformité directement dans le modèle, avec application automatique et actions correctives.
+
+### Domaines d'application
+- **Gouvernance des données** : Validation des aspects obligatoires
+- **Conformité** : Respect des réglementations (GDPR, SOX, etc.)
+- **Qualité** : Validation des contraintes et bonnes pratiques
+- **Sécurité** : Application automatique des politiques de sécurité
+- **Maintenance** : Corrections automatiques et notifications
+
+## Syntaxe de base
+
+### Structure générale
+```meshr
+policy PolicyName is
+  verbatim "Description libre optionnelle"
+  
+  scope "entity"|"record"|"trait"|"aspect"|"relation"|"metric"|"type"
+  
+  // Option A : Condition simple
+  condition missing aspect { AspectName }
+  condition exists aspect { AspectName }
+  
+  // Option B : Pattern matching (pour cas complexes)
+  match scope_type is
+    { pattern1 } -> actions { ... },
+    { pattern2 } or { pattern3 } -> actions { ... }
+  end
+  
+  actions {
+    deny with message "Error message",
+    warn with message "Warning message",
+    notify "email@company.com" with message "Notification",
+    patch modify aspect AspectName { property == value } with message "Patch message"
+  }
+end
+```
+
+## Composants détaillés
+
+### 1. Verbatim (optionnel)
+Documentation libre en langage naturel, placée immédiatement après `is`.
+
+```meshr
+policy DataGovernanceBasic is
+  verbatim "All entities with personal data must have proper governance aspects"
+  
+  scope "entity"
+  // ...
+end
+```
+
+### 2. Scope (obligatoire)
+Définit le type de déclaration sur lequel la policy s'applique.
+
+```meshr
+// Scopes supportés
+scope "entity"      // Entités
+scope "record"      // Records  
+scope "trait"       // Traits
+scope "aspect"      // Aspects
+scope "relation"    // Relations
+scope "metric"      // Métriques
+scope "type"        // Types personnalisés
+
+// Scope avec filtre
+scope "entity" where contains_personal_data == true
+scope "metric" where business_criticality == "high"
+```
+
+### 3. Conditions
+Expressions déclaratives pour tester l'état des déclarations.
+
+#### Validation d'aspects
+```meshr
+// Aspects manquants
+condition missing aspect { DataClassification }
+condition missing aspect { GDPRCompliance, DataStewardship }
+
+// Aspects existants  
+condition exists aspect { DataClassification }
+
+// Propriétés d'aspects
+condition aspects.DataClassification.level == "confidential"
+condition aspects.GDPRCompliance.retention_period > Interval 5 year
+```
+
+### 4. Pattern Matching
+Pour des validations complexes, réutilise la syntaxe des métriques.
+
+#### Patterns simples
+```meshr
+match table is
+  { partitioning is null } ->
+    actions { deny with message "Partitioning required" }
+end
+```
+
+#### Patterns avec OR
+```meshr
+match table is
+  { partitioning is null } or { expiration is null } ->
+    actions { deny with message "Both partitioning and expiration required" }
+end
+```
+
+#### Patterns avec ranges
+```meshr
+match dataset is
+  { expiration < 30 } ->
+    actions { deny with message "Retention too short" },
+  { expiration > 365 } ->
+    actions { deny with message "Retention too long" }
+end
+```
+
+#### Patterns avec ensembles
+```meshr
+match dataset is
+  { label "env" in { "dev", "staging" } } ->
+    actions { warn with message "Non-production environment" }
+end
+```
+
+### 5. Actions
+Définissent les mesures à prendre quand une policy est violée.
+
+#### Actions de validation
+```meshr
+actions {
+  deny with message "Blocking error message",
+  warn with message "Warning message"
+}
+```
+
+#### Actions de notification
+```meshr
+actions {
+  notify "admin@company.com" with message "Governance violation detected",
+  notify "dpo@company.com" with message "GDPR compliance issue"
+}
+```
+
+#### Actions de correction (patch)
+```meshr
+actions {
+  // Ajouter un aspect manquant
+  patch add aspect DataClassification {
+    level == "internal",
+    steward == "data.team@company.com"
+  } with message "Added default classification",
+  
+  // Modifier un aspect existant
+  patch modify aspect GDPRCompliance {
+    retention_period == Interval 7 year
+  } with message "Updated retention period",
+  
+  // Supprimer un aspect obsolète
+  patch remove aspect DeprecatedAspect with message "Removed deprecated aspect"
+}
+```
+
+## Exemples complets
+
+### Policy de gouvernance basique
+```meshr
+policy RequireDataClassification is
+  verbatim "All entities must have data classification for governance"
+  
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny with message "Entity must have DataClassification aspect"
+  }
+end
+```
+
+### Policy avec validation d'aspects multiples
+```meshr
+policy GDPRCompliance is
+  verbatim "Entities with personal data need GDPR compliance"
+  
+  scope "entity" where contains_personal_data == true
+  condition missing aspect { GDPRCompliance, DataClassification }
+  
+  actions {
+    patch add aspect GDPRCompliance {
+      lawful_basis == "consent",
+      retention_period == Interval 7 year,
+      data_subject_rights == List["access", "rectification", "erasure"]
+    } with message "Auto-added GDPR compliance",
+    
+    notify "dpo@company.com" with message "New entity with personal data created"
+  }
+end
+```
+
+### Policy avec pattern matching avancé
+```meshr
+policy SensitiveDataValidation is
+  verbatim "Sensitive columns must be properly tagged and encrypted"
+  
+  scope "column"
+  
+  match column is
+    { (name like "ssn" or name like "iban" or name like "credit_card") and not exists policy_tag } ->
+      actions {
+        deny with message "Sensitive columns must be tagged",
+        patch add policy_tag "pii.sensitive" with message "Auto-tagged sensitive column"
+      },
+    { name like "email" and constraints missing pattern } ->
+      actions {
+        warn with message "Email fields should have pattern validation",
+        patch add constraint pattern "^[^@]+@[^@]+$" with message "Added email pattern"
+      }
+  end
+end
+```
+
+### Policy de qualité des métriques
+```meshr
+policy MetricQualityStandards is
+  verbatim "All business-critical metrics must have proper governance"
+  
+  scope "metric"
+  condition missing aspect { MetricGovernance }
+  
+  actions {
+    patch add aspect MetricGovernance {
+      business_owner == "data.owner@company.com",
+      technical_owner == "analytics@company.com",
+      refresh_frequency == Interval 1 day,
+      accuracy_threshold == 95.0,
+      business_criticality == "medium"
+    } with message "Added default metric governance",
+    
+    warn with message "Metric should have explicit governance metadata"
+  }
+end
+```
+
+## Règles sémantiques
+
+### Validation des scopes
+- Les scopes doivent correspondre aux types de déclarations Meshr-Lang
+- Les filtres `where` utilisent les expressions standard du langage
+- Les références aux aspects doivent être valides et importées
+
+### Conditions vs Pattern Matching
+- **Conditions** : Pour des tests simples sur les aspects
+- **Pattern Matching** : Pour des validations complexes avec multiple branches
+- Les deux sont mutuellement exclusifs dans une même policy
+
+### Actions et effets de bord
+- **`deny`** : Bloque la compilation/validation
+- **`warn`** : Émet un avertissement non-bloquant
+- **`notify`** : Envoie une notification (email, webhook, etc.)
+- **`patch`** : Modifie automatiquement le modèle
+
+### Patch operations
+- **`add aspect`** : Ajoute un aspect complet (erreur si existe déjà)
+- **`modify aspect`** : Modifie des propriétés d'un aspect existant
+- **`remove aspect`** : Supprime un aspect complet
+
+## Bonnes pratiques
+
+### Organisation
+- Grouper les policies liées dans des modules dédiés
+- Utiliser des noms explicites : `RequireGDPRCompliance`, `ValidateDataClassification`
+- Documenter avec `verbatim` les policies complexes
+
+### Messages
+- Messages explicites et actionnables
+- Références aux politiques d'entreprise quand approprié
+- Messages de patch pour traçabilité des modifications automatiques
+
+### Exemple d'organisation
+```meshr
+@Version("1.0.0")
+@Documented(summary="Data governance policies for customer domain")
+module customer.policies
+
+import { DataClassification, GDPRCompliance } from meshr.security
+import { DataStewardship } from meshr.governance
+
+export { RequireDataClassification, GDPRValidation, StewardshipPolicy }
+
+policy RequireDataClassification is
+  verbatim "All customer entities must have data classification"
+  
+  scope "entity"
+  condition missing aspect { DataClassification }
+  
+  actions {
+    deny with message "Customer entities require data classification per policy GOV-001"
+  }
+end
+```
+
+\newpage
+
+# 13
+# Modificateur sealed
 
 Le modificateur `sealed` permet de **verrouiller l'extension** d'un artefact. Par défaut, tous les artefacts sont **ouverts** (extensibles). Un artefact marqué `sealed` ne peut plus être hérité, étendu ou redéfini partiellement. L'usage par référence ou instanciation **reste autorisé**.
 
