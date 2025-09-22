@@ -65,6 +65,11 @@ topLevelDecl
     | sealedMetricDecl
     | annotatedPolicyDecl
     | sealedPolicyDecl
+    | letDecl
+    ;
+
+letDecl
+    : 'let' IDENTIFIER '==' expression
     ;
 
 // ========== ENUM =============
@@ -396,8 +401,8 @@ qualifiedName
 
 // ========== TYPE REFERENCES ============
 typeRef
-    : qualifiedName
-    | baseType
+    : baseType
+    | qualifiedName
     | listType
     | mapType
     | rangeType
@@ -418,6 +423,7 @@ rangeType
 // ========== ANNOTATION USAGE ============
 annotationValue
     : STRING_LITERAL
+    | stringTemplate
     | NUMBER_LITERAL
     | BOOLEAN_LITERAL
     | qualifiedName
@@ -439,21 +445,21 @@ annotationValue
 // ========== INTERVAL LITERALS ============
 intervalLiteral
     : 'Interval' intervalSinglePart
-    | 'Interval' STRING_LITERAL 'year' 'to' 'month'
-    | 'Interval' STRING_LITERAL 'year' 'to' 'day'
-    | 'Interval' STRING_LITERAL 'year' 'to' 'hour'
-    | 'Interval' STRING_LITERAL 'year' 'to' 'minute'
-    | 'Interval' STRING_LITERAL 'year' 'to' 'second'
-    | 'Interval' STRING_LITERAL 'month' 'to' 'day'
-    | 'Interval' STRING_LITERAL 'month' 'to' 'hour'
-    | 'Interval' STRING_LITERAL 'month' 'to' 'minute'
-    | 'Interval' STRING_LITERAL 'month' 'to' 'second'
-    | 'Interval' STRING_LITERAL 'day' 'to' 'hour'
-    | 'Interval' STRING_LITERAL 'day' 'to' 'minute'
-    | 'Interval' STRING_LITERAL 'day' 'to' 'second'
-    | 'Interval' STRING_LITERAL 'hour' 'to' 'minute'
-    | 'Interval' STRING_LITERAL 'hour' 'to' 'second'
-    | 'Interval' STRING_LITERAL 'minute' 'to' 'second'
+    | 'Interval' NUMBER_LITERAL 'year' 'to' 'month'
+    | 'Interval' NUMBER_LITERAL 'year' 'to' 'day'
+    | 'Interval' NUMBER_LITERAL 'year' 'to' 'hour'
+    | 'Interval' NUMBER_LITERAL 'year' 'to' 'minute'
+    | 'Interval' NUMBER_LITERAL 'year' 'to' 'second'
+    | 'Interval' NUMBER_LITERAL 'month' 'to' 'day'
+    | 'Interval' NUMBER_LITERAL 'month' 'to' 'hour'
+    | 'Interval' NUMBER_LITERAL 'month' 'to' 'minute'
+    | 'Interval' NUMBER_LITERAL 'month' 'to' 'second'
+    | 'Interval' NUMBER_LITERAL 'day' 'to' 'hour'
+    | 'Interval' NUMBER_LITERAL 'day' 'to' 'minute'
+    | 'Interval' NUMBER_LITERAL 'day' 'to' 'second'
+    | 'Interval' NUMBER_LITERAL 'hour' 'to' 'minute'
+    | 'Interval' NUMBER_LITERAL 'hour' 'to' 'second'
+    | 'Interval' NUMBER_LITERAL 'minute' 'to' 'second'
     ;
 
 intervalSinglePart
@@ -722,11 +728,17 @@ expression
     | expression ('and' | 'or') expression                         # LogicalExpr
     | expression 'in' expression                                   # InExpr
     | expression 'where' expression                                # WhereExpr
-    | functionCall                                                  # FunctionCallExpr
-    | fieldReference                                                # FieldReferenceExpr
-    | enumReference                                                 # EnumReferenceExpr
-    | literal                                                       # LiteralExpr
-    | '(' expression ')'                                            # ParenthesizedExpr
+    | functionCall                                                 # FunctionCallExpr
+    | fieldReference                                               # FieldReferenceExpr
+    | enumReference                                                # EnumReferenceExpr
+    | literal                                                      # LiteralExpr
+    | matchExpression                                              # MatchExpr
+    | tupleExpr                                                    # TupleExpression
+    | '(' expression ')'                                           # ParenthesizedExpr
+    ;
+
+tupleExpr
+    : '(' expression (',' expression)+ ')'
     ;
 
 functionCall
@@ -743,6 +755,7 @@ enumReference
 
 literal
     : STRING_LITERAL
+    | stringTemplate
     | NUMBER_LITERAL
     | BOOLEAN_LITERAL
     | dateLiteral
@@ -940,7 +953,7 @@ policyVerbatim
     ;
 
 policyScope
-    : SCOPE STRING_LITERAL (WHERE expression)?
+    : SCOPE qualifiedName (WHERE expression)?
     ;
 
 policyCondition
@@ -989,20 +1002,25 @@ policyActionList
     ;
 
 policyAction
-    : DENY (WITH MESSAGE STRING_LITERAL)?
-    | WARN (WITH MESSAGE STRING_LITERAL)?
-    | NOTIFY STRING_LITERAL (WITH MESSAGE STRING_LITERAL)?
+    : DENY (WITH MESSAGE (STRING_LITERAL | stringTemplate))?
+    | WARN (WITH MESSAGE (STRING_LITERAL | stringTemplate))?
+    | NOTIFY (STRING_LITERAL | stringTemplate) (WITH MESSAGE (STRING_LITERAL | stringTemplate))?
     | patchAction
     ;
 
 patchAction
-    : PATCH patchOperation (WITH MESSAGE STRING_LITERAL)?
+    : PATCH patchOperation (WITH MESSAGE (STRING_LITERAL | stringTemplate))?
     ;
 
 patchOperation
     : ADD ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
     | MODIFY ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
     | REMOVE ASPECT IDENTIFIER
+    ;
+
+// ========== STRING TEMPLATE ==========
+stringTemplate
+    : STRING_LITERAL ( '${' expression '}' STRING_LITERAL )+
     ;
 
 IDENTIFIER: [a-zA-Z_][a-zA-Z0-9_]* ;

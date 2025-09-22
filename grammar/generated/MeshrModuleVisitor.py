@@ -64,6 +64,11 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#letDecl.
+    def visitLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#exportableDecl.
     def visitExportableDecl(self, ctx:MeshrModuleParser.ExportableDeclContext):
         return self.visitChildren(ctx)
@@ -619,6 +624,21 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#ComparisonExpr.
+    def visitComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#TupleExpression.
+    def visitTupleExpression(self, ctx:MeshrModuleParser.TupleExpressionContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
+    def visitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#MultiplicativeExpr.
     def visitMultiplicativeExpr(self, ctx:MeshrModuleParser.MultiplicativeExprContext):
         return self.visitChildren(ctx)
@@ -636,11 +656,6 @@ class MeshrModuleVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MeshrModuleParser#AdditiveExpr.
     def visitAdditiveExpr(self, ctx:MeshrModuleParser.AdditiveExprContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by MeshrModuleParser#ComparisonExpr.
-    def visitComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
         return self.visitChildren(ctx)
 
 
@@ -669,8 +684,13 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
-    def visitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+    # Visit a parse tree produced by MeshrModuleParser#MatchExpr.
+    def visitMatchExpr(self, ctx:MeshrModuleParser.MatchExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#tupleExpr.
+    def visitTupleExpr(self, ctx:MeshrModuleParser.TupleExprContext):
         return self.visitChildren(ctx)
 
 
@@ -946,6 +966,11 @@ class MeshrModuleVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MeshrModuleParser#patchOperation.
     def visitPatchOperation(self, ctx:MeshrModuleParser.PatchOperationContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#stringTemplate.
+    def visitStringTemplate(self, ctx:MeshrModuleParser.StringTemplateContext):
         return self.visitChildren(ctx)
 
 

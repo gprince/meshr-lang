@@ -1,0 +1,38 @@
+--- a/grammar/MeshrModule.g4
++++ b/grammar/MeshrModule.g4
+@@
+ typeRef
+-    : qualifiedName
+-    | baseType
+-    | listType
+-    | mapType
+-    | rangeType
++    : baseType
++    | qualifiedName
++    | listType
++    | mapType
++    | rangeType
+     ;
+ 
+ // ========== ANNOTATION USAGE ============
+@@
+ patchOperation
+     : ADD ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
+     | MODIFY ASPECT IDENTIFIER '{' aspectInstanceFieldList '}'
+     | REMOVE ASPECT IDENTIFIER
+     ;
+-
+-// ========== STRING TEMPLATE ==========
+-stringTemplate
+-    : '\"' stringPart* '\"'
+-    ;
+-
+-stringPart
+-    : ~[\"\\\\${}]+            # TextPart
+-    | ESC                   # EscapePart
+-    | '${' expression '}'   # InterpolationPart
+-    ;
++// ========== STRING TEMPLATE ==========
++stringTemplate
++    : STRING_LITERAL ( '${' expression '}' STRING_LITERAL )+
++    ;

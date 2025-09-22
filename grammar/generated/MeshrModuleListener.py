@@ -107,6 +107,15 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#letDecl.
+    def enterLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#letDecl.
+    def exitLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#exportableDecl.
     def enterExportableDecl(self, ctx:MeshrModuleParser.ExportableDeclContext):
         pass
@@ -1106,6 +1115,33 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#ComparisonExpr.
+    def enterComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#ComparisonExpr.
+    def exitComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#TupleExpression.
+    def enterTupleExpression(self, ctx:MeshrModuleParser.TupleExpressionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#TupleExpression.
+    def exitTupleExpression(self, ctx:MeshrModuleParser.TupleExpressionContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
+    def enterEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
+    def exitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#MultiplicativeExpr.
     def enterMultiplicativeExpr(self, ctx:MeshrModuleParser.MultiplicativeExprContext):
         pass
@@ -1139,15 +1175,6 @@ class MeshrModuleListener(ParseTreeListener):
 
     # Exit a parse tree produced by MeshrModuleParser#AdditiveExpr.
     def exitAdditiveExpr(self, ctx:MeshrModuleParser.AdditiveExprContext):
-        pass
-
-
-    # Enter a parse tree produced by MeshrModuleParser#ComparisonExpr.
-    def enterComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
-        pass
-
-    # Exit a parse tree produced by MeshrModuleParser#ComparisonExpr.
-    def exitComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
         pass
 
 
@@ -1196,12 +1223,21 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
-    def enterEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+    # Enter a parse tree produced by MeshrModuleParser#MatchExpr.
+    def enterMatchExpr(self, ctx:MeshrModuleParser.MatchExprContext):
         pass
 
-    # Exit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
-    def exitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+    # Exit a parse tree produced by MeshrModuleParser#MatchExpr.
+    def exitMatchExpr(self, ctx:MeshrModuleParser.MatchExprContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#tupleExpr.
+    def enterTupleExpr(self, ctx:MeshrModuleParser.TupleExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#tupleExpr.
+    def exitTupleExpr(self, ctx:MeshrModuleParser.TupleExprContext):
         pass
 
 
@@ -1697,6 +1733,15 @@ class MeshrModuleListener(ParseTreeListener):
 
     # Exit a parse tree produced by MeshrModuleParser#patchOperation.
     def exitPatchOperation(self, ctx:MeshrModuleParser.PatchOperationContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#stringTemplate.
+    def enterStringTemplate(self, ctx:MeshrModuleParser.StringTemplateContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#stringTemplate.
+    def exitStringTemplate(self, ctx:MeshrModuleParser.StringTemplateContext):
         pass
 
 

@@ -1,0 +1,52 @@
+/* ==============================
+   meshr-lang
+   ==============================
+   Code métamodèle simplifié
+*/
+
+@Version("1.0.0")
+@Author(name="G. Prince", email="gprince@equancy.com")
+@Documented(
+  summary="Métamodèle core simplifié de meshr-lang",
+  description="Ensemble des types de base et objets de base décrivant meshr-lang"
+)
+module meshr.core.metamodel
+
+
+@Since("1.0.0")
+entity Domain is
+ // TODO: Define the fields of the Entity
+end
+
+@Since("1.0.0")
+entity Produit is
+  // TODO: Define the fields of the Entity
+end
+
+@Since("1.0.0")
+entity Contract is
+  // TODO: Define the fields of the Entity
+end
+
+@Since("1.0.0")
+entity Owner is
+  // TODO: Define the fields of the Entity
+end
+
+enum OwnershipRole is ("primary", "delegated", "custodian", "observer")
+
+@Since("1.0.0")
+type relation HawOwnerRelationType is
+  ownershipSince : Date           // Date à laquelle l'entité est devenue propriétaire
+  ownershipRole : OwnershipRole   // Rôle du propriétaire (ex: primary, delegated)
+  ownershipShare : Float = 1.0    // Part de propriété comprise entre 0.0 et 1.0
+end
+
+relation DoaminOwnerRelation of type has_owner is
+  from Domain(domain_id)
+  to Owner(owner_id)
+
+
+
+
+end
