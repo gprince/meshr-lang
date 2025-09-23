@@ -1,12 +1,20 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.utils.hooks import collect_data_files
+from PyInstaller.utils.hooks import collect_submodules
+
+datas = [('/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/lsp/server/*.py', '.'), ('/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/meshr_project.py', '.')]
+hiddenimports = ['toml', 'antlr4', 'antlr4.InputStream', 'antlr4.CommonTokenStream', 'antlr4.ParseTreeWalker', 'antlr4.error.ErrorListener']
+datas += collect_data_files('lsprotocol')
+hiddenimports += collect_submodules('pygls')
+hiddenimports += collect_submodules('lsprotocol')
 
 
 a = Analysis(
     ['/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/lsp/server/standalone_language_server.py'],
     pathex=[],
     binaries=[],
-    datas=[('/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/lsp/server/*.py', '.'), ('/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/meshr_project.py', '.')],
-    hiddenimports=['pygls', 'lsprotocol', 'lsprotocol.types', 'toml', 'antlr4', 'antlr4.InputStream', 'antlr4.CommonTokenStream', 'antlr4.ParseTreeWalker', 'antlr4.error.ErrorListener'],
+    datas=datas,
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

@@ -3,6 +3,7 @@
 Script de build pour créer un serveur LSP standalone
 """
 
+import os
 import subprocess
 import sys
 import shutil
@@ -30,16 +31,18 @@ def build_server():
         "--distpath", str(output_dir),
         "--add-data", f"{server_dir}/*.py:.",
         "--add-data", f"{server_dir.parent.parent}/meshr_project.py:.",
-        "--hidden-import", "pygls",
-        "--hidden-import", "lsprotocol",
-        "--hidden-import", "lsprotocol.types",
         "--hidden-import", "toml",
         "--hidden-import", "antlr4",
         "--hidden-import", "antlr4.InputStream",
         "--hidden-import", "antlr4.CommonTokenStream",
         "--hidden-import", "antlr4.ParseTreeWalker",
         "--hidden-import", "antlr4.error.ErrorListener",
-        "--clean",
+        "--collect-submodules", "pygls",
+        "--collect-submodules", "lsprotocol",
+        "--collect-data", "lsprotocol",
+        "--collect-data", "pygls",
+        "--collect-all", "pygls",
+        "--collect-all", "lsprotocol",
         str(server_dir / "standalone_language_server.py")
     ]
     
@@ -47,7 +50,16 @@ def build_server():
     print(f"Command: {' '.join(cmd)}")
     
     try:
-        result = subprocess.run(cmd, check=True, capture_output=True, text=True)
+        env = os.environ.copy()
+        cache_dir = server_dir / "pyinstaller_cache"
+        config_dir = server_dir / "pyinstaller_config"
+        cache_dir.mkdir(exist_ok=True)
+        config_dir.mkdir(exist_ok=True)
+
+        env["PYINSTALLER_CACHE_DIR"] = str(cache_dir)
+        env["PYINSTALLER_CONFIG_DIR"] = str(config_dir)
+
+        result = subprocess.run(cmd, check=True, capture_output=True, text=True, env=env)
         print("✅ Server built successfully!")
         
         # Copier vers le répertoire client

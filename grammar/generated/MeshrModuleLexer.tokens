@@ -141,7 +141,7 @@ MULTILINE_COMMENT=136
 '}'=5
 ','=6
 'export'=7
-'let'=8
+'val'=8
 '=='=9
 'enum'=10
 'is'=11

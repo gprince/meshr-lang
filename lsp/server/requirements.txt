@@ -1,5 +1,7 @@
 # Language Server Protocol pour Meshr-Lang
 pygls==1.1.1
 antlr4-python3-runtime==4.13.2
-pydantic==2.5.0
-typing-extensions==4.8.0
+pydantic==2.9.2
+typing-extensions>=4.8.0
+toml==0.10.2
+pyinstaller>=6.9.0,<7

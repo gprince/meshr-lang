@@ -1,0 +1,305 @@
+@LangVersion("0.4.0")
+@LangSince("0.4.0")
+@LangDocumented(
+  summary="Métamodèle officiel du langage Meshr",
+  description="Ce module formalise les artefacts du DSL Meshr pour permettre son auto-description."
+)
+module meshr.lang.metamodel
+
+export {
+  LangVersion,
+  LangSince,
+  LangDocumented,
+  ModuleDefinition,
+  DeclarationDefinition,
+  DeclarationSurface,
+  FieldDefinition,
+  ImportSpec,
+  ExportSpec,
+  AnnotationApplication,
+  AspectBinding,
+  RelationShape,
+  MetricShape,
+  PolicyShape,
+  Declares,
+  ModuleDeclares,
+  DeclarationKind,
+  DeclarationFeature,
+  ImportKind,
+  ExportKind,
+  AspectScope
+}
+
+// Hiérarchie de chargement recommandée pour les artefacts Meshr
+val CORE_DECLARATION_ORDER == List["module", "type", "enum", "record", "trait", "aspect", "entity", "relation", "type_relation", "metric", "policy", "val"]
+val GOVERNANCE_DECLARATIONS == List["annotation", "policy"]
+
+type ModuleName is String pattern "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
+type Identifier is String pattern "^[A-Za-z_][A-Za-z0-9_]*$"
+type SemanticVersion is String pattern "^\\d+\\.\\d+\\.\\d+(-[A-Za-z0-9\\.]+)?$"
+type DocString is String length 1..2000
+type TypeExpression is String length 1..200
+
+@LangDocumented(summary="Liste exhaustive des artefacts top-level que Meshr-lang sait déclarer.")
+enum DeclarationKind is (
+  MODULE,
+  ANNOTATION,
+  ENUM,
+  TYPE,
+  RECORD,
+  TRAIT,
+  ASPECT,
+  ENTITY,
+  RELATION,
+  TYPE_RELATION,
+  METRIC,
+  POLICY,
+  VAL
+)
+
+@LangDocumented(summary="Capacités structurelles activables sur une déclaration Meshr.")
+enum DeclarationFeature is (
+  FIELDS,
+  TRAITS,
+  ASPECTS,
+  ANNOTATIONS,
+  EXPORTS,
+  SEALED_MODIFIER,
+  WITH_CLAUSE,
+  RELATION_ENDPOINTS,
+  SOURCE_CLAUSE,
+  CALCULATION_BLOCK,
+  AGGREGATION_BLOCK,
+  METRIC_DIMENSIONS,
+  METRIC_FILTERS,
+  METRIC_TEMPORAL,
+  POLICY_SCOPE,
+  POLICY_CONDITION,
+  POLICY_ACTIONS,
+  VAL_EXPRESSION
+)
+
+@LangDocumented(summary="Variantes d'import prévues par la grammaire Meshr.")
+enum ImportKind is (SINGLE, GROUPED, WILDCARD)
+
+@LangDocumented(summary="Modes d'export supportés par la syntaxe Meshr.")
+enum ExportKind is (INLINE, GROUPED)
+
+@LangDocumented(summary="Portées d'application possibles pour une instanciation d'aspect.")
+enum AspectScope is (DECLARATION, FIELD, METRIC_COMPONENT)
+
+@LangDocumented(summary="Représentation canonique d'un nom qualifié d'artefact Meshr.")
+record QualifiedName is
+  raw : String length 1..200
+  segments : List of Identifier = List[]
+end
+
+@LangDocumented(summary="Clause d'import telle que définie dans la grammaire Meshr.")
+record ImportSpec is
+  kind : ImportKind
+  module : QualifiedName
+  items : List of Identifier = List[]
+end
+
+@LangDocumented(summary="Clause d'export groupée ou inline pour exposer des artefacts.")
+record ExportSpec is
+  kind : ExportKind
+  items : List of Identifier = List[]
+end
+
+@LangDocumented(summary="Application concrète d'une annotation Meshr sur une cible.")
+record AnnotationApplication is
+  name : QualifiedName
+  positional : List of Json = List[]
+  named : Map of Identifier to Json = Map{}
+end
+
+@LangDocumented(summary="Instanciation d'un aspect sur une déclaration ou un champ.")
+record AspectBinding is
+  scope : AspectScope
+  aspect : QualifiedName
+  arguments : Map of Identifier to Json = Map{}
+end
+
+@LangDocumented(summary="Spécification d'un champ typé et annotable dans une déclaration.")
+record FieldDefinition is
+  name : Identifier
+  type_expression : TypeExpression
+  required : Boolean = true
+  default_value : Json = Json "{}"
+  applied_traits : List of QualifiedName = List[]
+  attached_aspects : List of AspectBinding = List[]
+end
+
+@LangDocumented(summary="Décrit les extrémités et la nature d'une relation Meshr.")
+record RelationShape is
+  type_name : QualifiedName
+  from_entity : QualifiedName
+  from_keys : List of Identifier = List[]
+  to_entity : QualifiedName
+  to_keys : List of Identifier = List[]
+  bidirectional : Boolean = false
+end
+
+@LangDocumented(summary="Décrit les composantes d'une métrique Meshr.")
+record MetricShape is
+  source : QualifiedName
+  calculation : String length 1..512
+  aggregation : String length 0..512 = ""
+  dimensions : List of Identifier = List[]
+  filters : List of String = List[]
+  temporal_window : String length 0..128 = ""
+end
+
+@LangDocumented(summary="Décrit une politique de gouvernance Meshr.")
+record PolicyShape is
+  scope : QualifiedName
+  condition : String length 1..512
+  actions : List of String = List[]
+end
+
+@LangDocumented(summary="Squelette commun aux artefacts Meshr structurés.")
+record DeclarationSurface is
+  fields : List of FieldDefinition = List[]
+  relations : List of RelationShape = List[]
+  metrics : List of MetricShape = List[]
+  policies : List of PolicyShape = List[]
+end
+
+trait WithIdentity is
+  name : Identifier
+end
+
+trait WithAnnotations is
+  annotations : List of AnnotationApplication = List[]
+end
+
+trait WithAspects is
+  aspects : List of AspectBinding = List[]
+end
+
+trait WithTraits is
+  traits : List of QualifiedName = List[]
+end
+
+abstract aspect SemanticTagBase is
+  semantics : String length 1..160
+  rationale : String length 0..512 = ""
+end
+
+aspect ModuleSemantics extends SemanticTagBase is
+  spec_version : SemanticVersion
+  stable : Boolean = false
+end
+
+aspect DeclarationSemantics extends SemanticTagBase is
+  scope : String length 1..120
+  features : List of DeclarationFeature = List[]
+end
+
+aspect SemanticLink extends SemanticTagBase is
+  relation_kind : String length 1..120
+end
+
+annotation LangVersion is
+  required value : SemanticVersion
+end
+
+annotation LangSince is
+  required value : SemanticVersion
+end
+
+annotation LangDocumented is
+  required summary : DocString
+  optional description : String = ""
+  optional references : String = ""
+end
+
+@LangDocumented(
+  summary="Structure canonique d'un module Meshr.",
+  description="Modélise l'unité de compilation Meshr, son versioning, ses imports/exports et la liste ordonnée des artefacts déclarés."
+)
+entity ModuleDefinition with WithAnnotations, WithAspects is
+  module_name : ModuleName
+  version : SemanticVersion
+  imports : List of ImportSpec = List[]
+  exports : List of ExportSpec = List[]
+  declarations : List of DeclarationDefinition = List[]
+  declaration_order : List of DeclarationKind = List[
+    DeclarationKind.MODULE,
+    DeclarationKind.TYPE,
+    DeclarationKind.ENUM,
+    DeclarationKind.RECORD,
+    DeclarationKind.TRAIT,
+    DeclarationKind.ASPECT,
+    DeclarationKind.ENTITY,
+    DeclarationKind.RELATION,
+    DeclarationKind.TYPE_RELATION,
+    DeclarationKind.METRIC,
+    DeclarationKind.POLICY,
+    DeclarationKind.VAL
+  ]
+  aspects {
+    ModuleSemantics {
+      semantics == "module",
+      rationale == "Un module encapsule et versionne un sous-domaine Meshr.",
+      spec_version == "0.4.0",
+      stable == true
+    }
+  }
+end
+
+@LangDocumented(
+  summary="Description générique d'une déclaration Meshr top-level.",
+  description="Capture le type de déclaration, son statut d'export, ses traits, sa surface structurelle et les métadonnées qui la gouvernent."
+)
+entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, WithTraits is
+  kind : DeclarationKind
+  exported : Boolean = false
+  features : List of DeclarationFeature = List[
+    DeclarationFeature.ANNOTATIONS,
+    DeclarationFeature.ASPECTS,
+    DeclarationFeature.WITH_CLAUSE,
+    DeclarationFeature.SEALED_MODIFIER
+  ]
+  surface : DeclarationSurface
+  owning_module : ModuleName
+  nested : List of DeclarationDefinition = List[]
+  aspects {
+    DeclarationSemantics {
+      semantics == "Meshr declaration descriptor",
+      rationale == "Permet aux outils d'inspecter les capacités de chaque artefact.",
+      scope == "top_level",
+      features == List[
+        DeclarationFeature.FIELDS,
+        DeclarationFeature.TRAITS,
+        DeclarationFeature.ANNOTATIONS,
+        DeclarationFeature.ASPECTS,
+        DeclarationFeature.RELATION_ENDPOINTS,
+        DeclarationFeature.POLICY_SCOPE,
+        DeclarationFeature.POLICY_ACTIONS
+      ]
+    }
+  }
+end
+
+@LangDocumented(
+  summary="Relation de composition entre un module Meshr et les déclarations qu'il expose.",
+  description="Spécifie la cardinalité et l'ordre d'apparition des artefacts dans un module."
+)
+type relation Declares is
+  declared_on : Date
+  ordinal : Integer = 0
+end
+
+relation ModuleDeclares of type Declares is
+  from ModuleDefinition(module_name)
+  to DeclarationDefinition(name)
+  aspects {
+    SemanticLink {
+      semantics == "contains",
+      rationale == "Un module référence chaque déclaration qu'il rend disponible.",
+      relation_kind == "module->declaration"
+    }
+  }
+end

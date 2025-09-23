@@ -69,7 +69,7 @@ topLevelDecl
     ;
 
 letDecl
-    : 'let' IDENTIFIER '==' expression
+    : 'val' IDENTIFIER '==' expression
     ;
 
 // ========== ENUM =============

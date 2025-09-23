@@ -28,7 +28,6 @@
   "typescript.preferences.maxNodeModuleJsFileSize": 1024,
   "typescript.tsc.autoDetect": "off",
   "typescript.npm": "off",
-  "typescript.preferences.includePackageJsonAutoImports": "off",
   "typescript.updateImportsOnFileMove.enabled": "never",
   "typescript.validate.enable": false,
   "python.analysis.autoImportCompletions": false,
@@ -36,5 +35,10 @@
   "extensions.autoUpdate": false,
   "workbench.settings.enableNaturalLanguageSearch": false,
   "search.smartCase": false,
-  "files.trimTrailingWhitespace": false
+  "files.trimTrailingWhitespace": false,
+  "meshr-lang.server.path": "/Users/gregory_prince/Documents/Workspaces/lang/meshr-lang/lsp/server/.venv/bin/python",
+  "meshr-lang.server.args": [
+    "-m",
+    "lsp.server.main"
+  ]
 }

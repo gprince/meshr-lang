@@ -7,6 +7,8 @@ lsp/client/out/extension.js
 lsp/client/out/extension.js.map
 lsp/client/out/extension_bundled.js
 lsp/client/*.vsix
+lsp/server/pyinstaller_cache/
+lsp/server/pyinstaller_config/
 
 # Python cache
 __pycache__/

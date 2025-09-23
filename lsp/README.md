@@ -60,10 +60,18 @@ lsp/
 cd lsp/server
 pip install -r requirements.txt
 
+# Rebuilder le binaire standalone (PyInstaller)
+python build_server.py
+
 # Client VSCode
 cd lsp/client
 npm install
 ```
+
+Le script `build_server.py` encapsule désormais la configuration de PyInstaller :
+- il force PyInstaller à utiliser des caches locaux au dépôt (utile dans les environnements sandboxés) ;
+- il collecte automatiquement tous les sous-modules `pygls`/`lsprotocol` pour éviter les erreurs `ImportError` lors du lancement du serveur embarqué.
+
 
 ### Test
 ```bash
