@@ -24,6 +24,7 @@
 #### MÉTRIQUES (v0.2.0 - Maintenu)
 - **Mot-clé `metric`** : Syntaxe complète avec 9 composants
 - **Pattern matching** : `match expr { ... }` avec `->`, `or`, wildcards, ranges, enums
+- **Expressions conditionnelles** : `if (expr) valeur1 else valeur2` pour les calculs inline
 - **Composants supportés** :
   - `source` : Entité source des données
   - `calculation` : Expression de calcul simple

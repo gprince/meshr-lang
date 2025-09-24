@@ -758,12 +758,15 @@ expression
     | expression ('and' | 'or') expression                         # LogicalExpr
     | expression 'in' expression                                   # InExpr
     | expression 'where' expression                                # WhereExpr
+    | 'if' '(' expression ')' expression 'else' expression         # ConditionalExpr
+    | policyAction                                                 # PolicyActionExpr
     | functionCall                                                 # FunctionCallExpr
     | fieldReference                                               # FieldReferenceExpr
     | enumReference                                                # EnumReferenceExpr
     | literal                                                      # LiteralExpr
     | matchExpression                                              # MatchExpr
     | tupleExpr                                                    # TupleExpression
+    | '_'                                                          # PlaceholderExpr
     | '(' expression ')'                                           # ParenthesizedExpr
     ;
 
@@ -879,7 +882,17 @@ matchExpression
     ;
 
 matchArm
-    : pattern '->' matchResult
+    : matchPattern '->' expression
+    ;
+
+matchPattern
+    : pattern
+    | '{' matchPatternExpression '}'
+    ;
+
+matchPatternExpression
+    : expression
+    | '_'
     ;
 
 pattern
@@ -916,12 +929,6 @@ wildcardPattern
     : '_'
     ;
 
-matchResult
-    : STRING_LITERAL
-    | NUMBER_LITERAL
-    | BOOLEAN_LITERAL
-    | qualifiedName
-    ;
 
 metricFilters
     : FILTERS '{' filterList '}'
@@ -970,7 +977,9 @@ policyDecl
     : POLICY IDENTIFIER 'is'
       policyVerbatim?
       policyScope
-      (policyCondition policyActions | policyMatch)
+      (policyCondition policyActions
+      | policyMatch
+      | policyActions)
       'end'
     ;
 
@@ -991,7 +1000,7 @@ policyMatch
     ;
 
 policyMatchArm
-    : policyPattern '->' policyActions
+    : policyPattern '->' expression
     ;
 
 policyPattern
@@ -1020,11 +1029,12 @@ aspectList
     ;
 
 policyActions
-    : ACTIONS '{' policyActionList '}'
+    : ACTIONS '{' policyActionEntry (',' policyActionEntry)* '}'
     ;
 
-policyActionList
-    : policyAction (',' policyAction)*
+policyActionEntry
+    : policyAction
+    | expression
     ;
 
 policyAction

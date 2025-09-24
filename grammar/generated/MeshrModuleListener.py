@@ -1133,6 +1133,15 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#PolicyActionExpr.
+    def enterPolicyActionExpr(self, ctx:MeshrModuleParser.PolicyActionExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#PolicyActionExpr.
+    def exitPolicyActionExpr(self, ctx:MeshrModuleParser.PolicyActionExprContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#ComparisonExpr.
     def enterComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
         pass
@@ -1151,12 +1160,30 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#ConditionalExpr.
+    def enterConditionalExpr(self, ctx:MeshrModuleParser.ConditionalExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#ConditionalExpr.
+    def exitConditionalExpr(self, ctx:MeshrModuleParser.ConditionalExprContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
     def enterEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
         pass
 
     # Exit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
     def exitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#PlaceholderExpr.
+    def enterPlaceholderExpr(self, ctx:MeshrModuleParser.PlaceholderExprContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#PlaceholderExpr.
+    def exitPlaceholderExpr(self, ctx:MeshrModuleParser.PlaceholderExprContext):
         pass
 
 
@@ -1448,6 +1475,24 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#matchPattern.
+    def enterMatchPattern(self, ctx:MeshrModuleParser.MatchPatternContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#matchPattern.
+    def exitMatchPattern(self, ctx:MeshrModuleParser.MatchPatternContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#matchPatternExpression.
+    def enterMatchPatternExpression(self, ctx:MeshrModuleParser.MatchPatternExpressionContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#matchPatternExpression.
+    def exitMatchPatternExpression(self, ctx:MeshrModuleParser.MatchPatternExpressionContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#pattern.
     def enterPattern(self, ctx:MeshrModuleParser.PatternContext):
         pass
@@ -1508,15 +1553,6 @@ class MeshrModuleListener(ParseTreeListener):
 
     # Exit a parse tree produced by MeshrModuleParser#wildcardPattern.
     def exitWildcardPattern(self, ctx:MeshrModuleParser.WildcardPatternContext):
-        pass
-
-
-    # Enter a parse tree produced by MeshrModuleParser#matchResult.
-    def enterMatchResult(self, ctx:MeshrModuleParser.MatchResultContext):
-        pass
-
-    # Exit a parse tree produced by MeshrModuleParser#matchResult.
-    def exitMatchResult(self, ctx:MeshrModuleParser.MatchResultContext):
         pass
 
 
@@ -1709,12 +1745,12 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MeshrModuleParser#policyActionList.
-    def enterPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+    # Enter a parse tree produced by MeshrModuleParser#policyActionEntry.
+    def enterPolicyActionEntry(self, ctx:MeshrModuleParser.PolicyActionEntryContext):
         pass
 
-    # Exit a parse tree produced by MeshrModuleParser#policyActionList.
-    def exitPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+    # Exit a parse tree produced by MeshrModuleParser#policyActionEntry.
+    def exitPolicyActionEntry(self, ctx:MeshrModuleParser.PolicyActionEntryContext):
         pass
 
 

@@ -157,19 +157,12 @@ policy TableSizeGovernance is
   
   scope "table"
   
-  match table {
-    { rows < 1000000 } ->
-      actions {
-        warn with message "Small table: partitioning optional"
-      }
-    { rows >= 1000000 and rows < 100000000 } ->
-      actions {
-        warn with message "Medium table: partitioning recommended"
-      }
-    { rows >= 100000000 } ->
-      actions {
-        deny with message "Large table: partitioning is mandatory"
-      }
+  actions {
+    match table.rows {
+      { _ < 1000000 } -> warn with message "The table ${table.name} is small (${table.rows} < 1000000), partitioning optional"
+      { _ >= 1000000 and _ < 100_000_000 } -> warn with message "The table ${table.name} est medium (${table.rows}), partitioning recommended"
+      { _ >= 100_000_000 } -> deny with message "The table ${table.name} is large (${table.rows}), partitioning is mandatory"
+    }
   }
 end
 

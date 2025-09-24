@@ -298,7 +298,7 @@ Les mots suivants sont **réservés** par le langage et **ne peuvent pas être u
 - `metric`, `source`, `calculation`, `aggregation`, `unit`
 - `outputs`, `dimensions`, `filters`, `temporal`
 - `window`, `refresh_frequency`, `historical_depth`
-- `match`, `or` (pattern matching)
+- `match`, `or`, `if`, `else`
 
 #### 🔗 **Relations et composition**
 - `from`, `to`, `with`, `extends`, `implements`
@@ -2372,6 +2372,17 @@ policy RequireDataClassification is
 end
 ```
 
+Depuis Meshr 0.4, le bloc `actions { ... }` peut également contenir des expressions pures (comme `match` ou `if`) qui retournent un objet `Action`. Cela permet d'exprimer des branches directement :
+
+```meshr
+actions {
+  match table {
+    { rows < 10_000 } -> warn with message "Small table"
+    _ -> deny with message "Table too large"
+  }
+}
+```
+
 ### Policy avec validation d'aspects multiples
 ```meshr
 policy GDPRCompliance is
@@ -2742,6 +2753,40 @@ dimensions {
 - **Enums** : `ApplicationStatus.hired`
 - **OR patterns** : `pattern1 or pattern2`
 - **Wildcard** : `_` (catch-all)
+- **Placeholder** : `_` utilisé dans une expression de motif représente la valeur matchée
+
+#### Expressions conditionnelles
+
+```meshr
+outputs {
+  high_value_flag : Integer = if (total_amount > 1000) 1 else 0
+}
+```
+
+- `if (condition) <valeur_vraie> else <valeur_fausse>` retourne toujours une valeur.
+- Peut être utilisé dans n'importe quelle expression (dimensions, agrégations, filtres…).
+
+#### Actions dérivées d'un pattern (match pur)
+
+```meshr
+policy TableSizeGovernance is
+  scope "table"
+
+  actions {
+    match table.rows {
+      { _ < 1000000 } -> warn with message "The table ${table.name} is small (${table.rows} < 1000000), therefore the partitioning is optional"
+
+      { _ >= 1000000 and _ < 100_000_000 } -> warn with message "The table ${table.name} is medium (${table.rows}), partitioning recommended"
+
+      { _ >= 100_000_000 } -> deny with message "The table ${table.name} is large (${table.rows}), partitioning is mandatory"
+    }
+  }
+end
+```
+
+- `warn`/`deny` sont des expressions qui retournent un objet `Action`.
+- L'opérateur `with message` construit un tuple `(Action, Reason)` accepté par `actions { ... }`.
+- Les **string templates** (`"... ${expr} ..."`) permettent d'injecter du contexte dynamique dans les messages.
 
 ### 6. Filtres (optionnel)
 

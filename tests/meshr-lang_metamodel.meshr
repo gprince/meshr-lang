@@ -14,6 +14,9 @@
 )
 module meshr.lang.metamodel
 
+
+import LifecycleStage from meshr.lifecycle
+
 export {
   LangVersion,
   LangSince,
@@ -69,6 +72,7 @@ val MESHR_KEYWORDS == List[
   "calculation", "aggregation", "unit", "outputs", "dimensions",
   "filters", "temporal", "window", "refresh_frequency", "historical_depth",
   "policy", "verbatim", "scope", "condition", "actions", "match",
+  "if", "else",
   "range", "precision", "positive", "negative", "non_negative",
   "after", "before", "between", "format", "size", "schema"
 ]
@@ -461,10 +465,7 @@ metric DeclarationsByKind is
   source DeclarationDefinition
   aggregation {
     declarations_total as count(name),
-    exported_total as sum(match exported {
-      true -> 1
-      _ -> 0
-    }),
+    exported_total as sum(if (exported) 1 else 0),
     nested_total as sum(listSize(nested)),
     traits_total as sum(listSize(traits)),
     avg_nested_per_decl as avg(listSize(nested))
@@ -490,18 +491,9 @@ metric DeclarationsByModule is
   source DeclarationDefinition
   aggregation {
     declarations_total as count(name),
-    exported_total as sum(match exported {
-      true -> 1
-      _ -> 0
-    }),
-    metrics_total as sum(match kind {
-      DeclarationKind.METRIC -> 1
-      _ -> 0
-    }),
-    policies_total as sum(match kind {
-      DeclarationKind.POLICY -> 1
-      _ -> 0
-    })
+    exported_total as sum(if (exported) 1 else 0),
+    metrics_total as sum(if (kind == DeclarationKind.METRIC) 1 else 0),
+    policies_total as sum(if (kind == DeclarationKind.POLICY) 1 else 0)
   }
   outputs {
     declarations_total : Integer,
@@ -523,18 +515,9 @@ metric PoliciesByKind is
   source PolicyShape
   aggregation {
     policies_total as count(name),
-    verbatim_total as sum(match kind {
-      PolicyKind.VERBATIM -> 1
-      _ -> 0
-    }),
-    aspect_missing_total as sum(match kind {
-      PolicyKind.MISSING_ASPECT -> 1
-      _ -> 0
-    }),
-    match_total as sum(match uses_match {
-      true -> 1
-      _ -> 0
-    }),
+    verbatim_total as sum(if (kind == PolicyKind.VERBATIM) 1 else 0),
+    aspect_missing_total as sum(if (kind == PolicyKind.MISSING_ASPECT) 1 else 0),
+    match_total as sum(if (uses_match) 1 else 0),
     actions_total as sum(listSize(policy_actions))
   }
   outputs {
@@ -558,14 +541,8 @@ metric PoliciesByScope is
   source PolicyShape
   aggregation {
     policies_total as count(name),
-    with_filter_total as sum(match scope_filter {
-      "" -> 0
-      _ -> 1
-    }),
-    match_total as sum(match uses_match {
-      true -> 1
-      _ -> 0
-    })
+    with_filter_total as sum(if (scope_filter == "") 0 else 1),
+    match_total as sum(if (uses_match) 1 else 0)
   }
   outputs {
     policies_total : Integer,
@@ -586,28 +563,15 @@ metric PolicyActionsByKind is
   source PolicyActionShape
   aggregation {
     actions_total as count(policy_name),
-    deny_total as sum(match action_kind {
-      PolicyActionKind.DENY -> 1
-      _ -> 0
-    }),
-    warn_total as sum(match action_kind {
-      PolicyActionKind.WARN -> 1
-      _ -> 0
-    }),
-    notify_total as sum(match action_kind {
-      PolicyActionKind.NOTIFY -> 1
-      _ -> 0
-    }),
-    patch_total as sum(match action_kind {
-      PolicyActionKind.PATCH_ADD_ASPECT -> 1
-      PolicyActionKind.PATCH_MODIFY_ASPECT -> 1
-      PolicyActionKind.PATCH_REMOVE_ASPECT -> 1
-      _ -> 0
-    }),
-    targeted_notifications as sum(match notification_target {
-      "" -> 0
-      _ -> 1
-    })
+    deny_total as sum(if (action_kind == PolicyActionKind.DENY) 1 else 0),
+    warn_total as sum(if (action_kind == PolicyActionKind.WARN) 1 else 0),
+    notify_total as sum(if (action_kind == PolicyActionKind.NOTIFY) 1 else 0),
+    patch_total as sum(if (
+      action_kind == PolicyActionKind.PATCH_ADD_ASPECT
+      or action_kind == PolicyActionKind.PATCH_MODIFY_ASPECT
+      or action_kind == PolicyActionKind.PATCH_REMOVE_ASPECT
+    ) 1 else 0),
+    targeted_notifications as sum(if (notification_target == "") 0 else 1)
   }
   outputs {
     actions_total : Integer,
@@ -628,25 +592,46 @@ metric PolicyActionsByKind is
   }
 end
 
+@LangDocumented(summary="Barème de sévérité en fonction du stade du cycle de vie des politiques.")
+metric PolicyLifecycleScore is
+  source PolicyShape
+  aggregation {
+    lifecycle_score as sum(match lifecycle_stage {
+      LifecycleStage.discover -> 10
+      LifecycleStage.activate -> 20
+      LifecycleStage.exploit -> 30
+      _ -> 0
+    })
+  }
+  outputs {
+    lifecycle_score : Integer
+  }
+end
+
+@LangDocumented(summary="Gouvernance des tailles de tables Meshr.")
+@LangExperimental
+policy TableSizeGovernance is
+  scope table
+
+  actions {
+    match table.rows {
+      { _ < 1000000 } -> warn with message "The table ${table.name} is small (${table.rows} < 1000000), therefore the partitioning is optional"
+      { _ >= 1000000 and _ < 100000000 } -> warn with message "The table ${table.name} is medium (${table.rows}), partitioning recommended"
+      { _ >= 100000000 } -> deny with message "The table ${table.name} is large (${table.rows}), partitioning is mandatory"
+    }
+  }
+end
+
 @LangDocumented(summary="Analyse agrégée de l'utilisation des formules de métriques Meshr.")
 metric MetricFormulaUsage is
   source MetricShape
   aggregation {
     metrics_total as count(metric_source),
-    calculation_total as sum(match formula.kind {
-      MetricFormulaKind.CALCULATION -> 1
-      _ -> 0
-    }),
-    aggregation_total as sum(match formula.kind {
-      MetricFormulaKind.AGGREGATION -> 1
-      _ -> 0
-    }),
+    calculation_total as sum(if (formula.kind == MetricFormulaKind.CALCULATION) 1 else 0),
+    aggregation_total as sum(if (formula.kind == MetricFormulaKind.AGGREGATION) 1 else 0),
     dimension_volume as sum(listSize(dimension_definitions)),
     filter_volume as sum(listSize(filter_definitions)),
-    temporal_defined as sum(match temporal_configuration.time_window {
-      "" -> 0
-      _ -> 1
-    }),
+    temporal_defined as sum(if (temporal_configuration.time_window == "") 0 else 1),
     outputs_defined as sum(listSize(output_fields))
   }
   outputs {

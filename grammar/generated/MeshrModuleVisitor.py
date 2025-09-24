@@ -634,6 +634,11 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#PolicyActionExpr.
+    def visitPolicyActionExpr(self, ctx:MeshrModuleParser.PolicyActionExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#ComparisonExpr.
     def visitComparisonExpr(self, ctx:MeshrModuleParser.ComparisonExprContext):
         return self.visitChildren(ctx)
@@ -644,8 +649,18 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#ConditionalExpr.
+    def visitConditionalExpr(self, ctx:MeshrModuleParser.ConditionalExprContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#EnumReferenceExpr.
     def visitEnumReferenceExpr(self, ctx:MeshrModuleParser.EnumReferenceExprContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#PlaceholderExpr.
+    def visitPlaceholderExpr(self, ctx:MeshrModuleParser.PlaceholderExprContext):
         return self.visitChildren(ctx)
 
 
@@ -809,6 +824,16 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#matchPattern.
+    def visitMatchPattern(self, ctx:MeshrModuleParser.MatchPatternContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#matchPatternExpression.
+    def visitMatchPatternExpression(self, ctx:MeshrModuleParser.MatchPatternExpressionContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#pattern.
     def visitPattern(self, ctx:MeshrModuleParser.PatternContext):
         return self.visitChildren(ctx)
@@ -841,11 +866,6 @@ class MeshrModuleVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MeshrModuleParser#wildcardPattern.
     def visitWildcardPattern(self, ctx:MeshrModuleParser.WildcardPatternContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by MeshrModuleParser#matchResult.
-    def visitMatchResult(self, ctx:MeshrModuleParser.MatchResultContext):
         return self.visitChildren(ctx)
 
 
@@ -954,8 +974,8 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MeshrModuleParser#policyActionList.
-    def visitPolicyActionList(self, ctx:MeshrModuleParser.PolicyActionListContext):
+    # Visit a parse tree produced by MeshrModuleParser#policyActionEntry.
+    def visitPolicyActionEntry(self, ctx:MeshrModuleParser.PolicyActionEntryContext):
         return self.visitChildren(ctx)
 
 
