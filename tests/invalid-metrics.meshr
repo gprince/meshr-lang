@@ -41,9 +41,9 @@ metric IncompletePatternMatch is
   unit "EUR"
   
   dimensions {
-    segment match customer_type is
+    segment match customer_type {
       CustomerType.premium -> 
-    end
+    }
   }
 end
 
@@ -54,8 +54,8 @@ metric EmptyPatternMatch is
   unit "EUR"
   
   dimensions {
-    segment match customer_type is
-    end
+    segment match customer_type {
+    }
   }
 end
 

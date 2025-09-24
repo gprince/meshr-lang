@@ -54,11 +54,11 @@ metric RevenueBySegment is
   unit "EUR"
   
   dimensions {
-    customer_segment match customer_type is
-      CustomerType.premium or CustomerType.gold -> "high_value",
-      CustomerType.standard -> "standard",
+    customer_segment match customer_type {
+      CustomerType.premium or CustomerType.gold -> "high_value"
+      CustomerType.standard -> "standard"
       _ -> "other"
-    end
+    }
   }
 end
 
@@ -116,11 +116,11 @@ metric CompleteMetric with DataQuality is
   
   dimensions {
     department department_id,
-    seniority_tier match seniority_level is
-      SeniorityLevel.intern or SeniorityLevel.junior -> "junior",
-      SeniorityLevel.senior or SeniorityLevel.lead -> "senior",
+    seniority_tier match seniority_level {
+      SeniorityLevel.intern or SeniorityLevel.junior -> "junior"
+      SeniorityLevel.senior or SeniorityLevel.lead -> "senior"
       _ -> "executive"
-    end
+    }
   }
   
   filters {

@@ -132,7 +132,7 @@ entity SecureFile with WithEncryption is
     DataProtection {
       encryption_key == Bytes"",
       access_control == Bytes{"level": "private", "encryption": true},
-      audit_trail: Bytes{"enabled": true, "retention_days": 2555}
+      audit_trail == Bytes{"enabled": true, "retention_days": 2555}
     }
   }
 end

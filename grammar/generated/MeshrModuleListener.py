@@ -1,4 +1,4 @@
-# Generated from MeshrModule.g4 by ANTLR 4.13.2
+# Generated from grammar/MeshrModule.g4 by ANTLR 4.13.2
 from antlr4 import *
 if "." in __name__:
     from .MeshrModuleParser import MeshrModuleParser
@@ -107,12 +107,12 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by MeshrModuleParser#letDecl.
-    def enterLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+    # Enter a parse tree produced by MeshrModuleParser#valDecl.
+    def enterValDecl(self, ctx:MeshrModuleParser.ValDeclContext):
         pass
 
-    # Exit a parse tree produced by MeshrModuleParser#letDecl.
-    def exitLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+    # Exit a parse tree produced by MeshrModuleParser#valDecl.
+    def exitValDecl(self, ctx:MeshrModuleParser.ValDeclContext):
         pass
 
 
@@ -782,6 +782,15 @@ class MeshrModuleListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by MeshrModuleParser#annotatedRecordDecl.
+    def enterAnnotatedRecordDecl(self, ctx:MeshrModuleParser.AnnotatedRecordDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#annotatedRecordDecl.
+    def exitAnnotatedRecordDecl(self, ctx:MeshrModuleParser.AnnotatedRecordDeclContext):
+        pass
+
+
     # Enter a parse tree produced by MeshrModuleParser#sealedRecordDecl.
     def enterSealedRecordDecl(self, ctx:MeshrModuleParser.SealedRecordDeclContext):
         pass
@@ -815,6 +824,15 @@ class MeshrModuleListener(ParseTreeListener):
 
     # Exit a parse tree produced by MeshrModuleParser#traitDecl.
     def exitTraitDecl(self, ctx:MeshrModuleParser.TraitDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by MeshrModuleParser#annotatedTraitDecl.
+    def enterAnnotatedTraitDecl(self, ctx:MeshrModuleParser.AnnotatedTraitDeclContext):
+        pass
+
+    # Exit a parse tree produced by MeshrModuleParser#annotatedTraitDecl.
+    def exitAnnotatedTraitDecl(self, ctx:MeshrModuleParser.AnnotatedTraitDeclContext):
         pass
 
 
@@ -1418,15 +1436,6 @@ class MeshrModuleListener(ParseTreeListener):
 
     # Exit a parse tree produced by MeshrModuleParser#matchExpression.
     def exitMatchExpression(self, ctx:MeshrModuleParser.MatchExpressionContext):
-        pass
-
-
-    # Enter a parse tree produced by MeshrModuleParser#matchArms.
-    def enterMatchArms(self, ctx:MeshrModuleParser.MatchArmsContext):
-        pass
-
-    # Exit a parse tree produced by MeshrModuleParser#matchArms.
-    def exitMatchArms(self, ctx:MeshrModuleParser.MatchArmsContext):
         pass
 
 

@@ -97,30 +97,30 @@ end
 policy MatchMissingEnd is
   scope "table"
   
-  match table is
+  match table {
     { partitioning is null } ->
       actions { deny }
-  // ERREUR: Manque 'end'
+  // ERREUR: Manque '}'
 end
 
 // ERREUR: Pattern malformé
 policy InvalidPattern is
   scope "table"
   
-  match table is
+  match table {
     partitioning is null ->  // ERREUR: Manque les accolades
       actions { deny }
-  end
+  }
 end
 
 // ERREUR: Actions dans match sans accolades
 policy MatchActionsNoBraces is
   scope "table"
   
-  match table is
+  match table {
     { partitioning is null } ->
       deny with message "Bad syntax"  // ERREUR: Actions sans accolades
-  end
+  }
 end
 
 // ========== ERREURS D'ACTIONS ==========
@@ -176,9 +176,9 @@ policy ConditionAndMatch is
   scope "entity"
   condition missing aspect { DataClassification }
   
-  match entity is
+  match entity {
     { _ } -> actions { warn }
-  end
+  }
   
   actions { deny }  // ERREUR: Condition et match en même temps
 end

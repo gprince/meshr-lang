@@ -15,11 +15,11 @@ metric TestMetric is
   }
   
   dimensions {
-    category match status is
-      Status.active or Status.pending -> "operational",
-      Status.inactive -> "non_operational",
+    category match status {
+      Status.active or Status.pending -> "operational"
+      Status.inactive -> "non_operational"
       _ -> "unknown"
-    end
+    }
   }
   
   filters {

@@ -1,7 +1,12 @@
 import sys
 from antlr4 import InputStream, CommonTokenStream
-from grammar.generated.MeshrModuleLexer import MeshrModuleLexer
-from grammar.generated.MeshrModuleParser import MeshrModuleParser
+try:
+    from grammar.generated.MeshrModuleLexer import MeshrModuleLexer
+    from grammar.generated.MeshrModuleParser import MeshrModuleParser
+except ModuleNotFoundError:
+    from grammar.generated.grammar.MeshrModuleLexer import MeshrModuleLexer
+    from grammar.generated.grammar.MeshrModuleParser import MeshrModuleParser
+from antlr4.atn.PredictionMode import PredictionMode
 
 def main():
     if len(sys.argv) < 2:
@@ -15,6 +20,7 @@ def main():
     lexer = MeshrModuleLexer(input_stream)
     stream = CommonTokenStream(lexer)
     parser = MeshrModuleParser(stream)
+    parser._interp.predictionMode = PredictionMode.LL
 
     from antlr4.error.ErrorListener import ErrorListener
 

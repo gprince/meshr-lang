@@ -1,3 +1,11 @@
+/*
+ * ==============================
+ * Meshr-lang Metamodel
+ * ==============================
+ * Ce fichier démontre la richesse du langage Meshr
+ * (annotations, aspects, métriques, policies…) en s'auto-décrivant.
+ */
+// Versionnage du module
 @LangVersion("0.4.0")
 @LangSince("0.4.0")
 @LangDocumented(
@@ -20,7 +28,28 @@ export {
   AspectBinding,
   RelationShape,
   MetricShape,
+  MetricFormulaKind,
+  MetricFormula,
+  AggregationComponent,
+  MetricOutputField,
+  MetricDimension,
+  MetricFilter,
+  MetricTemporalWindow,
   PolicyShape,
+  PolicyKind,
+  PolicyActionKind,
+  PolicyActionShape,
+  ModulesTotal,
+  DeclarationsTotal,
+  DeclarationsByKind,
+  DeclarationsByModule,
+  PoliciesByKind,
+  PoliciesByScope,
+  PolicyActionsByKind,
+  MetricFormulaUsage,
+  PolicyActionAggregation,
+  MetricFormulaConsistency,
+  MetricFormulaMutualExclusion,
   Declares,
   ModuleDeclares,
   DeclarationKind,
@@ -33,12 +62,25 @@ export {
 // Hiérarchie de chargement recommandée pour les artefacts Meshr
 val CORE_DECLARATION_ORDER == List["module", "type", "enum", "record", "trait", "aspect", "entity", "relation", "type_relation", "metric", "policy", "val"]
 val GOVERNANCE_DECLARATIONS == List["annotation", "policy"]
+val MESHR_KEYWORDS == List[
+  "module", "import", "export", "entity", "enum", "trait", "aspect",
+  "annotation", "record", "relation", "sealed", "val", "type",
+  "with", "is", "end", "from", "to", "aspects", "metric", "source",
+  "calculation", "aggregation", "unit", "outputs", "dimensions",
+  "filters", "temporal", "window", "refresh_frequency", "historical_depth",
+  "policy", "verbatim", "scope", "condition", "actions", "match",
+  "range", "precision", "positive", "negative", "non_negative",
+  "after", "before", "between", "format", "size", "schema"
+]
 
 type ModuleName is String pattern "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)*$"
 type Identifier is String pattern "^[A-Za-z_][A-Za-z0-9_]*$"
 type SemanticVersion is String pattern "^\\d+\\.\\d+\\.\\d+(-[A-Za-z0-9\\.]+)?$"
 type DocString is String length 1..2000
 type TypeExpression is String length 1..200
+type HumanReadableLabel is String length 1..120
+type Iso8601Duration is String pattern "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+type CronExpression is String pattern "^([0-9*,\\-/]+\\s){4}[0-9*,\\-/]+$"
 
 @LangDocumented(summary="Liste exhaustive des artefacts top-level que Meshr-lang sait déclarer.")
 enum DeclarationKind is (
@@ -70,6 +112,7 @@ enum DeclarationFeature is (
   SOURCE_CLAUSE,
   CALCULATION_BLOCK,
   AGGREGATION_BLOCK,
+  METRIC_OUTPUTS,
   METRIC_DIMENSIONS,
   METRIC_FILTERS,
   METRIC_TEMPORAL,
@@ -97,7 +140,7 @@ end
 @LangDocumented(summary="Clause d'import telle que définie dans la grammaire Meshr.")
 record ImportSpec is
   kind : ImportKind
-  module : QualifiedName
+  moduleQualifiedName : QualifiedName
   items : List of Identifier = List[]
 end
 
@@ -116,8 +159,8 @@ end
 
 @LangDocumented(summary="Instanciation d'un aspect sur une déclaration ou un champ.")
 record AspectBinding is
-  scope : AspectScope
-  aspect : QualifiedName
+  aspectScope : AspectScope
+  aspectQualifiedName : QualifiedName
   arguments : Map of Identifier to Json = Map{}
 end
 
@@ -125,7 +168,7 @@ end
 record FieldDefinition is
   name : Identifier
   type_expression : TypeExpression
-  required : Boolean = true
+  iSrequired : Boolean = true
   default_value : Json = Json "{}"
   applied_traits : List of QualifiedName = List[]
   attached_aspects : List of AspectBinding = List[]
@@ -138,24 +181,103 @@ record RelationShape is
   from_keys : List of Identifier = List[]
   to_entity : QualifiedName
   to_keys : List of Identifier = List[]
-  bidirectional : Boolean = false
+  isBidirectional : Boolean = false
+end
+
+@LangDocumented(summary="Types de formules supportées par les métriques Meshr.")
+enum MetricFormulaKind is (
+  CALCULATION,
+  AGGREGATION
+)
+
+@LangDocumented(summary="Agrégat nommé calculé dans une métrique par lot.")
+record AggregationComponent is
+  alias : Identifier
+  expression : String length 1..512
+end
+
+@LangDocumented(summary="Formule de calcul attachée à une métrique Meshr.")
+record MetricFormula is
+  kind : MetricFormulaKind
+  calculation_expression : String length 0..512 = ""  // utilisé lorsque kind == CALCULATION
+  aggregation_components : List of AggregationComponent = List[]  // utilisé lorsque kind == AGGREGATION
+end
+
+@LangDocumented(summary="Champ de sortie déclaré par une métrique Meshr.")
+record MetricOutputField is
+  name : Identifier
+  type_expression : TypeExpression
+end
+
+@LangDocumented(summary="Dimension exposée par une métrique Meshr.")
+record MetricDimension is
+  name : Identifier
+  expression : String length 1..512
+end
+
+@LangDocumented(summary="Filtre appliqué lors du calcul d'une métrique Meshr.")
+record MetricFilter is
+  name : Identifier
+  predicate : String length 1..512
+end
+
+@LangDocumented(summary="Configuration temporelle optionnelle d'une métrique Meshr.")
+record MetricTemporalWindow is
+  rolling_horizon : Interval = Interval 0 day
+  refresh_schedule : CronExpression = "0 * * * *"
+  data_latency : Interval = Interval 0 hour
+  grace_period : Interval = Interval 0 minute
 end
 
 @LangDocumented(summary="Décrit les composantes d'une métrique Meshr.")
 record MetricShape is
-  source : QualifiedName
-  calculation : String length 1..512
-  aggregation : String length 0..512 = ""
-  dimensions : List of Identifier = List[]
-  filters : List of String = List[]
-  temporal_window : String length 0..128 = ""
+  metric_source : QualifiedName
+  formula : MetricFormula
+  measurement_unit : HumanReadableLabel = ""
+  output_fields : List of MetricOutputField = List[]
+  dimension_definitions : List of MetricDimension = List[]
+  filter_definitions : List of MetricFilter = List[]
+  temporal_configuration : MetricTemporalWindow = Record { rolling_horizon: Interval 0 day, refresh_schedule: "0 * * * *", data_latency: Interval 0 hour, grace_period: Interval 0 minute }
+end
+
+@LangDocumented(summary="Variantes de politiques Meshr en fonction de leur logique.")
+enum PolicyKind is (
+  VERBATIM,
+  MISSING_ASPECT,
+  EXISTS_ASPECT,
+  ASPECT_COMPARISON,
+  EXPRESSION,
+  MATCH
+)
+
+@LangDocumented(summary="Actions atomiques supportées par les politiques Meshr.")
+enum PolicyActionKind is (
+  DENY,
+  WARN,
+  NOTIFY,
+  PATCH_ADD_ASPECT,
+  PATCH_MODIFY_ASPECT,
+  PATCH_REMOVE_ASPECT
+)
+
+@LangDocumented(summary="Action détaillée déclenchée par une politique Meshr.")
+record PolicyActionShape is
+  policy_name : Identifier
+  action_kind : PolicyActionKind
+  target_aspect : Identifier = ""
+  message_template : String length 0..512 = ""
+  notification_target : String length 0..256 = ""
 end
 
 @LangDocumented(summary="Décrit une politique de gouvernance Meshr.")
 record PolicyShape is
-  scope : QualifiedName
-  condition : String length 1..512
-  actions : List of String = List[]
+  name : Identifier
+  kind : PolicyKind
+  policy_scope : QualifiedName
+  scope_filter : String length 0..512 = ""
+  condition_expression : String length 0..512 = ""
+  uses_match : Boolean = false  // true lorsque la politique exploite un bloc match
+  policy_actions : List of PolicyActionShape = List[]
 end
 
 @LangDocumented(summary="Squelette commun aux artefacts Meshr structurés.")
@@ -175,7 +297,7 @@ trait WithAnnotations is
 end
 
 trait WithAspects is
-  aspects : List of AspectBinding = List[]
+  aspect_bindings : List of AspectBinding = List[]
 end
 
 trait WithTraits is
@@ -193,7 +315,7 @@ aspect ModuleSemantics extends SemanticTagBase is
 end
 
 aspect DeclarationSemantics extends SemanticTagBase is
-  scope : String length 1..120
+  declaration_scope : String length 1..120
   features : List of DeclarationFeature = List[]
 end
 
@@ -260,7 +382,9 @@ entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, Wi
     DeclarationFeature.ANNOTATIONS,
     DeclarationFeature.ASPECTS,
     DeclarationFeature.WITH_CLAUSE,
-    DeclarationFeature.SEALED_MODIFIER
+    DeclarationFeature.SEALED_MODIFIER,
+    DeclarationFeature.METRIC_OUTPUTS,
+    DeclarationFeature.VAL_EXPRESSION
   ]
   surface : DeclarationSurface
   owning_module : ModuleName
@@ -269,7 +393,7 @@ entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, Wi
     DeclarationSemantics {
       semantics == "Meshr declaration descriptor",
       rationale == "Permet aux outils d'inspecter les capacités de chaque artefact.",
-      scope == "top_level",
+      declaration_scope == "top_level",
       features == List[
         DeclarationFeature.FIELDS,
         DeclarationFeature.TRAITS,
@@ -277,7 +401,11 @@ entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, Wi
         DeclarationFeature.ASPECTS,
         DeclarationFeature.RELATION_ENDPOINTS,
         DeclarationFeature.POLICY_SCOPE,
-        DeclarationFeature.POLICY_ACTIONS
+        DeclarationFeature.POLICY_ACTIONS,
+        DeclarationFeature.METRIC_OUTPUTS,
+        DeclarationFeature.METRIC_DIMENSIONS,
+        DeclarationFeature.METRIC_FILTERS,
+        DeclarationFeature.METRIC_TEMPORAL
       ]
     }
   }
@@ -295,11 +423,316 @@ end
 relation ModuleDeclares of type Declares is
   from ModuleDefinition(module_name)
   to DeclarationDefinition(name)
+  // Décrit le lien de composition module -> déclaration
   aspects {
     SemanticLink {
       semantics == "contains",
       rationale == "Un module référence chaque déclaration qu'il rend disponible.",
       relation_kind == "module->declaration"
     }
+  }
+end
+
+@LangDocumented(summary="Nombre total de modules décrits dans le métamodèle Meshr.")
+metric ModulesTotal is
+  source ModuleDefinition
+  calculation count(module_name)
+  outputs {
+    total : Integer
+  }
+end
+
+@LangDocumented(summary="Volume global de déclarations Meshr, toutes catégories confondues.")
+metric DeclarationsTotal is
+  source DeclarationDefinition
+  calculation count(name)
+  outputs {
+    total : Integer
+  }
+end
+
+/*
+ * === Section: métriques d'analyse ===
+ * Les métriques ci-dessous démontrent les agrégations et dimensions
+ * que Meshr sait exprimer sur son propre métamodèle.
+ */
+@LangDocumented(summary="Répartition des déclarations par type et statut d'export.")
+metric DeclarationsByKind is
+  source DeclarationDefinition
+  aggregation {
+    declarations_total as count(name),
+    exported_total as sum(match exported {
+      true -> 1
+      _ -> 0
+    }),
+    nested_total as sum(listSize(nested)),
+    traits_total as sum(listSize(traits)),
+    avg_nested_per_decl as avg(listSize(nested))
+  }
+  outputs {
+    declarations_total : Integer,
+    exported_total : Integer,
+    nested_total : Integer,
+    traits_total : Integer,
+    avg_nested_per_decl : Float
+  }
+  dimensions {
+    kind kind,
+    exported exported
+  }
+  filters {
+    kind != DeclarationKind.VAL
+  }
+end
+
+@LangDocumented(summary="Distribution des déclarations par module propriétaire.")
+metric DeclarationsByModule is
+  source DeclarationDefinition
+  aggregation {
+    declarations_total as count(name),
+    exported_total as sum(match exported {
+      true -> 1
+      _ -> 0
+    }),
+    metrics_total as sum(match kind {
+      DeclarationKind.METRIC -> 1
+      _ -> 0
+    }),
+    policies_total as sum(match kind {
+      DeclarationKind.POLICY -> 1
+      _ -> 0
+    })
+  }
+  outputs {
+    declarations_total : Integer,
+    exported_total : Integer,
+    metrics_total : Integer,
+    policies_total : Integer
+  }
+  dimensions {
+    owning_module_name owning_module,
+    kind kind
+  }
+  filters {
+    kind != DeclarationKind.VAL
+  }
+end
+
+@LangDocumented(summary="Répartition des politiques par logique métier et usage du pattern matching.")
+metric PoliciesByKind is
+  source PolicyShape
+  aggregation {
+    policies_total as count(name),
+    verbatim_total as sum(match kind {
+      PolicyKind.VERBATIM -> 1
+      _ -> 0
+    }),
+    aspect_missing_total as sum(match kind {
+      PolicyKind.MISSING_ASPECT -> 1
+      _ -> 0
+    }),
+    match_total as sum(match uses_match {
+      true -> 1
+      _ -> 0
+    }),
+    actions_total as sum(listSize(policy_actions))
+  }
+  outputs {
+    policies_total : Integer,
+    verbatim_total : Integer,
+    aspect_missing_total : Integer,
+    match_total : Integer,
+    actions_total : Integer
+  }
+  dimensions {
+    kind kind,
+    uses_match uses_match
+  }
+  filters {
+    policy_scope.raw != ""
+  }
+end
+
+@LangDocumented(summary="Volume de politiques selon la portée de gouvernance ciblée.")
+metric PoliciesByScope is
+  source PolicyShape
+  aggregation {
+    policies_total as count(name),
+    with_filter_total as sum(match scope_filter {
+      "" -> 0
+      _ -> 1
+    }),
+    match_total as sum(match uses_match {
+      true -> 1
+      _ -> 0
+    })
+  }
+  outputs {
+    policies_total : Integer,
+    with_filter_total : Integer,
+    match_total : Integer
+  }
+  dimensions {
+    policy_scope_value policy_scope.raw,
+    filter scope_filter
+  }
+  filters {
+    policy_scope.raw != ""
+  }
+end
+
+@LangDocumented(summary="Répartition des actions de politique par type et cible.")
+metric PolicyActionsByKind is
+  source PolicyActionShape
+  aggregation {
+    actions_total as count(policy_name),
+    deny_total as sum(match action_kind {
+      PolicyActionKind.DENY -> 1
+      _ -> 0
+    }),
+    warn_total as sum(match action_kind {
+      PolicyActionKind.WARN -> 1
+      _ -> 0
+    }),
+    notify_total as sum(match action_kind {
+      PolicyActionKind.NOTIFY -> 1
+      _ -> 0
+    }),
+    patch_total as sum(match action_kind {
+      PolicyActionKind.PATCH_ADD_ASPECT -> 1
+      PolicyActionKind.PATCH_MODIFY_ASPECT -> 1
+      PolicyActionKind.PATCH_REMOVE_ASPECT -> 1
+      _ -> 0
+    }),
+    targeted_notifications as sum(match notification_target {
+      "" -> 0
+      _ -> 1
+    })
+  }
+  outputs {
+    actions_total : Integer,
+    deny_total : Integer,
+    warn_total : Integer,
+    notify_total : Integer,
+    patch_total : Integer,
+    targeted_notifications : Integer
+  }
+  dimensions {
+    action_kind_label action_kind,
+    policy_name_label policy_name,
+    target_aspect_label target_aspect,
+    notification_target_label notification_target
+  }
+  filters {
+    policy_name != ""
+  }
+end
+
+@LangDocumented(summary="Analyse agrégée de l'utilisation des formules de métriques Meshr.")
+metric MetricFormulaUsage is
+  source MetricShape
+  aggregation {
+    metrics_total as count(metric_source),
+    calculation_total as sum(match formula.kind {
+      MetricFormulaKind.CALCULATION -> 1
+      _ -> 0
+    }),
+    aggregation_total as sum(match formula.kind {
+      MetricFormulaKind.AGGREGATION -> 1
+      _ -> 0
+    }),
+    dimension_volume as sum(listSize(dimension_definitions)),
+    filter_volume as sum(listSize(filter_definitions)),
+    temporal_defined as sum(match temporal_configuration.time_window {
+      "" -> 0
+      _ -> 1
+    }),
+    outputs_defined as sum(listSize(output_fields))
+  }
+  outputs {
+    metrics_total : Integer,
+    calculation_total : Integer,
+    aggregation_total : Integer,
+    dimension_volume : Integer,
+    filter_volume : Integer,
+    temporal_defined : Integer,
+    outputs_defined : Integer
+  }
+  dimensions {
+    formula_kind formula.kind,
+    source_domain metric_source.raw
+  }
+  filters {
+    metric_source.raw != ""
+  }
+end
+
+@LangDocumented(summary="Vue agrégée des actions de politique par politique et type d'action.")
+metric PolicyActionAggregation is
+  source PolicyActionShape
+  aggregation {
+    actions_total as count(policy_name),
+    notifications_total as sum(match action_kind {
+      PolicyActionKind.NOTIFY -> 1
+      _ -> 0
+    }),
+    patches_add_total as sum(match action_kind {
+      PolicyActionKind.PATCH_ADD_ASPECT -> 1
+      _ -> 0
+    }),
+    patches_modify_total as sum(match action_kind {
+      PolicyActionKind.PATCH_MODIFY_ASPECT -> 1
+      _ -> 0
+    }),
+    patches_remove_total as sum(match action_kind {
+      PolicyActionKind.PATCH_REMOVE_ASPECT -> 1
+      _ -> 0
+    }),
+    message_template_total as sum(match message_template {
+      "" -> 0
+      _ -> 1
+    })
+  }
+  outputs {
+    actions_total : Integer,
+    notifications_total : Integer,
+    patches_add_total : Integer,
+    patches_modify_total : Integer,
+    patches_remove_total : Integer,
+    message_template_total : Integer
+  }
+  dimensions {
+    policy_name_label policy_name,
+    action_kind_label action_kind
+  }
+  filters {
+    policy_name != ""
+  }
+end
+
+@LangDocumented(summary="Garantit qu'une formule de métrique n'est pas à la fois calcul et agrégation.")
+// Policy démontrant l'usage de match/condition sur MetricShape
+policy MetricFormulaMutualExclusion is
+  scope meshr.lang.metamodel.MetricShape
+  condition (
+    (formula.kind == MetricFormulaKind.CALCULATION and formula.aggregation_components != List[])
+    or
+    (formula.kind == MetricFormulaKind.AGGREGATION and formula.calculation_expression != "")
+  )
+  actions {
+    deny with message "Metric formula must not mix calculation expression and aggregation components"
+  }
+end
+
+@LangDocumented(summary="Vérifie qu'une formule de métrique fournit les composantes requises selon son type.")
+policy MetricFormulaConsistency is
+  scope meshr.lang.metamodel.MetricShape
+  condition (
+    (formula.kind == MetricFormulaKind.CALCULATION and formula.calculation_expression == "")
+    or
+    (formula.kind == MetricFormulaKind.AGGREGATION and formula.aggregation_components == List[])
+  )
+  actions {
+    deny with message "Metric formula must provide the appropriate calculation expression or aggregation list"
   }
 end

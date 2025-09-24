@@ -1,4 +1,4 @@
-# Generated from MeshrModule.g4 by ANTLR 4.13.2
+# Generated from grammar/MeshrModule.g4 by ANTLR 4.13.2
 from antlr4 import *
 if "." in __name__:
     from .MeshrModuleParser import MeshrModuleParser
@@ -64,8 +64,8 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by MeshrModuleParser#letDecl.
-    def visitLetDecl(self, ctx:MeshrModuleParser.LetDeclContext):
+    # Visit a parse tree produced by MeshrModuleParser#valDecl.
+    def visitValDecl(self, ctx:MeshrModuleParser.ValDeclContext):
         return self.visitChildren(ctx)
 
 
@@ -439,6 +439,11 @@ class MeshrModuleVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by MeshrModuleParser#annotatedRecordDecl.
+    def visitAnnotatedRecordDecl(self, ctx:MeshrModuleParser.AnnotatedRecordDeclContext):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by MeshrModuleParser#sealedRecordDecl.
     def visitSealedRecordDecl(self, ctx:MeshrModuleParser.SealedRecordDeclContext):
         return self.visitChildren(ctx)
@@ -456,6 +461,11 @@ class MeshrModuleVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MeshrModuleParser#traitDecl.
     def visitTraitDecl(self, ctx:MeshrModuleParser.TraitDeclContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by MeshrModuleParser#annotatedTraitDecl.
+    def visitAnnotatedTraitDecl(self, ctx:MeshrModuleParser.AnnotatedTraitDeclContext):
         return self.visitChildren(ctx)
 
 
@@ -791,11 +801,6 @@ class MeshrModuleVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by MeshrModuleParser#matchExpression.
     def visitMatchExpression(self, ctx:MeshrModuleParser.MatchExpressionContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by MeshrModuleParser#matchArms.
-    def visitMatchArms(self, ctx:MeshrModuleParser.MatchArmsContext):
         return self.visitChildren(ctx)
 
 

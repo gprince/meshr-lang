@@ -54,12 +54,12 @@ policy RequirePartitioning is
   
   scope "table"
   
-  match table is
+  match table {
     { partitioning is null } ->
       actions {
         deny with message "Partitioning is required for all tables"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC PATTERN MATCHING OR ==========
@@ -69,12 +69,12 @@ policy RequirePartitioningAndExpiration is
   
   scope "table"
   
-  match table is
+  match table {
     { partitioning is null } or { expiration is null } ->
       actions {
         deny with message "Tables must have partitioning AND expiration"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC WILDCARD ==========
@@ -84,12 +84,12 @@ policy CatchAllDatasets is
   
   scope "dataset"
   
-  match dataset is
+  match dataset {
     { _ } ->
       actions {
         warn with message "All datasets are subject to audit requirements"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC RANGES NUMÉRIQUES ==========
@@ -99,20 +99,20 @@ policy RetentionWithinBounds is
   
   scope "dataset"
   
-  match dataset is
+  match dataset {
     { expiration in 30..365 } ->
       actions {
         warn with message "Expiration between 30 and 365 days is acceptable"
-      },
+      }
     { expiration < 30 } ->
       actions {
         deny with message "Expiration too short (<30 days)"
-      },
+      }
     { expiration > 365 } ->
       actions {
         deny with message "Expiration too long (>365 days)"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC ENUMS/ENSEMBLES ==========
@@ -122,16 +122,16 @@ policy EnvironmentSpecific is
   
   scope "dataset"
   
-  match dataset is
+  match dataset {
     { label "env" in { "dev", "staging" } } ->
       actions {
         warn with message "Dataset in non-production environment"
-      },
+      }
     { label "env" == "prod" } ->
       actions {
         deny with message "Production datasets require manual approval"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC COMBINAISONS LOGIQUES ==========
@@ -141,13 +141,13 @@ policy SensitiveColumnsValidation is
   
   scope "column"
   
-  match column is
+  match column {
     { (name like "ssn" or name like "iban") and not exists policy_tag } ->
       actions {
         deny with message "Sensitive columns must be tagged",
         patch add policy_tag "pii.sensitive" with message "Auto-tagged sensitive column"
       }
-  end
+  }
 end
 
 // ========== POLICY MULTI-BRANCHES ==========
@@ -157,20 +157,20 @@ policy TableSizeGovernance is
   
   scope "table"
   
-  match table is
+  match table {
     { rows < 1000000 } ->
       actions {
         warn with message "Small table: partitioning optional"
-      },
+      }
     { rows >= 1000000 and rows < 100000000 } ->
       actions {
         warn with message "Medium table: partitioning recommended"
-      },
+      }
     { rows >= 100000000 } ->
       actions {
         deny with message "Large table: partitioning is mandatory"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC BINDING EXPLICITE ==========
@@ -180,12 +180,12 @@ policy OwnerLabelCheck is
   
   scope "dataset"
   
-  match dataset is
+  match dataset {
     { _.labels.owner is null } ->
       actions {
         deny with message "Dataset must have an owner label"
       }
-  end
+  }
 end
 
 // ========== POLICY AVEC SCOPE WHERE ==========

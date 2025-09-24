@@ -45,73 +45,95 @@ exportItems
 // ==============================
 topLevelDecl
     : annotatedEnumDecl
+    | enumDecl
     | sealedEnumDecl
     | annotatedTypeDecl
+    | typeDecl
     | sealedTypeDecl
     | annotatedAnnotationDecl
-    | sealedRecordDecl
+    | annotationDecl
+    | annotatedRecordDecl
     | recordDecl
-    | sealedTraitDecl
+    | sealedRecordDecl
+    | annotatedTraitDecl
     | traitDecl
+    | sealedTraitDecl
     | annotatedAspectDecl
+    | aspectDecl
     | sealedAspectDecl
     | annotatedEntityDecl
+    | entityDecl
     | sealedEntityDecl
     | annotatedTypeRelationDecl
+    | typeRelationDecl
     | sealedTypeRelationDecl
     | annotatedRelationDecl
+    | relationDecl
     | sealedRelationDecl
     | annotatedMetricDecl
+    | metricDecl
     | sealedMetricDecl
     | annotatedPolicyDecl
+    | policyDecl
     | sealedPolicyDecl
-    | letDecl
+    | valDecl
     ;
 
-letDecl
-    : 'val' IDENTIFIER '==' expression
+valDecl
+    : 'val' IDENTIFIER '==' expression NEWLINE?
     ;
 
 // ========== ENUM =============
 exportableDecl
     : annotatedAnnotationDecl
+    | annotationDecl
     | annotatedEnumDecl
+    | enumDecl
     | sealedEnumDecl
     | annotatedTypeDecl
+    | typeDecl
     | sealedTypeDecl
     | annotatedEntityDecl
+    | entityDecl
     | sealedEntityDecl
     | annotatedTypeRelationDecl
+    | typeRelationDecl
     | sealedTypeRelationDecl
     | annotatedRelationDecl
+    | relationDecl
     | sealedRelationDecl
+    | annotatedRecordDecl
     | recordDecl
     | sealedRecordDecl
+    | annotatedTraitDecl
     | traitDecl
     | sealedTraitDecl
     | annotatedAspectDecl
+    | aspectDecl
     | sealedAspectDecl
     | annotatedMetricDecl
+    | metricDecl
     | sealedMetricDecl
     | annotatedPolicyDecl
+    | policyDecl
     | sealedPolicyDecl
     ;
 
 annotatedEnumDecl
-    : annotation* enumDecl
+    : annotation+ enumDecl
     ;
 
 sealedEnumDecl
-    : SEALED enumDecl
+    : annotation* SEALED enumDecl
     ;
 
 // ========== ENTITY =============
 annotatedEntityDecl
-    : annotation* entityDecl
+    : annotation+ entityDecl
     ;
 
 sealedEntityDecl
-    : SEALED entityDecl
+    : annotation* SEALED entityDecl
     ;
 
 enumDecl
@@ -181,11 +203,11 @@ aspectInstanceField
 
 // ========== TYPE DECLARATION ============
 annotatedTypeDecl
-    : annotation* typeDecl
+    : annotation+ typeDecl
     ;
 
 sealedTypeDecl
-    : SEALED typeDecl
+    : annotation* SEALED typeDecl
     ;
 
 typeDecl
@@ -264,11 +286,11 @@ otherConstraint
 
 // ========== TYPE RELATION DECLARATION ============
 annotatedTypeRelationDecl
-    : annotation* typeRelationDecl
+    : annotation+ typeRelationDecl
     ;
 
 sealedTypeRelationDecl
-    : SEALED typeRelationDecl
+    : annotation* SEALED typeRelationDecl
     ;
 
 typeRelationDecl
@@ -289,11 +311,11 @@ typeRelationAspects
 
 // ========== RELATION DECLARATION ============
 annotatedRelationDecl
-    : annotation* relationDecl
+    : annotation+ relationDecl
     ;
 
 sealedRelationDecl
-    : SEALED relationDecl
+    : annotation* SEALED relationDecl
     ;
 
 relationDecl
@@ -326,7 +348,7 @@ relationAspects
 
 // ========== ANNOTATION DECLARATION ============
 annotatedAnnotationDecl
-    : annotation* annotationDecl
+    : annotation+ annotationDecl
     ;
 
 annotationDecl
@@ -476,8 +498,12 @@ recordDecl
     : 'record' IDENTIFIER withClause? 'is' recordFieldList 'end'
     ;
 
+annotatedRecordDecl
+    : annotation+ recordDecl
+    ;
+
 sealedRecordDecl
-    : SEALED recordDecl
+    : annotation* SEALED recordDecl
     ;
 
 recordFieldList
@@ -493,8 +519,12 @@ traitDecl
     : 'trait' IDENTIFIER withClause? 'is' traitFieldList traitAspects? 'end'
     ;
 
+annotatedTraitDecl
+    : annotation+ traitDecl
+    ;
+
 sealedTraitDecl
-    : SEALED traitDecl
+    : annotation* SEALED traitDecl
     ;
 
 traitFieldList
@@ -515,7 +545,7 @@ withClause
 
 // ========== ASPECT DECLARATION ==========
 annotatedAspectDecl
-    : annotation* aspectDecl
+    : annotation+ aspectDecl
     ;
 
 aspectDecl
@@ -523,7 +553,7 @@ aspectDecl
     ;
 
 sealedAspectDecl
-    : SEALED aspectDecl
+    : annotation* SEALED aspectDecl
     ;
 
 aspectInheritance
@@ -775,11 +805,11 @@ literal
 
 // ========== METRIC DECLARATION ==========
 annotatedMetricDecl
-    : annotation* metricDecl
+    : annotation+ metricDecl
     ;
 
 sealedMetricDecl
-    : SEALED metricDecl
+    : annotation* SEALED metricDecl
     ;
 
 metricDecl
@@ -845,11 +875,7 @@ dimension
     ;
 
 matchExpression
-    : MATCH expression 'is' matchArms 'end'
-    ;
-
-matchArms
-    : matchArm (',' matchArm)*
+    : MATCH expression '{' matchArm+ '}'
     ;
 
 matchArm
@@ -933,11 +959,11 @@ metricAspects
 
 // ========== POLICY DECLARATION ==========
 annotatedPolicyDecl
-    : annotation* policyDecl
+    : annotation+ policyDecl
     ;
 
 sealedPolicyDecl
-    : SEALED policyDecl
+    : annotation* SEALED policyDecl
     ;
 
 policyDecl
@@ -961,7 +987,7 @@ policyCondition
     ;
 
 policyMatch
-    : MATCH qualifiedName 'is' policyMatchArm+ 'end'
+    : MATCH qualifiedName '{' policyMatchArm+ '}'
     ;
 
 policyMatchArm
