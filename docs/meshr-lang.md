@@ -2218,10 +2218,10 @@ policy PolicyName is
   condition exists aspect { AspectName }
   
   // Option B : Pattern matching (pour cas complexes)
-  match scope_type is
-    { pattern1 } -> actions { ... },
+  match scope_type {
+    { pattern1 } -> actions { ... }
     { pattern2 } or { pattern3 } -> actions { ... }
-  end
+  }
   
   actions {
     deny with message "Error message",
@@ -2286,36 +2286,36 @@ Pour des validations complexes, réutilise la syntaxe des métriques.
 
 #### Patterns simples
 ```meshr
-match table is
+match table {
   { partitioning is null } ->
     actions { deny with message "Partitioning required" }
-end
+}
 ```
 
 #### Patterns avec OR
 ```meshr
-match table is
+match table {
   { partitioning is null } or { expiration is null } ->
     actions { deny with message "Both partitioning and expiration required" }
-end
+}
 ```
 
 #### Patterns avec ranges
 ```meshr
-match dataset is
+match dataset {
   { expiration < 30 } ->
-    actions { deny with message "Retention too short" },
+    actions { deny with message "Retention too short" }
   { expiration > 365 } ->
     actions { deny with message "Retention too long" }
-end
+}
 ```
 
 #### Patterns avec ensembles
 ```meshr
-match dataset is
+match dataset {
   { label "env" in { "dev", "staging" } } ->
     actions { warn with message "Non-production environment" }
-end
+}
 ```
 
 ### 5. Actions
@@ -2399,18 +2399,18 @@ policy SensitiveDataValidation is
   
   scope "column"
   
-  match column is
+  match column {
     { (name like "ssn" or name like "iban" or name like "credit_card") and not exists policy_tag } ->
       actions {
         deny with message "Sensitive columns must be tagged",
         patch add policy_tag "pii.sensitive" with message "Auto-tagged sensitive column"
-      },
+      }
     { name like "email" and constraints missing pattern } ->
       actions {
         warn with message "Email fields should have pattern validation",
         patch add constraint pattern "^[^@]+@[^@]+$" with message "Added email pattern"
       }
-  end
+  }
 end
 ```
 
@@ -2724,17 +2724,16 @@ dimensions {
 
 ```meshr
 dimensions {
-  salary_tier match salary_offered is
-    0..49999 -> "entry level",
-    50000..79999 -> "mid level",
+  salary_tier match salary_offered {
+    0..49999 -> "entry level"
+    50000..79999 -> "mid level"
     80000.. -> "senior level"
-  end,
-  
-  channel_type match source_channel is
-    SourceChannel.linkedin or SourceChannel."social media" -> "digital",
-    SourceChannel."internal referral" -> "internal",
+  },
+  channel_type match source_channel {
+    SourceChannel.linkedin or SourceChannel."social media" -> "digital"
+    SourceChannel."internal referral" -> "internal"
     _ -> "external"
-  end
+  }
 }
 ```
 
@@ -2813,11 +2812,11 @@ metric TimeToHireByDepartment is
   
   dimensions {
     department related(JobPosting, job_id).department_id,
-    seniority_tier match related(JobPosting, job_id).seniority_level is
-      SeniorityLevel.intern or SeniorityLevel.junior -> "junior",
-      SeniorityLevel.senior or SeniorityLevel.lead -> "senior",
+    seniority_tier match related(JobPosting, job_id).seniority_level {
+      SeniorityLevel.intern or SeniorityLevel.junior -> "junior"
+      SeniorityLevel.senior or SeniorityLevel.lead -> "senior"
       _ -> "executive"
-    end,
+    },
     period date_trunc("month", application_date)
   }
   
@@ -4144,8 +4143,7 @@ metric-dimensions   = "dimensions", "{", dimension-list, "}" ;
 dimension-list      = dimension, { ",", dimension } ;
 dimension           = identifier, ( expression | match-expression ) ;
 
-match-expression    = "match", expression, "is", match-arms, "end" ;
-match-arms          = match-arm, { ",", match-arm } ;
+match-expression    = "match", expression, "{", match-arm, { match-arm }, "}" ;
 match-arm           = pattern, "->", match-result ;
 
 pattern             = literal-pattern | range-pattern | enum-pattern | wildcard-pattern | or-pattern ;
@@ -5074,4 +5072,3 @@ end
 6. **JSON** : Utilisez la syntaxe objet `{}` pour les structures, la syntaxe chaîne `""` pour le JSON brut
 
 Cette annexe couvre tous les littéraux supportés par Meshr-lang avec des exemples pratiques et des cas d'usage réels.
-

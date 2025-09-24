@@ -13,7 +13,7 @@
 
 #### MÉTRIQUES (Nouvelle fonctionnalité majeure)
 - **Mot-clé `metric`** : Syntaxe complète avec 9 composants
-- **Pattern matching** : `match...is...end` avec `->`, `or`, wildcards, ranges, enums
+- **Pattern matching** : `match expr { ... }` avec `->`, `or`, wildcards, ranges, enums
 - **Composants supportés** :
   - `source` : Entité source des données
   - `calculation` : Expression de calcul simple
