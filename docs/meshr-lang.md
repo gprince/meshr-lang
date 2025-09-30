@@ -4,7 +4,7 @@
 
 G. Prince - Architecte Principal
 
-Version 0.4.0 - Septembre 2025
+Version 0.4.1 - Septembre 2025
 
 ---
 
@@ -66,6 +66,11 @@ Version 0.4.0 - Septembre 2025
   - [🧩 Composants détaillés](#-composants-détaillés)
   - [📦 Exemple complet](#-exemple-complet)
   - [✅ Règles sémantiques](#-règles-sémantiques)
+
+### 🤝 Expressions et policies (v0.4.1)
+- Arbre d'expression (`ExpressionTree`) généralisé à toutes les valeurs par défaut, arguments d'enum et expressions `val`.
+- Nouvelles structures de policy : `PolicyConditionShape`, opérateurs de motif (`PolicyPatternOperator`), actions inline.
+- Policy d'exemple : `DeclarationDocumentationGovernance` illustrant des `match` sur des artefacts du langage.
 
 ### 🔒 Contrôles avancés
 - [🔒 Modificateur `sealed`](#-modificateur-sealed)
@@ -633,7 +638,7 @@ module metadata.annotations
 - Les paires `clé=valeur` peuvent être combinées dans une annotation.
 - Les annotations sont **optionnelles** et **non normatives** mais peuvent être exploitées par les outils CLI ou LSP.
 
-### 🧩 [2025-09-10] — Annotations avec arguments typés
+### 🧩 [2025-09-10] — Annotations avec arguments typés (v0.4.0)
 
 - **Contexte :** Besoin d’enrichir les artefacts avec des métadonnées structurées.
 - **Décision :** Support des annotations avec arguments (valeur unique ou paires clé/valeur), et valeurs typées (`string`, `boolean`, `number` — y compris hex —, `qualifiedName`, `interval`).
@@ -4015,7 +4020,7 @@ end
 ```ebnf
 (* ==============================
    Meshr-Lang — Grammaire EBNF (alignée ANTLR)
-   Mise à jour: 2025-09-17 - Version 0.2.0 avec métriques
+   Mise à jour: 2025-11-05 - Version 0.4.1 (expressions complètes, policies enrichies)
    ============================== *)
 
 compilation-unit    = module-decl, { import-decl }, { export-decl }, { top-level-decl }, EOF ;
@@ -4031,19 +4036,19 @@ import-item         = identifier ;
 export-decl         = "export", ( export-items | exportable-decl ) ;
 export-items        = "{", identifier, { ",", identifier }, "}" ;
 
-top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
-exportable-decl     = enum-decl | entity-decl | type-relation-decl | relation-decl | metric-decl ;
+top-level-decl      = enum-decl | annotation-decl | record-decl | trait-decl | aspect-decl | entity-decl | type-decl | type-relation-decl | relation-decl | metric-decl | policy-decl | val-decl ;
+exportable-decl     = enum-decl | entity-decl | type-decl | type-relation-decl | relation-decl | metric-decl | policy-decl | val-decl ;
 
 enum-decl           = { annotation }, [ "sealed" ], "enum", identifier, [ enum-signature ], "is", "(", enum-values, ")" ;
 enum-signature      = "(", enum-attribute, { ",", enum-attribute }, ")" ;
-enum-attribute      = identifier, ":", ( qualified-name | base-type ), [ "=", annotation-value ] ;
+enum-attribute      = identifier, ":", ( qualified-name | base-type ), [ "==", annotation-value ] ;
 enum-values         = enum-value, { ",", enum-value } ;
 enum-value          = (identifier | string-literal), [ "(", enum-value-args, ")" ] ;
 enum-value-args     = enum-value-arg, { ",", enum-value-arg } ;
-enum-value-arg      = identifier, "=", annotation-value ;
+enum-value-arg      = identifier, "==", annotation-value ;
 
 annotation-decl     = { annotation }, "annotation", identifier, "is", annotation-field, { annotation-field }, "end" ;
-annotation-field    = ( "required" | "optional" ), identifier, ":", ( qualified-name | base-type ), [ "=", annotation-value ], [ NEWLINE ] ;
+annotation-field    = ( "required" | "optional" ), identifier, ":", ( qualified-name | base-type ), [ "==", annotation-value ], [ NEWLINE ] ;
 
 annotation          = "@", identifier, [ "(", [ annotation-args ], ")" ] ;
 annotation-args     = annotation-arg, { ",", annotation-arg } ;
@@ -4088,11 +4093,11 @@ boolean-literal     = "true" | "false" ;
 
 (* ========== RECORD DECLARATION ============ *)
 record-decl         = "record", identifier, [ with-clause ], "is", record-field, { record-field }, "end" ;
-record-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+record-field        = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 
 (* ========== TRAIT DECLARATION ============ *)
 trait-decl          = [ "sealed" ], "trait", identifier, [ with-clause ], "is", trait-field, { trait-field }, [ trait-aspects ], "end" ;
-trait-field         = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+trait-field         = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 with-clause         = "with", qualified-name, { ",", qualified-name } ;
 trait-aspects       = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
 
@@ -4101,16 +4106,16 @@ aspect-decl         = { annotation }, [ "abstract" ], "aspect", identifier, [ as
 aspect-inheritance  = extends-clause, [ with-clause ]
                     | with-clause, [ extends-clause ] ;
 extends-clause      = "extends", qualified-name ;
-aspect-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+aspect-field        = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 
 (* ========== ENTITY ============= *)
 entity-decl         = { annotation }, [ "sealed" ], "entity", identifier, [ with-clause ], "is", entity-field, { entity-field }, [ entity-aspects ], "end" ;
-entity-field        = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+entity-field        = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 entity-aspects      = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
 
 (* ========== TYPE RELATION ============= *)
 type-relation-decl  = { annotation }, [ "sealed" ], "type", "relation", identifier, [ with-clause ], "is", type-relation-field, { type-relation-field }, [ type-relation-aspects ], "end" ;
-type-relation-field = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+type-relation-field = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 type-relation-aspects = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
 
 (* ========== RELATION ============= *)
@@ -4119,8 +4124,52 @@ relation-type       = "of", "type", qualified-name ;
 relation-endpoints  = "from", relation-endpoint, "to", relation-endpoint ;
 relation-endpoint   = qualified-name, "(", identifier, { ",", identifier }, ")" ;
 relation-field-list = relation-field, { relation-field } ;
-relation-field      = identifier, ":", type-ref, [ "=", annotation-value ], [ NEWLINE ] ;
+relation-field      = identifier, ":", type-ref, [ "==", annotation-value ], [ NEWLINE ] ;
 relation-aspects    = "aspects", "{", aspect-instance, { ",", aspect-instance }, "}" ;
+
+(* ========== TYPE ALIAS ============ *)
+type-decl           = { annotation }, "type", identifier, "is", base-type-with-constraints ;
+
+(* ========== VAL DECLARATION ============ *)
+val-decl            = "val", identifier, "==", expression ;
+
+(* ========== POLICY DECLARATION ============ *)
+policy-decl         = { annotation }, [ "sealed" ], "policy", identifier, [ policy-verbatim ],
+                      policy-scope,
+                      ( policy-condition, policy-actions
+                      | policy-match
+                      | policy-actions ),
+                      "end" ;
+policy-verbatim     = "verbatim", string-literal ;
+policy-scope        = "scope", qualified-name, [ "where", expression ] ;
+policy-condition    = "condition", policy-expression ;
+policy-expression   = "missing", "aspect", "{", aspect-list, "}"
+                    | "exists", "aspect", "{", aspect-list, "}"
+                    | "aspects", ".", identifier, ".", identifier, comparison-operator, annotation-value
+                    | expression ;
+comparison-operator = "==" | "!=" | "<" | "<=" | ">" | ">=" ;
+aspect-list         = identifier, { ",", identifier } ;
+policy-match        = "match", qualified-name, "{", policy-match-arm, { policy-match-arm }, "}" ;
+policy-match-arm    = policy-pattern, "->", expression ;
+policy-pattern      = "{", policy-pattern-expression, "}" , { "or", "{", policy-pattern-expression, "}" }
+                    | "_" ;
+policy-pattern-expression
+                    = expression
+                    | identifier, "is", "null"
+                    | identifier, "in", ( range-literal | list-literal | "{", string-literal, { ",", string-literal }, "}" )
+                    | identifier, "like", string-literal
+                    | "not", "exists", identifier
+                    | "_" ;
+policy-actions      = "actions", "{", policy-action-entry, { ",", policy-action-entry }, "}" ;
+policy-action-entry = policy-action | expression ;
+policy-action       = "deny", [ "with", "message", ( string-literal | string-template ) ]
+                    | "warn", [ "with", "message", ( string-literal | string-template ) ]
+                    | "notify", ( string-literal | string-template ), [ "with", "message", ( string-literal | string-template ) ]
+                    | patch-action ;
+patch-action        = "patch", patch-operation, [ "with", "message", ( string-literal | string-template ) ] ;
+patch-operation     = "add", "aspect", identifier, "{", aspect-instance-field, { ",", aspect-instance-field }, "}"
+                    | "modify", "aspect", identifier, "{", aspect-instance-field, { ",", aspect-instance-field }, "}"
+                    | "remove", "aspect", identifier ;
 
 (* ========== ASPECT INSTANCES ============ *)
 aspect-instance     = identifier, "{", [ aspect-instance-field-list ], "}" ;
@@ -4215,6 +4264,7 @@ expression          = arithmetic-expr | comparison-expr | logical-expr | functio
 
 (* ========== TERMINAUX ============ *)
 string-literal      = '"', { character - '"' | '\\"' }, '"' ;
+string-template     = string-literal, { "${", expression, "}", string-literal } ;
 number-literal      = digit, { digit } | "0x", hex-digit, { hex-digit } ;
 identifier          = letter, { letter | digit | "_" } ;
 NEWLINE             = ("\r"?), "\n", { ("\r"?), "\n" } ;
@@ -4226,7 +4276,7 @@ block-comment       = "/*", { character - "*/" }, "*/" ;
 
 ### Annexe B — Grammaire ANTLR (référence, Python target)
 
-> ⚠️ **Note**: Cette annexe contient un extrait de la grammaire ANTLR. La **grammaire complète et à jour** (incluant les métriques et le pattern matching) se trouve dans le fichier `/grammar/MeshrModule.g4` du projet. Dernière mise à jour : **Version 0.2.0 (2025-09-17)** avec support complet des métriques.
+> ⚠️ **Note**: Cette annexe contient un extrait de la grammaire ANTLR. La **grammaire complète et à jour** (incluant les expressions 0.4.1 et les policies enrichies) se trouve dans le fichier `/grammar/MeshrModule.g4` du projet. Dernière mise à jour : **Version 0.4.1 (2025-11-05)**.
 
 ```antlr
 grammar MeshrModule;
@@ -5117,3 +5167,11 @@ end
 6. **JSON** : Utilisez la syntaxe objet `{}` pour les structures, la syntaxe chaîne `""` pour le JSON brut
 
 Cette annexe couvre tous les littéraux supportés par Meshr-lang avec des exemples pratiques et des cas d'usage réels.
+### 🧩 [2025-11-05] — Métamodèle 0.4.1 : Expressions enrichies et policies structurées
+
+- **Contexte :** besoin de représenter fidèlement tous les artefacts (expressions, policies, patchs) dans le métamodèle.
+- **Décisions clés :**
+  - Adoption d’un arbre d’expression (`ExpressionTree`) pour les valeurs par défaut, arguments d’enum, `val`, etc.
+  - Introduction des opérateurs de motif (`PolicyPatternOperator`), conditions spécialisées (`PolicyConditionShape`) et opérations de patch (`PolicyPatchOperation`).
+  - Remplacement des policy de démonstration par `DeclarationDocumentationGovernance`, qui illustre le pattern matching appliqué au langage lui-même.
+- **Pourquoi :** Permettre aux outils (LSP, analyse statique, génération de docs) d’exploiter des structures précises sans relire la grammaire brute.

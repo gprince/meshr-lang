@@ -1,0 +1,108 @@
+module meshr.syntaxe.literals
+
+import Status from meshr.types
+
+/*
+  Les déclarations suivantes illustrent les littéraux associés aux types primitifs.
+  Chaque exemple suit la forme "val identifiant: Type == valeur" et documente la sémantique.
+*/
+
+// ----------------------------
+// Chaînes de caractères
+// ----------------------------
+// Littéral texte exact entre guillemets doubles.
+val message_bienvenue: String == "Bienvenue dans Meshr"
+
+// Une chaîne peut être vide tout en restant typée.
+val chaine_vide: String == ""
+
+/*
+  Les caractères spéciaux sont échappés avec un antislash.
+  Ici, \" conserve les guillemets dans la valeur stockée.
+*/
+val citation_incluse: String == "Il a dit \"Bonjour\""
+
+/*
+  Les string templates concatènent des segments textuels et des expressions.
+  Ici on injecte des expressions numériques, booléennes et temporelles qui seront converties en String.
+*/
+val message_dynamique: String == "Traitement ${42} terminé: succès=${true}, durée=${Interval 5 minutes}"
+
+// Exemple plus riche utilisant une expression arithmétique et un littéral datetime.
+val message_detaille: String == "Process ${100 + 23} lancé à ${Datetime\"2024-09-18T10:15:30Z\"}"
+
+// ----------------------------
+// Booléens
+// ----------------------------
+// Valeur de vérité vraie utilisée pour les indicateurs positifs.
+val visible_par_defaut: Boolean == true
+
+// Valeur de vérité fausse pour désactiver un comportement.
+val archivee: Boolean == false
+
+// ----------------------------
+// Nombres entiers
+// ----------------------------
+// Littéral entier décimal sans suffixe.
+val compteur_elements: Integer == 42
+
+// Littéral entier en base hexadécimale préfixé par 0x.
+val couleur_hex: Integer == 0xFF00CC
+
+/*
+  Préfixer par 0b active la base binaire.
+  Utile pour manipuler des flags bit à bit.
+*/
+val masque_binaire: Integer == 0b1010
+
+// ----------------------------
+// Nombres décimaux
+// ----------------------------
+// Nombre à virgule flottante typé Float par défaut.
+val taux_tva: Float == 20.0
+
+/*
+  La notation scientifique exprime des valeurs très petites ou très grandes.
+  Ici 1.23e-4 correspond à 0.000123.
+*/
+val coefficient_scientifique: Float == 1.23e-4
+
+// Double précision pour des calculs nécessitant plus de décimales.
+val pi_double_precision: Double == 3.14159265359
+
+// ----------------------------
+// Littéraux temporels
+// ----------------------------
+// Date ISO 8601 typée via le constructeur Date"".
+val date_reference: Date == Date"2024-01-01"
+
+// Heure précise avec millisecondes.
+val heure_execution: Time == Time"14:30:25.123"
+
+/*
+  Datetime combine date, heure et fuseau horaire.
+  Le suffixe Z indique l'heure UTC.
+*/
+val timestamp_creation: Datetime == Datetime"2024-09-18T10:15:30Z"
+
+// ----------------------------
+// Intervalles temporels
+// ----------------------------
+// Intervalle positif exprimé en mois.
+val periode_retention: Interval == Interval 6 months
+
+/*
+  Les intervalles acceptent des valeurs négatives pour remonter dans le temps.
+  Ici on exprime "une journée en arrière".
+*/
+val decalage_hier: Interval == Interval -1 day
+
+// ----------------------------
+// Noms qualifiés
+// ----------------------------
+/*
+  Un nom qualifié fait référence à une valeur exportée depuis un autre module.
+  Après import, on accède à l'énumération et à la valeur via son identifiant.
+*/
+val statut_actif: Status == Status."active"
+

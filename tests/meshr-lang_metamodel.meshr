@@ -6,13 +6,13 @@
  * (annotations, aspects, métriques, policies…) en s'auto-décrivant.
  */
 // Versionnage du module
-@LangVersion("0.4.0")
-@LangSince("0.4.0")
+@LangVersion("0.4.1")
+@LangSince("0.4.1")
 @LangDocumented(
   summary="Métamodèle officiel du langage Meshr",
-  description="Ce module formalise les artefacts du DSL Meshr pour permettre son auto-description."
+  description="Ce module formalise les artefacts du DSL Meshr pour permettre son auto-description. Exemple : les outils d'analyse importent explicitement meshr.lang.internal.metamodel pour inspecter les politiques disponibles."
 )
-module meshr.lang.metamodel
+module meshr.lang.internal.metamodel
 
 
 import LifecycleStage from meshr.lifecycle
@@ -25,11 +25,33 @@ export {
   DeclarationDefinition,
   DeclarationSurface,
   FieldDefinition,
+  ExpressionKind,
+  LiteralKind,
+  MatchPatternKind,
+  PolicyPatternOperator,
+  LiteralValue,
+  ExpressionAssociation,
+  MatchPatternShape,
+  MatchExpressionArm,
+  ExpressionTree,
+  AnnotationFieldShape,
+  AnnotationDefinitionShape,
+  EnumAttributeShape,
+  EnumValueArgument,
+  EnumValueShape,
+  EnumDefinitionShape,
+  RecordShape,
+  TraitShape,
+  AspectDefinitionShape,
+  EntityShape,
+  TypeAliasDefinition,
+  TypeRelationDefinition,
+  ValDefinition,
   ImportSpec,
   ExportSpec,
   AnnotationApplication,
   AspectBinding,
-  RelationShape,
+  RelationDefinition,
   MetricShape,
   MetricFormulaKind,
   MetricFormula,
@@ -42,6 +64,12 @@ export {
   PolicyKind,
   PolicyActionKind,
   PolicyActionShape,
+  PolicyScopeDefinition,
+  PolicyConditionKind,
+  PolicyConditionShape,
+  PolicyPatchOperationKind,
+  PolicyPatchOperation,
+  AspectPatchField,
   ModulesTotal,
   DeclarationsTotal,
   DeclarationsByKind,
@@ -85,8 +113,147 @@ type TypeExpression is String length 1..200
 type HumanReadableLabel is String length 1..120
 type Iso8601Duration is String pattern "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+D)?(T(\\d+H)?(\\d+M)?(\\d+S)?)?$"
 type CronExpression is String pattern "^([0-9*,\\-/]+\\s){4}[0-9*,\\-/]+$"
+type LiteralExpression is String length 0..512
+type QualifiedReference is String length 0..255
 
-@LangDocumented(summary="Liste exhaustive des artefacts top-level que Meshr-lang sait déclarer.")
+@LangDocumented(
+  summary="Catégories d'expressions supportées par Meshr.",
+  description="Exemple : l'expression sum(amount) est capturée avec ExpressionKind.CALL alors que amount > 0 utilise ExpressionKind.BINARY."
+)
+enum ExpressionKind is (
+  LITERAL,
+  IDENTIFIER,
+  UNARY,
+  BINARY,
+  CALL,
+  MEMBER_ACCESS,
+  CONDITIONAL,
+  MATCH,
+  LIST_LITERAL,
+  MAP_LITERAL,
+  RECORD_LITERAL,
+  RANGE_LITERAL,
+  JSON_LITERAL,
+  TEMPLATE_LITERAL,
+  GROUPING,
+  UNKNOWN
+)
+
+@LangDocumented(
+  summary="Types de littéraux qu'une expression Meshr peut véhiculer.",
+  description="Exemple : Json{\"country\": \"FR\"} instancie LiteralKind.JSON_LITERAL alors que \"draft\" correspond à LiteralKind.STRING."
+)
+enum LiteralKind is (
+  STRING,
+  NUMBER,
+  BOOLEAN,
+  JSON_LITERAL,
+  BYTES,
+  DATE,
+  TIME,
+  DATETIME,
+  INTERVAL,
+  RANGE,
+  GEOGRAPHY,
+  SQL,
+  LIST,
+  MAP,
+  RECORD,
+  TEMPLATE,
+  NULL,
+  OTHER
+)
+
+@LangDocumented(
+  summary="Catégories de motifs utilisables dans un match Meshr.",
+  description="Exemple : _ correspond à MatchPatternKind.WILDCARD tandis que OrderStatus.confirmed relève de MatchPatternKind.ENUM."
+)
+enum MatchPatternKind is (
+  WILDCARD,
+  LITERAL,
+  RANGE,
+  ENUM,
+  STRUCTURED,
+  EXPRESSION
+)
+
+@LangDocumented(
+  summary="Opérateurs spécialisés disponibles dans les motifs de policy Meshr.",
+  description="Exemple : PolicyPatternOperator.IS_NULL modélise status is null tandis que PolicyPatternOperator.IN_COLLECTION capture status in {\"draft\", \"archived\"}."
+)
+enum PolicyPatternOperator is (
+  WILDCARD,
+  EXPRESSION,
+  IS_NULL,
+  IN_COLLECTION,
+  LIKE,
+  NOT_EXISTS
+)
+
+@LangDocumented(
+  summary="Valeur littérale telle qu'exprimée dans le code Meshr.",
+  description="Exemple : LiteralValue(kind == LiteralKind.STRING, text == \"\n\") décrit la chaîne \"\n\"."
+)
+record LiteralValue is
+  kind : LiteralKind
+  text : LiteralExpression
+end
+
+@LangDocumented(
+  summary="Entrée clé/valeur capturée dans un littéral de type Map ou Record.",
+  description="Exemple : ExpressionAssociation(key.kind == ExpressionKind.LITERAL, value.kind == ExpressionKind.LITERAL) représente {\"region\": \"EMEA\"}."
+)
+record ExpressionAssociation is
+  key : ExpressionTree
+  value : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Motif évalué dans une branche de match Meshr.",
+  description="Exemple : MatchPatternShape(operator == PolicyPatternOperator.IN_COLLECTION, subject_identifier == \"status\", collection_literals == List[LiteralValue(text == \"draft\")]) modélise status in {\"draft\", ...}."
+)
+record MatchPatternShape is
+  kind : MatchPatternKind
+  operator : PolicyPatternOperator
+  subject_identifier : Identifier == ""
+  optional literal : LiteralValue
+  optional range_start : LiteralValue
+  optional range_end : LiteralValue
+  collection_literals : List of LiteralValue == List[]
+  optional enum_reference : QualifiedReference
+  optional expression : ExpressionTree
+  sub_patterns : List of MatchPatternShape == List[]
+end
+
+@LangDocumented(
+  summary="Branche d'un match Meshr.",
+  description="Exemple : MatchExpressionArm(inline_action.kind == PolicyActionKind.WARN) représente un bras qui retourne warn with message '...'."
+)
+record MatchExpressionArm is
+  pattern : MatchPatternShape
+  result : ExpressionTree
+  optional inline_action : PolicyActionShape
+end
+
+@LangDocumented(
+  summary="Arbre d'expression canonique du langage Meshr.",
+  description="Exemple : ExpressionTree(kind == ExpressionKind.BINARY, operator == \">\", operands == List[ExpressionTree(kind == ExpressionKind.IDENTIFIER, reference == \"amount\"), ExpressionTree(kind == ExpressionKind.LITERAL, literal.text == \"0\")]) modélise amount > 0."
+)
+record ExpressionTree is
+  kind : ExpressionKind
+  operator : String == ""
+  optional literal : LiteralValue
+  optional reference : QualifiedReference
+  operands : List of ExpressionTree == List[]
+  associations : List of ExpressionAssociation == List[]
+  match_arms : List of MatchExpressionArm == List[]
+  metadata : Map of Identifier to LiteralExpression == Map{}
+end
+
+@LangDocumented(
+  summary="Liste exhaustive des artefacts top-level que Meshr-lang sait déclarer.",
+  description="Exemple : DeclarationDefinition.kind == DeclarationKind.MODULE pour la déclaration du module meshr.sales.reporting."
+)
 enum DeclarationKind is (
   MODULE,
   ANNOTATION,
@@ -103,7 +270,10 @@ enum DeclarationKind is (
   VAL
 )
 
-@LangDocumented(summary="Capacités structurelles activables sur une déclaration Meshr.")
+@LangDocumented(
+  summary="Capacités structurelles activables sur une déclaration Meshr.",
+  description="Exemple : une entity Customer déclare DeclarationFeature.FIELDS et DeclarationFeature.ANNOTATIONS pour exposer ses champs annotables."
+)
 enum DeclarationFeature is (
   FIELDS,
   TRAITS,
@@ -126,125 +296,325 @@ enum DeclarationFeature is (
   VAL_EXPRESSION
 )
 
-@LangDocumented(summary="Variantes d'import prévues par la grammaire Meshr.")
+@LangDocumented(
+  summary="Variantes d'import prévues par la grammaire Meshr.",
+  description="Exemple : import customer.module.* utilise ImportKind.WILDCARD alors que import order.types{Order, OrderStatus} produit ImportKind.GROUPED."
+)
 enum ImportKind is (SINGLE, GROUPED, WILDCARD)
 
-@LangDocumented(summary="Modes d'export supportés par la syntaxe Meshr.")
+@LangDocumented(
+  summary="Modes d'export supportés par la syntaxe Meshr.",
+  description="Exemple : export Order exposes ExportKind.INLINE tandis que export { Order, Customer } correspond à ExportKind.GROUPED."
+)
 enum ExportKind is (INLINE, GROUPED)
 
-@LangDocumented(summary="Portées d'application possibles pour une instanciation d'aspect.")
+@LangDocumented(
+  summary="Types de sémantiques supportés dans les tags sémantiques.",
+  description="Exemple : l'aspect ModuleSemantics déclare semantics == SemanticType.MODULE pour signaler qu'il documente des modules."
+)
+enum SemanticType is (
+  MODULE,
+  MESHR_DECLARATION_DESCRIPTOR,
+  CONTAINS
+)
+
+@LangDocumented(
+  summary="Portées d'application possibles pour une instanciation d'aspect.",
+  description="Exemple : AspectBinding.aspectScope == AspectScope.FIELD lorsque l'aspect DataRetention cible un champ précis."
+)
 enum AspectScope is (DECLARATION, FIELD, METRIC_COMPONENT)
 
-@LangDocumented(summary="Représentation canonique d'un nom qualifié d'artefact Meshr.")
+@LangDocumented(
+  summary="Représentation canonique d'un nom qualifié d'artefact Meshr.",
+  description="Exemple : QualifiedName.raw == \"meshr.sales.Order\" fournit segments == List[\"meshr\", \"sales\", \"Order\"]."
+)
 record QualifiedName is
-  raw : String length 1..200
-  segments : List of Identifier = List[]
+  raw : String length 1..255
+  segments : List of Identifier == List[]
+  separator : String == "."
 end
 
-@LangDocumented(summary="Clause d'import telle que définie dans la grammaire Meshr.")
+@LangDocumented(
+  summary="Clause d'import telle que définie dans la grammaire Meshr.",
+  description="Exemple : import order.shared{Order, OrderStatus} se traduit par kind == ImportKind.GROUPED et items == List[\"Order\", \"OrderStatus\"]."
+)
 record ImportSpec is
   kind : ImportKind
   moduleQualifiedName : QualifiedName
-  items : List of Identifier = List[]
+  items : List of Identifier == List[]
 end
 
-@LangDocumented(summary="Clause d'export groupée ou inline pour exposer des artefacts.")
+@LangDocumented(
+  summary="Clause d'export groupée ou inline pour exposer des artefacts.",
+  description="Exemple : export { Order as PublicOrder } produit items == List[\"Order\"] pour un ExportSpec grouped."
+)
 record ExportSpec is
   kind : ExportKind
-  items : List of Identifier = List[]
+  items : List of Identifier == List[]
 end
 
-@LangDocumented(summary="Application concrète d'une annotation Meshr sur une cible.")
+@LangDocumented(
+  summary="Application concrète d'une annotation Meshr sur une cible.",
+  description="Exemple : @since(\"1.2.0\", Json{\"flag\": true}) produit positional=List[Json\"1.2.0\", Json{\"flag\": true}] et named=Map{}."
+)
 record AnnotationApplication is
   name : QualifiedName
-  positional : List of Json = List[]
-  named : Map of Identifier to Json = Map{}
+  positional : List of Json == List[]
+  named : Map of Identifier to Json == Map{}
 end
 
-@LangDocumented(summary="Instanciation d'un aspect sur une déclaration ou un champ.")
+@LangDocumented(
+  summary="Instanciation d'un aspect sur une déclaration ou un champ.",
+  description="Exemple : l'aspect DataRetention appliqué au champ transactions.amount produit arguments == Map{\"retention_days\" -> Json 90}."
+)
 record AspectBinding is
   aspectScope : AspectScope
   aspectQualifiedName : QualifiedName
-  arguments : Map of Identifier to Json = Map{}
+  arguments : Map of Identifier to Json == Map{}
 end
 
-@LangDocumented(summary="Spécification d'un champ typé et annotable dans une déclaration.")
+@LangDocumented(
+  summary="Spécification d'un champ typé et annotable dans une déclaration.",
+  description="Exemple : FieldDefinition(name == \"amount\", type_expression == \"Decimal(10,2)\", iSrequired == false) décrit un champ monétaire optionnel."
+)
 record FieldDefinition is
   name : Identifier
   type_expression : TypeExpression
-  iSrequired : Boolean = true
-  default_value : Json = Json "{}"
-  applied_traits : List of QualifiedName = List[]
-  attached_aspects : List of AspectBinding = List[]
+  iSrequired : Boolean == true
+  default_value : Json == Json "{}"
+  applied_traits : List of QualifiedName == List[]
+  attached_aspects : List of AspectBinding == List[]
 end
 
-@LangDocumented(summary="Décrit les extrémités et la nature d'une relation Meshr.")
-record RelationShape is
+@LangDocumented(
+  summary="Champ déclaré dans une annotation Meshr.",
+  description="Exemple : le champ required tenant : String génère AnnotationFieldShape(name == \"tenant\", type_expression == \"String\", is_required == true)."
+)
+record AnnotationFieldShape is
+  name : Identifier
+  type_expression : TypeExpression
+  is_required : Boolean == true
+  optional default_value : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Détail structurel d'une annotation Meshr.",
+  description="Exemple : AnnotationDefinitionShape(fields == List[AnnotationFieldShape(name == \"owner\")]) décrit les paramètres de @Owner."
+)
+record AnnotationDefinitionShape is
+  fields : List of AnnotationFieldShape == List[]
+end
+
+@LangDocumented(
+  summary="Attribut de signature d'une énumération Meshr.",
+  description="Exemple : EnumAttributeShape(name == \"code\", type_expression == \"Integer\") décrit un champ partagé par chaque variante."
+)
+record EnumAttributeShape is
+  name : Identifier
+  type_expression : TypeExpression
+  optional default_value : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Argument nommé passé à une variante d'énumération Meshr.",
+  description="Exemple : EnumValueArgument(name == \"code\", value.kind == ExpressionKind.LITERAL) pour la variante ok(code = 200)."
+)
+record EnumValueArgument is
+  name : Identifier
+  value : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Variante concrète d'une énumération Meshr.",
+  description="Exemple : EnumValueShape(symbol == \"ok\", arguments == List[EnumValueArgument(name == \"code\", value.kind == ExpressionKind.LITERAL)]) représente ok(code = 200)."
+)
+record EnumValueShape is
+  symbol : String length 1..120
+  arguments : List of EnumValueArgument == List[]
+end
+
+@LangDocumented(
+  summary="Structure complète d'une énumération Meshr.",
+  description="Exemple : l'énumération Status(code : Integer) avec ok(code = 200) devient EnumDefinitionShape où attributes contient EnumAttributeShape(name == \"code\") et values contient EnumValueShape(symbol == \"ok\")."
+)
+record EnumDefinitionShape is
+  attributes : List of EnumAttributeShape == List[]
+  values : List of EnumValueShape == List[]
+  sealed : Boolean == false
+end
+
+@LangDocumented(
+  summary="Structure d'un record Meshr.",
+  description="Exemple : un record Customer with meshr.common.Audit renvoie RecordShape(declared_traits contenant meshr.common.Audit, fields listant FieldDefinition(name == \"id\"))."
+)
+record RecordShape is
+  sealed : Boolean == false
+  declared_traits : List of QualifiedName == List[]
+  fields : List of FieldDefinition == List[]
+end
+
+@LangDocumented(
+  summary="Structure d'un trait Meshr.",
+  description="Exemple : le trait Audit(sealed) qui expose FieldDefinition(name == \"created_at\") produit TraitShape(sealed == true, fields contenant ce champ)."
+)
+record TraitShape is
+  sealed : Boolean == false
+  composed_traits : List of QualifiedName == List[]
+  fields : List of FieldDefinition == List[]
+  attached_aspects : List of AspectBinding == List[]
+end
+
+@LangDocumented(
+  summary="Structure d'un aspect Meshr.",
+  description="Exemple : AspectDefinitionShape(is_abstract == true, extends_aspect == \"meshr.core.Displayable\") modélise un aspect abstrait."
+)
+record AspectDefinitionShape is
+  is_abstract : Boolean == false
+  extends_aspect : QualifiedReference == ""
+  implemented_traits : List of QualifiedName == List[]
+  fields : List of FieldDefinition == List[]
+  attached_aspects : List of AspectBinding == List[]
+end
+
+@LangDocumented(
+  summary="Structure d'une entity Meshr.",
+  description="Exemple : EntityShape(sealed == false, fields == List[FieldDefinition(name == \"id\")]) représente une entity Customer."
+)
+record EntityShape is
+  sealed : Boolean == false
+  declared_traits : List of QualifiedName == List[]
+  fields : List of FieldDefinition == List[]
+  attached_aspects : List of AspectBinding == List[]
+end
+
+@LangDocumented(
+  summary="Structure d'un alias de type Meshr.",
+  description="Exemple : TypeAliasDefinition(base_type == \"String\", constraint_literals == List[\"length 1..20\"]) formalise type Email = String length 1..20."
+)
+record TypeAliasDefinition is
+  base_type : TypeExpression
+  constraint_literals : List of LiteralExpression == List[]
+end
+
+@LangDocumented(
+  summary="Structure d'une relation de type Meshr.",
+  description="Exemple : TypeRelationDefinition(fields == List[FieldDefinition(name == \"source\")]) décrit une relation typée DomainToRange."
+)
+record TypeRelationDefinition is
+  declared_traits : List of QualifiedName == List[]
+  fields : List of FieldDefinition == List[]
+  attached_aspects : List of AspectBinding == List[]
+end
+
+@LangDocumented(
+  summary="Déclaration d'une valeur Meshr.",
+  description="Exemple : ValDefinition(expression.kind == ExpressionKind.JSON_LITERAL) représente val FEATURES == Json{\"enabled\": true}."
+)
+record ValDefinition is
+  expression : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Décrit les extrémités et la nature d'une relation Meshr.",
+  description="Exemple : la relation CustomerOwnsOrder utilise from_entity == QualifiedName \"meshr.crm.Customer\" et to_entity == QualifiedName \"meshr.sales.Order\"."
+)
+record RelationDefinition is
   type_name : QualifiedName
   from_entity : QualifiedName
-  from_keys : List of Identifier = List[]
+  from_keys : List of Identifier == List[]
   to_entity : QualifiedName
-  to_keys : List of Identifier = List[]
-  isBidirectional : Boolean = false
+  to_keys : List of Identifier == List[]
+  isBidirectional : Boolean == false
+  declared_traits : List of QualifiedName == List[]
+  relation_type_reference : QualifiedReference == ""
+  relation_fields : List of FieldDefinition == List[]
+  attached_aspects : List of AspectBinding == List[]
 end
 
-@LangDocumented(summary="Types de formules supportées par les métriques Meshr.")
+@LangDocumented(
+  summary="Types de formules supportées par les métriques Meshr.",
+  description="Exemple : une métrique RevenueGrowth définit formula.kind == MetricFormulaKind.CALCULATION pour calculer un ratio entre deux champs."
+)
 enum MetricFormulaKind is (
   CALCULATION,
   AGGREGATION
 )
 
-@LangDocumented(summary="Agrégat nommé calculé dans une métrique par lot.")
+@LangDocumented(
+  summary="Agrégat nommé calculé dans une métrique par lot.",
+  description="Exemple : AggregationComponent(alias == \"total_revenue\", expression.kind == ExpressionKind.CALL) synthétise le montant cumulé via sum(amount)."
+)
 record AggregationComponent is
   alias : Identifier
-  expression : String length 1..512
+  expression : ExpressionTree
 end
 
-@LangDocumented(summary="Formule de calcul attachée à une métrique Meshr.")
+@LangDocumented(
+  summary="Formule de calcul attachée à une métrique Meshr.",
+  description="Exemple : MetricFormula(kind == MetricFormulaKind.AGGREGATION, aggregation_components == List[AggregationComponent(alias == \"total\", expression.kind == ExpressionKind.CALL)]) modélise une somme globale."
+)
 record MetricFormula is
   kind : MetricFormulaKind
-  calculation_expression : String length 0..512 = ""  // utilisé lorsque kind == CALCULATION
-  aggregation_components : List of AggregationComponent = List[]  // utilisé lorsque kind == AGGREGATION
+  calculation_expression : ExpressionTree == ExpressionTree { kind: ExpressionKind.UNKNOWN }
+  aggregation_components : List of AggregationComponent == List[]  // utilisé lorsque kind == AGGREGATION
 end
 
-@LangDocumented(summary="Champ de sortie déclaré par une métrique Meshr.")
+@LangDocumented(
+  summary="Champ de sortie déclaré par une métrique Meshr.",
+  description="Exemple : MetricOutputField(name == \"total_revenue\", type_expression == \"Decimal(18,2)\") expose la mesure principale d'une métrique."
+)
 record MetricOutputField is
   name : Identifier
   type_expression : TypeExpression
 end
 
-@LangDocumented(summary="Dimension exposée par une métrique Meshr.")
+@LangDocumented(
+  summary="Dimension exposée par une métrique Meshr.",
+  description="Exemple : MetricDimension(name == \"country\", expression.kind == ExpressionKind.IDENTIFIER) permet de ventiler une mesure par pays."
+)
 record MetricDimension is
   name : Identifier
-  expression : String length 1..512
+  expression : ExpressionTree
 end
 
-@LangDocumented(summary="Filtre appliqué lors du calcul d'une métrique Meshr.")
+@LangDocumented(
+  summary="Filtre appliqué lors du calcul d'une métrique Meshr.",
+  description="Exemple : MetricFilter(predicate.operator == \"==\") avec predicate.operands ciblant region et 'EMEA' limite le calcul aux données EMEA."
+)
 record MetricFilter is
   name : Identifier
-  predicate : String length 1..512
+  predicate : ExpressionTree
 end
 
-@LangDocumented(summary="Configuration temporelle optionnelle d'une métrique Meshr.")
+@LangDocumented(
+  summary="Configuration temporelle optionnelle d'une métrique Meshr.",
+  description="Exemple : MetricTemporalWindow(refresh_frequency == \"0 0 * * *\", historical_depth == \"P90D\") planifie un recalcul quotidien sur 90 jours glissants."
+)
 record MetricTemporalWindow is
-  rolling_horizon : Interval = Interval 0 day
-  refresh_schedule : CronExpression = "0 * * * *"
-  data_latency : Interval = Interval 0 hour
-  grace_period : Interval = Interval 0 minute
+  rolling_horizon : Interval == Interval 0 day
+  refresh_schedule : CronExpression == "0 * * * *"
+  data_latency : Interval == Interval 0 hour
+  grace_period : Interval == Interval 0 minute
 end
 
-@LangDocumented(summary="Décrit les composantes d'une métrique Meshr.")
+@LangDocumented(
+  summary="Décrit les composantes d'une métrique Meshr.",
+  description="Exemple : MetricShape(name == \"orders_total\", formula.kind == MetricFormulaKind.AGGREGATION, outputs == List[MetricOutputField(name == \"total_orders\")]) expose le volume de commandes."
+)
 record MetricShape is
   metric_source : QualifiedName
   formula : MetricFormula
-  measurement_unit : HumanReadableLabel = ""
-  output_fields : List of MetricOutputField = List[]
-  dimension_definitions : List of MetricDimension = List[]
-  filter_definitions : List of MetricFilter = List[]
-  temporal_configuration : MetricTemporalWindow = Record { rolling_horizon: Interval 0 day, refresh_schedule: "0 * * * *", data_latency: Interval 0 hour, grace_period: Interval 0 minute }
+  measurement_unit : HumanReadableLabel == ""
+  output_fields : List of MetricOutputField == List[]
+  dimension_definitions : List of MetricDimension == List[]
+  filter_definitions : List of MetricFilter == List[]
+  temporal_configuration : MetricTemporalWindow == Record { rolling_horizon: Interval 0 day, refresh_schedule: "0 * * * *", data_latency: Interval 0 hour, grace_period: Interval 0 minute }
 end
 
-@LangDocumented(summary="Variantes de politiques Meshr en fonction de leur logique.")
+@LangDocumented(
+  summary="Variantes de politiques Meshr en fonction de leur logique.",
+  description="Exemple : une policy DataAccessGuard se positionne sur PolicyKind.VERBATIM pour exécuter une condition libre."
+)
 enum PolicyKind is (
   VERBATIM,
   MISSING_ASPECT,
@@ -254,7 +624,28 @@ enum PolicyKind is (
   MATCH
 )
 
-@LangDocumented(summary="Actions atomiques supportées par les politiques Meshr.")
+@LangDocumented(
+  summary="Types de relations sémantiques supportés dans les liens.",
+  description="Exemple : ModuleDeclares annote SemanticLink avec relation_kind == RelationKind.CONTAINMENT pour exprimer qu’un module contient ses déclarations."
+)
+enum RelationKind is (
+  INHERITANCE,
+  COMPOSITION,
+  AGGREGATION,
+  ASSOCIATION,
+  DEPENDENCY,
+  IMPLEMENTATION,
+  REFERENCE,
+  CONTAINMENT,
+  COLLABORATION,
+  SPECIALIZATION,
+  GENERALIZATION
+)
+
+@LangDocumented(
+  summary="Actions atomiques supportées par les politiques Meshr.",
+  description="Exemple : PolicyActionShape(action_kind == PolicyActionKind.DENY, message == \"Forbidden\") rejette explicitement une déclaration violant la règle."
+)
 enum PolicyActionKind is (
   DENY,
   WARN,
@@ -264,32 +655,111 @@ enum PolicyActionKind is (
   PATCH_REMOVE_ASPECT
 )
 
-@LangDocumented(summary="Action détaillée déclenchée par une politique Meshr.")
+@LangDocumented(
+  summary="Scope d'application d'une policy Meshr.",
+  description="Exemple : PolicyScopeDefinition(target.raw == \"meshr.sales\", has_where_clause == true, where_clause.kind == ExpressionKind.BINARY) formalise scope meshr.sales where status == 'ACTIVE'."
+)
+record PolicyScopeDefinition is
+  target : QualifiedName
+  has_where_clause : Boolean == false
+  where_clause : ExpressionTree == ExpressionTree { kind: ExpressionKind.UNKNOWN }
+end
+
+@LangDocumented(
+  summary="Variantes de conditions supportées par les policies Meshr.",
+  description="Exemple : une policy qui vérifie l'absence d'un aspect utilise PolicyConditionKind.MISSING_ASPECT alors qu'une condition libre exploite PolicyConditionKind.EXPRESSION."
+)
+enum PolicyConditionKind is (
+  MISSING_ASPECT,
+  EXISTS_ASPECT,
+  ASPECT_COMPARISON,
+  EXPRESSION
+)
+
+@LangDocumented(
+  summary="Condition appliquée à l'exécution d'une policy Meshr.",
+  description="Exemple : PolicyConditionShape(kind == PolicyConditionKind.MISSING_ASPECT, aspects == List[\"DataRetention\"]) force la présence de l'aspect DataRetention, tandis qu'un match dédié renseigne match_subject et match_arms."
+)
+record PolicyConditionShape is
+  kind : PolicyConditionKind
+  aspects : List of Identifier == List[]
+  optional aspect_namespace : Identifier
+  optional aspect_property : Identifier
+  comparison_operator : String == ""
+  optional comparison_value : ExpressionTree
+  optional expression : ExpressionTree
+  match_subject : QualifiedReference == ""
+  match_arms : List of MatchExpressionArm == List[]
+end
+
+@LangDocumented(
+  summary="Opérations disponibles dans une action de type patch.",
+  description="Exemple : PolicyPatchOperationKind.ADD_ASPECT pour ajouter un aspect lorsqu'une violation est détectée."
+)
+enum PolicyPatchOperationKind is (
+  ADD_ASPECT,
+  MODIFY_ASPECT,
+  REMOVE_ASPECT
+)
+
+@LangDocumented(
+  summary="Champ à modifier lors d'une opération de patch d'aspect.",
+  description="Exemple : AspectPatchField(name == \"retention_days\", value.kind == ExpressionKind.LITERAL) applique retention_days == 90."
+)
+record AspectPatchField is
+  name : Identifier
+  value : ExpressionTree
+end
+
+@LangDocumented(
+  summary="Opération de patch appliquée par une policy Meshr.",
+  description="Exemple : PolicyPatchOperation(operation_kind == PolicyPatchOperationKind.ADD_ASPECT, aspect_name == \"DataRetention\") ajoute l'aspect DataRetention avec les champs fournis."
+)
+record PolicyPatchOperation is
+  operation_kind : PolicyPatchOperationKind
+  aspect_name : Identifier
+  fields : List of AspectPatchField == List[]
+end
+
+@LangDocumented(
+  summary="Action détaillée déclenchée par une politique Meshr.",
+  description="Exemple : PolicyActionShape(policy_name == \"EnforcePII\", action_kind == PolicyActionKind.NOTIFY, message_expression.kind == ExpressionKind.LITERAL, target_expression.kind == ExpressionKind.LITERAL) diffuse une alerte dédiée."
+)
 record PolicyActionShape is
   policy_name : Identifier
   action_kind : PolicyActionKind
-  target_aspect : Identifier = ""
-  message_template : String length 0..512 = ""
-  notification_target : String length 0..256 = ""
+  message_expression : ExpressionTree == ExpressionTree { kind: ExpressionKind.UNKNOWN }
+  target_expression : ExpressionTree == ExpressionTree { kind: ExpressionKind.UNKNOWN }
+  optional patch_operation : PolicyPatchOperation
+  metadata : Map of Identifier to LiteralExpression == Map{}
 end
 
-@LangDocumented(summary="Décrit une politique de gouvernance Meshr.")
+@LangDocumented(
+  summary="Décrit une politique de gouvernance Meshr.",
+  description="Exemple : PolicyShape(name == \"RequirePIIApproval\", policy_scope.target.raw == \"meshr.sales\", match_arms == List[]) contrôle les déclarations PII d'un module."
+)
 record PolicyShape is
   name : Identifier
   kind : PolicyKind
-  policy_scope : QualifiedName
-  scope_filter : String length 0..512 = ""
-  condition_expression : String length 0..512 = ""
-  uses_match : Boolean = false  // true lorsque la politique exploite un bloc match
-  policy_actions : List of PolicyActionShape = List[]
+  policy_scope : PolicyScopeDefinition
+  optional condition : PolicyConditionShape
+  uses_match : Boolean == false  // true lorsque la politique exploite un bloc match
+  policy_actions : List of PolicyActionShape == List[]
+  policy_match_subject : QualifiedReference == ""
+  policy_match_arms : List of MatchExpressionArm == List[]
+  action_expressions : List of ExpressionTree == List[]
+  action_match_arms : List of MatchExpressionArm == List[]
 end
 
-@LangDocumented(summary="Squelette commun aux artefacts Meshr structurés.")
+@LangDocumented(
+  summary="Squelette commun aux artefacts Meshr structurés.",
+  description="Exemple : une entity Customer référence DeclarationSurface(fields == List[FieldDefinition(name == \"id\")]) pour exposer ses champs."
+)
 record DeclarationSurface is
-  fields : List of FieldDefinition = List[]
-  relations : List of RelationShape = List[]
-  metrics : List of MetricShape = List[]
-  policies : List of PolicyShape = List[]
+  fields : List of FieldDefinition == List[]
+  relations : List of RelationDefinition == List[]
+  metrics : List of MetricShape == List[]
+  policies : List of PolicyShape == List[]
 end
 
 trait WithIdentity is
@@ -297,34 +767,42 @@ trait WithIdentity is
 end
 
 trait WithAnnotations is
-  annotations : List of AnnotationApplication = List[]
+  annotations : List of AnnotationApplication == List[]
 end
 
 trait WithAspects is
-  aspect_bindings : List of AspectBinding = List[]
+  aspect_bindings : List of AspectBinding == List[]
 end
 
 trait WithTraits is
-  traits : List of QualifiedName = List[]
+  traits : List of QualifiedName == List[]
 end
 
+@LangDocumented(
+  summary="Aspect de base pour les tags sémantiques.",
+  description="Définit les propriétés communes à tous les tags sémantiques. Exemple : ModuleSemantics hérite de SemanticTagBase pour typer semantics en SemanticType.MODULE."
+)
 abstract aspect SemanticTagBase is
-  semantics : String length 1..160
-  rationale : String length 0..512 = ""
+  semantics : SemanticType
+  rationale : String length 0..512 == ""
 end
 
 aspect ModuleSemantics extends SemanticTagBase is
   spec_version : SemanticVersion
-  stable : Boolean = false
+  stable : Boolean == false
 end
 
 aspect DeclarationSemantics extends SemanticTagBase is
   declaration_scope : String length 1..120
-  features : List of DeclarationFeature = List[]
+  features : List of DeclarationFeature == List[]
 end
 
-aspect SemanticLink extends SemanticTagBase is
-  relation_kind : String length 1..120
+@LangDocumented(
+  summary="Aspect de base pour les liens sémantiques.",
+  description="Définit les propriétés communes à tous les liens sémantiques. Exemple : SemanticLink appliqué à ModuleDeclares fixe relation_kind == RelationKind.CONTAINMENT."
+)
+sealed aspect SemanticLink extends SemanticTagBase is
+  relation_kind : RelationKind
 end
 
 annotation LangVersion is
@@ -337,21 +815,21 @@ end
 
 annotation LangDocumented is
   required summary : DocString
-  optional description : String = ""
-  optional references : String = ""
+  optional description : String == ""
+  optional references : String == ""
 end
 
 @LangDocumented(
   summary="Structure canonique d'un module Meshr.",
-  description="Modélise l'unité de compilation Meshr, son versioning, ses imports/exports et la liste ordonnée des artefacts déclarés."
+  description="Modélise l'unité de compilation Meshr, son versioning, ses imports/exports et la liste ordonnée des artefacts déclarés. Exemple : ModuleDefinition(module_name == \"meshr.sales\", declarations == List[DeclarationDefinition(name == \"Order\")]) représente le module métier des ventes."
 )
 entity ModuleDefinition with WithAnnotations, WithAspects is
   module_name : ModuleName
   version : SemanticVersion
-  imports : List of ImportSpec = List[]
-  exports : List of ExportSpec = List[]
-  declarations : List of DeclarationDefinition = List[]
-  declaration_order : List of DeclarationKind = List[
+  imports : List of ImportSpec == List[]
+  exports : List of ExportSpec == List[]
+  declarations : List of DeclarationDefinition == List[]
+  declaration_order : List of DeclarationKind == List[
     DeclarationKind.MODULE,
     DeclarationKind.TYPE,
     DeclarationKind.ENUM,
@@ -367,9 +845,9 @@ entity ModuleDefinition with WithAnnotations, WithAspects is
   ]
   aspects {
     ModuleSemantics {
-      semantics == "module",
+      semantics == SemanticType.MODULE,
       rationale == "Un module encapsule et versionne un sous-domaine Meshr.",
-      spec_version == "0.4.0",
+      spec_version == "0.4.1",
       stable == true
     }
   }
@@ -377,12 +855,12 @@ end
 
 @LangDocumented(
   summary="Description générique d'une déclaration Meshr top-level.",
-  description="Capture le type de déclaration, son statut d'export, ses traits, sa surface structurelle et les métadonnées qui la gouvernent."
+  description="Capture le type de déclaration, son statut d'export, ses traits, la structure spécialisée associée et les métadonnées qui la gouvernent. Exemple : DeclarationDefinition(name == \"Order\", kind == DeclarationKind.ENTITY) référence un entity_shape décrivant les champs et aspects de l'entité Order."
 )
 entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, WithTraits is
   kind : DeclarationKind
-  exported : Boolean = false
-  features : List of DeclarationFeature = List[
+  exported : Boolean == false
+  features : List of DeclarationFeature == List[
     DeclarationFeature.ANNOTATIONS,
     DeclarationFeature.ASPECTS,
     DeclarationFeature.WITH_CLAUSE,
@@ -390,12 +868,24 @@ entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, Wi
     DeclarationFeature.METRIC_OUTPUTS,
     DeclarationFeature.VAL_EXPRESSION
   ]
+  optional annotation_shape : AnnotationDefinitionShape
+  optional enum_shape : EnumDefinitionShape
+  optional type_alias_definition : TypeAliasDefinition
+  optional record_shape : RecordShape
+  optional trait_shape : TraitShape
+  optional aspect_shape : AspectDefinitionShape
+  optional entity_shape : EntityShape
+  optional relation_definition : RelationDefinition
+  optional type_relation_definition : TypeRelationDefinition
+  optional metric_shape : MetricShape
+  optional policy_shape : PolicyShape
+  optional val_definition : ValDefinition
   surface : DeclarationSurface
   owning_module : ModuleName
-  nested : List of DeclarationDefinition = List[]
+  nested : List of DeclarationDefinition == List[]
   aspects {
     DeclarationSemantics {
-      semantics == "Meshr declaration descriptor",
+      semantics == SemanticType.MESHR_DECLARATION_DESCRIPTOR,
       rationale == "Permet aux outils d'inspecter les capacités de chaque artefact.",
       declaration_scope == "top_level",
       features == List[
@@ -416,28 +906,35 @@ entity DeclarationDefinition with WithIdentity, WithAnnotations, WithAspects, Wi
 end
 
 @LangDocumented(
-  summary="Relation de composition entre un module Meshr et les déclarations qu'il expose.",
-  description="Spécifie la cardinalité et l'ordre d'apparition des artefacts dans un module."
+  summary="Type de relation générique pour exprimer qu’un artefact en déclare un autre.",
+  description="Fournit les attributs communs aux relations de déclaration : la date de déclaration (declared_on) et un ordinal (ordinal) permettant d’ordonner ou de stabiliser l’affichage. Sert de base à des relations spécialisées comme ModuleDeclares. Exemple : Declares(declared_on == Date \"2024-01-15\", ordinal == 1) classe la première déclaration d'un module."
 )
 type relation Declares is
   declared_on : Date
-  ordinal : Integer = 0
+  ordinal : Integer == 0
 end
 
+@LangDocumented(
+  summary="Relation de composition entre un module Meshr et les déclarations qu'il expose.",
+  description="Spécifie la cardinalité et l'ordre d'apparition des artefacts dans un module. Exemple : ModuleDeclares relie ModuleDefinition(module_name == \"meshr.sales\") à DeclarationDefinition(name == \"Order\") avec ordinal == 10."
+)
 relation ModuleDeclares of type Declares is
   from ModuleDefinition(module_name)
   to DeclarationDefinition(name)
   // Décrit le lien de composition module -> déclaration
   aspects {
     SemanticLink {
-      semantics == "contains",
+      semantics == SemanticType.CONTAINS,
       rationale == "Un module référence chaque déclaration qu'il rend disponible.",
-      relation_kind == "module->declaration"
+      relation_kind == RelationKind.CONTAINMENT
     }
   }
 end
 
-@LangDocumented(summary="Nombre total de modules décrits dans le métamodèle Meshr.")
+@LangDocumented(
+  summary="Nombre total de modules décrits dans le métamodèle Meshr.",
+  description="Exemple : ModulesTotal retourne total == 5 lorsque cinq ModuleDefinition sont présents dans le workspace."
+)
 metric ModulesTotal is
   source ModuleDefinition
   calculation count(module_name)
@@ -446,7 +943,10 @@ metric ModulesTotal is
   }
 end
 
-@LangDocumented(summary="Volume global de déclarations Meshr, toutes catégories confondues.")
+@LangDocumented(
+  summary="Volume global de déclarations Meshr, toutes catégories confondues.",
+  description="Exemple : DeclarationsTotal retourne total == 42 lorsque l'ensemble des modules contient quarante-deux artefacts top-level."
+)
 metric DeclarationsTotal is
   source DeclarationDefinition
   calculation count(name)
@@ -460,7 +960,10 @@ end
  * Les métriques ci-dessous démontrent les agrégations et dimensions
  * que Meshr sait exprimer sur son propre métamodèle.
  */
-@LangDocumented(summary="Répartition des déclarations par type et statut d'export.")
+@LangDocumented(
+  summary="Répartition des déclarations par type et statut d'export.",
+  description="Exemple : DeclarationsByKind fournit exported_total == 3 pour kind == DeclarationKind.ENTITY dans un module exposant trois entités publiques."
+)
 metric DeclarationsByKind is
   source DeclarationDefinition
   aggregation {
@@ -486,7 +989,10 @@ metric DeclarationsByKind is
   }
 end
 
-@LangDocumented(summary="Distribution des déclarations par module propriétaire.")
+@LangDocumented(
+  summary="Distribution des déclarations par module propriétaire.",
+  description="Exemple : DeclarationsByModule recense policies_total == 2 pour owning_module == \"meshr.governance\" lorsque ce module définit deux politiques."
+)
 metric DeclarationsByModule is
   source DeclarationDefinition
   aggregation {
@@ -510,7 +1016,10 @@ metric DeclarationsByModule is
   }
 end
 
-@LangDocumented(summary="Répartition des politiques par logique métier et usage du pattern matching.")
+@LangDocumented(
+  summary="Répartition des politiques par logique métier et usage du pattern matching.",
+  description="Exemple : PoliciesByKind retourne match_total == 1 lorsque seule la policy MetricFormulaMutualExclusion active uses_match."
+)
 metric PoliciesByKind is
   source PolicyShape
   aggregation {
@@ -532,16 +1041,19 @@ metric PoliciesByKind is
     uses_match uses_match
   }
   filters {
-    policy_scope.raw != ""
+    policy_scope.target.raw != ""
   }
 end
 
-@LangDocumented(summary="Volume de politiques selon la portée de gouvernance ciblée.")
+@LangDocumented(
+  summary="Volume de politiques selon la portée de gouvernance ciblée.",
+  description="Exemple : PoliciesByScope fait ressortir policies_total == 4 pour policy_scope.target.raw == \"meshr.sales\" dans un domaine très gouverné."
+)
 metric PoliciesByScope is
   source PolicyShape
   aggregation {
     policies_total as count(name),
-    with_filter_total as sum(if (scope_filter == "") 0 else 1),
+    with_filter_total as sum(if (policy_scope.has_where_clause) 1 else 0),
     match_total as sum(if (uses_match) 1 else 0)
   }
   outputs {
@@ -550,15 +1062,18 @@ metric PoliciesByScope is
     match_total : Integer
   }
   dimensions {
-    policy_scope_value policy_scope.raw,
-    filter scope_filter
+    policy_scope_value policy_scope.target.raw,
+    filter_expression_kind policy_scope.where_clause.kind
   }
   filters {
-    policy_scope.raw != ""
+    policy_scope.target.raw != ""
   }
 end
 
-@LangDocumented(summary="Répartition des actions de politique par type et cible.")
+@LangDocumented(
+  summary="Répartition des actions de politique par type et cible.",
+  description="Exemple : PolicyActionsByKind révèle deny_total == 2 lorsque deux actions DENY sont définies sur la policy TableSizeGovernance."
+)
 metric PolicyActionsByKind is
   source PolicyActionShape
   aggregation {
@@ -571,7 +1086,7 @@ metric PolicyActionsByKind is
       or action_kind == PolicyActionKind.PATCH_MODIFY_ASPECT
       or action_kind == PolicyActionKind.PATCH_REMOVE_ASPECT
     ) 1 else 0),
-    targeted_notifications as sum(if (notification_target == "") 0 else 1)
+    targeted_notifications as sum(if (target_expression.kind == ExpressionKind.UNKNOWN) 0 else 1)
   }
   outputs {
     actions_total : Integer,
@@ -584,15 +1099,17 @@ metric PolicyActionsByKind is
   dimensions {
     action_kind_label action_kind,
     policy_name_label policy_name,
-    target_aspect_label target_aspect,
-    notification_target_label notification_target
+    target_expression_kind target_expression.kind
   }
   filters {
     policy_name != ""
   }
 end
 
-@LangDocumented(summary="Barème de sévérité en fonction du stade du cycle de vie des politiques.")
+@LangDocumented(
+  summary="Barème de sévérité en fonction du stade du cycle de vie des politiques.",
+  description="Exemple : PolicyLifecycleScore calcule lifecycle_score == 30 lorsqu'une politique unique est au stade exploit."
+)
 metric PolicyLifecycleScore is
   source PolicyShape
   aggregation {
@@ -608,21 +1125,25 @@ metric PolicyLifecycleScore is
   }
 end
 
-@LangDocumented(summary="Gouvernance des tailles de tables Meshr.")
-@LangExperimental
-policy TableSizeGovernance is
-  scope table
+@LangDocumented(
+  summary="Gouvernance de la documentation des déclarations Meshr.",
+  description="Exemple : DeclarationDocumentationGovernance déclenche un deny lorsqu'une déclaration exportée ne possède pas d'annotation @LangDocumented."
+)
+policy DeclarationDocumentationGovernance is
+  scope meshr.lang.metamodel.DeclarationDefinition
 
   actions {
-    match table.rows {
-      { _ < 1000000 } -> warn with message "The table ${table.name} is small (${table.rows} < 1000000), therefore the partitioning is optional"
-      { _ >= 1000000 and _ < 100000000 } -> warn with message "The table ${table.name} is medium (${table.rows}), partitioning recommended"
-      { _ >= 100000000 } -> deny with message "The table ${table.name} is large (${table.rows}), partitioning is mandatory"
+    match annotations {
+      { listSize(_) == 0 and exported } -> deny with message "Exported declaration ${name} must be documented with @LangDocumented"
+      { listSize(_) == 0 } -> warn with message "Consider documenting declaration ${name} with @LangDocumented"
     }
   }
 end
 
-@LangDocumented(summary="Analyse agrégée de l'utilisation des formules de métriques Meshr.")
+@LangDocumented(
+  summary="Analyse agrégée de l'utilisation des formules de métriques Meshr.",
+  description="Exemple : MetricFormulaUsage remonte aggregation_total == 4 lorsque quatre métriques sont de type agrégation dans un domaine."
+)
 metric MetricFormulaUsage is
   source MetricShape
   aggregation {
@@ -652,7 +1173,10 @@ metric MetricFormulaUsage is
   }
 end
 
-@LangDocumented(summary="Vue agrégée des actions de politique par politique et type d'action.")
+@LangDocumented(
+  summary="Vue agrégée des actions de politique par politique et type d'action.",
+  description="Exemple : PolicyActionAggregation recense notifications_total == 2 pour la policy RequirePIIApproval qui envoie deux alertes."
+)
 metric PolicyActionAggregation is
   source PolicyActionShape
   aggregation {
@@ -673,10 +1197,7 @@ metric PolicyActionAggregation is
       PolicyActionKind.PATCH_REMOVE_ASPECT -> 1
       _ -> 0
     }),
-    message_template_total as sum(match message_template {
-      "" -> 0
-      _ -> 1
-    })
+    message_expression_total as sum(if (message_expression.kind == ExpressionKind.UNKNOWN) 0 else 1)
   }
   outputs {
     actions_total : Integer,
@@ -684,7 +1205,7 @@ metric PolicyActionAggregation is
     patches_add_total : Integer,
     patches_modify_total : Integer,
     patches_remove_total : Integer,
-    message_template_total : Integer
+    message_expression_total : Integer
   }
   dimensions {
     policy_name_label policy_name,
@@ -695,25 +1216,31 @@ metric PolicyActionAggregation is
   }
 end
 
-@LangDocumented(summary="Garantit qu'une formule de métrique n'est pas à la fois calcul et agrégation.")
+@LangDocumented(
+  summary="Garantit qu'une formule de métrique n'est pas à la fois calcul et agrégation.",
+  description="Exemple : MetricFormulaMutualExclusion déclenche un deny si une métrique Revenue combine calculation_expression.kind != ExpressionKind.UNKNOWN et aggregation_components."
+)
 // Policy démontrant l'usage de match/condition sur MetricShape
 policy MetricFormulaMutualExclusion is
   scope meshr.lang.metamodel.MetricShape
   condition (
     (formula.kind == MetricFormulaKind.CALCULATION and formula.aggregation_components != List[])
     or
-    (formula.kind == MetricFormulaKind.AGGREGATION and formula.calculation_expression != "")
+    (formula.kind == MetricFormulaKind.AGGREGATION and formula.calculation_expression.kind != ExpressionKind.UNKNOWN)
   )
   actions {
     deny with message "Metric formula must not mix calculation expression and aggregation components"
   }
 end
 
-@LangDocumented(summary="Vérifie qu'une formule de métrique fournit les composantes requises selon son type.")
+@LangDocumented(
+  summary="Vérifie qu'une formule de métrique fournit les composantes requises selon son type.",
+  description="Exemple : MetricFormulaConsistency signale une métrique OrderCount dont calculation_expression.kind == ExpressionKind.UNKNOWN alors que kind == CALCULATION."
+)
 policy MetricFormulaConsistency is
   scope meshr.lang.metamodel.MetricShape
   condition (
-    (formula.kind == MetricFormulaKind.CALCULATION and formula.calculation_expression == "")
+    (formula.kind == MetricFormulaKind.CALCULATION and formula.calculation_expression.kind == ExpressionKind.UNKNOWN)
     or
     (formula.kind == MetricFormulaKind.AGGREGATION and formula.aggregation_components == List[])
   )

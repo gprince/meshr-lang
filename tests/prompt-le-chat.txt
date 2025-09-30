@@ -1,0 +1,123 @@
+J'ai besoin de préciser certaines choses :
+
+1. Ce langage s'appelle Meshr-Lang (Meshr)
+
+2. Les aspects (mot clé aspect) sont le moyen du langage pour déclarer des types de métadonnées (: les structures de celles-ci) et de les instancier dans les autres déclarations.
+
+Exemple (extrait) :   
+
+```meshr
+module meshr.lang.internal.metamodel
+
+[...]
+
+@LangDocumented(summary="Types de relations sémantiques supportés dans les liens.")
+enum RelationKind is (
+  INHERITANCE,
+  COMPOSITION,
+  AGGREGATION,
+  ASSOCIATION,
+  DEPENDENCY,
+  IMPLEMENTATION,
+  REFERENCE,
+  CONTAINMENT,
+  COLLABORATION,
+  SPECIALIZATION,
+  GENERALIZATION
+)
+
+@LangDocumented(summary="Types de sémantiques supportés dans les tags sémantiques.")
+enum SemanticType is (
+  MODULE,
+  MESHR_DECLARATION_DESCRIPTOR,
+  CONTAINS
+)
+
+[...]
+
+@LangDocumented(
+  summary="Aspect de base pour les tags sémantiques.",
+  description="Définit les propriétés communes à tous les tags sémantiques."
+)
+abstract aspect SemanticTagBase is
+  semantics : SemanticType
+  rationale : String length 0..512 = ""
+end 
+
+[...]
+
+@LangDocumented(
+  summary="Aspect de base pour les liens sémantiques.",
+  description="Définit les propriétés communes à tous les liens sémantiques."
+)
+sealed aspect SemanticLink extends SemanticTagBase is
+  relation_kind : RelationKind
+end
+
+[..]
+
+@LangDocumented(
+  summary="Structure canonique d'un module Meshr.",
+  description="Modélise l'unité de compilation Meshr, son versioning, ses imports/exports et la liste ordonnée des artefacts déclarés."
+)
+entity ModuleDefinition with WithAnnotations, WithAspects is
+  module_name : ModuleName
+  version : SemanticVersion
+  imports : List of ImportSpec = List[]
+  exports : List of ExportSpec = List[]
+  declarations : List of DeclarationDefinition = List[]
+  declaration_order : List of DeclarationKind = List[
+    DeclarationKind.MODULE,
+    DeclarationKind.TYPE,
+    DeclarationKind.ENUM,
+    DeclarationKind.RECORD,
+    DeclarationKind.TRAIT,
+    DeclarationKind.ASPECT,
+    DeclarationKind.ENTITY,
+    DeclarationKind.RELATION,
+    DeclarationKind.TYPE_RELATION,
+    DeclarationKind.METRIC,
+    DeclarationKind.POLICY,
+    DeclarationKind.VAL
+  ]
+  aspects {
+    ModuleSemantics {
+      semantics == SemanticType.MODULE,
+      rationale == "Un module encapsule et versionne un sous-domaine Meshr.",
+      spec_version == "0.4.0",
+      stable == true
+    }
+  }
+end
+
+[...]
+
+@LangDocumented(
+  summary="Type de relation générique pour exprimer qu’un artefact en déclare un autre.",
+  description="Fournit les attributs communs aux relations de déclaration : la date de déclaration (declared_on) et un ordinal (ordinal) permettant d’ordonner ou de stabiliser l’affichage. Sert de base à des relations spécialisées comme ModuleDeclares."
+)
+type relation Declares is
+  declared_on : Date
+  ordinal : Integer = 0
+end
+
+@LangDocumented(
+  summary="Relation de composition entre un module Meshr et les déclarations qu'il expose.",
+  description="Spécifie la cardinalité et l'ordre d'apparition des artefacts dans un module."
+)
+relation ModuleDeclares of type Declares is
+  from ModuleDefinition(module_name)
+  to DeclarationDefinition(name)
+  // Décrit le lien de composition module -> déclaration
+  aspects {
+    SemanticLink {
+      semantics == SemanticType.CONTAINS,
+      rationale == "Un module référence chaque déclaration qu'il rend disponible.",
+      relation_kind == RelationKind.CONTAINMENT
+    }
+  }
+end
+
+[...]
+
+```

@@ -1,0 +1,75 @@
+version: 2
+
+semantic_models:
+  - name: projets_budgetaires
+    description: "Core Semantic Model pour le suivi des projets et budgets"
+    model: ref('vue_projets_budgetaires')   # vue consolidée
+    primary_entity: projet
+
+    entities:
+      - name: lotissement
+        type: primary
+        expr: code_lotissement_metier
+      - name: projet
+        type: primary
+        expr: code_projet_operationnel
+      - name: jalon
+        type: foreign
+        expr: code_evenement_jalon
+        relation: many_to_one
+        to_entity: projet
+      - name: evenement_budgetaire
+        type: foreign
+        expr: code_evenement_budgetaire
+        relation: many_to_one
+        to_entity: projet
+      - name: budget
+        type: foreign
+        expr: exercice
+        relation: many_to_one
+        to_entity: projet
+
+    dimensions:
+      - name: nom_lotissement_metier
+        type: categorical
+        expr: nom_lotissement_metier
+      - name: nom_projet_operationnel
+        type: categorical
+        expr: nom_projet_operationnel
+      - name: categorie_projet_operationnel
+        type: categorical
+        expr: categorie_projet_operationnel
+      - name: statut_projet_operationnel
+        type: categorical
+        expr: statut_projet_operationnel
+      - name: date_debut
+        type: time
+        expr: date_debut
+        time_granularity: day
+      - name: date_fin
+        type: time
+        expr: date_fin
+        time_granularity: day
+      - name: statut_evenement_jalon
+        type: categorical
+        expr: statut_evenement_jalon
+      - name: statut_evenement_budgetaire
+        type: categorical
+        expr: statut_evenement_budgetaire
+      - name: exercice
+        type: categorical
+        expr: exercice
+
+    measures:
+      - name: montant_total
+        description: "Montant budgétaire total en euros"
+        agg: sum
+        expr: montant_euro
+      - name: nb_projets
+        description: "Nombre de projets opérationnels"
+        agg: count_distinct
+        expr: code_projet_operationnel
+      - name: nb_jours
+        description: "Somme des jours déclarés dans le budget"
+        agg: sum
+        expr: nombre_jours

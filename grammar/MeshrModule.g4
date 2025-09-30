@@ -149,7 +149,7 @@ enumAttributeList
     ;
 
 enumAttribute
-    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)?
     ;
 
 enumValueList
@@ -165,7 +165,7 @@ enumValueArgList
     ;
 
 enumValueArg
-    : IDENTIFIER '=' annotationValue
+    : IDENTIFIER '==' annotationValue
     ;
 
 // ========== ENTITY DECLARATION ============
@@ -178,7 +178,7 @@ entityFieldList
     ;
 
 entityField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)?
     ;
 
 entityAspects
@@ -302,7 +302,7 @@ typeRelationFieldList
     ;
 
 typeRelationField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)?
     ;
 
 typeRelationAspects
@@ -339,7 +339,7 @@ relationFieldList
     ;
 
 relationField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)?
     ;
 
 relationAspects
@@ -360,7 +360,7 @@ annotationFieldList
     ;
 
 annotationField
-    : ('required' | 'optional') IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    : ('required' | 'optional') IDENTIFIER ':' typeRef ('==' annotationValue)? NEWLINE?
     ;
 
 // ========== ANNOTATION USAGE ============
@@ -511,7 +511,7 @@ recordFieldList
     ;
 
 recordField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)? NEWLINE?
     ;
 
 // ========== TRAIT DECLARATION ==========
@@ -532,7 +532,7 @@ traitFieldList
     ;
 
 traitField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)? NEWLINE?
     ;
 
 traitAspects
@@ -570,7 +570,7 @@ aspectFieldList
     ;
 
 aspectField
-    : IDENTIFIER ':' typeRef ('=' annotationValue)? NEWLINE?
+    : IDENTIFIER ':' typeRef ('==' annotationValue)? NEWLINE?
     ;
 
 // ========== COLLECTION AND COMPOSITE LITERALS ==========

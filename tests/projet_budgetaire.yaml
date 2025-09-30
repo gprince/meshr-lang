@@ -1,0 +1,253 @@
+%YAML 1.2
+---
+$schema: "https://git.equancy.cloud/schemas/data-contract.schema.yaml"
+
+edition:
+  version: 1.0.0
+  group: public
+
+fundamentals:
+  identification:
+    urn: "urn:bpce-si:contract:operations:projets_budgetaires:1.0.0"
+    name: "projets_budgetaires"
+    domain: "operations"
+    display_name: "Vue Projets et Budgets"
+    description: "Vue BigQuery exposant les projets opérationnels, jalons, évènements budgétaires et budgets consolidés."
+    version: "1.0.0"
+    type: contract
+
+  lifecycle:
+    status: published
+    created_at: "2025-09-25"
+    updated_at: "2025-09-25"
+    version: "1.0.0"
+
+  stakeholders:
+    - role: owner
+      entity_type: team
+      name: "BI & Data Management"
+      email: "data-team@bpce-si.fr"
+
+  labels:
+    - bigquery
+    - finance
+    - projects
+    - curated
+  tags:
+    domain: "operations"
+    subdomain: "budget"
+    sensitivity: "internal"
+    finops_owner: "finance-controller"
+    retention: "5y"
+    pii: false
+
+schema:
+  fields:
+    - name: code_lotissement_metier
+      type: string
+      constraints:
+        required: true
+        pattern: "^[A-Z0-9_]+$"
+    - name: nom_lotissement_metier
+      type: string
+      constraints:
+        required: true
+        maxLength: 255
+    - name: code_projet_operationnel
+      type: string
+      constraints:
+        required: true
+        unique: true
+    - name: nom_projet_operationnel
+      type: string
+      constraints:
+        required: true
+    - name: categorie_projet_operationnel
+      type: string
+      constraints:
+        enum: ["Investissement", "Fonctionnement", "Maintenance"]
+    - name: statut_projet_operationnel
+      type: string
+      constraints:
+        enum: ["Planifié", "En cours", "Terminé", "Annulé"]
+    - name: date_debut
+      type: date
+      constraints:
+        required: true
+    - name: date_fin
+      type: date
+      constraints:
+        required: true
+    - name: code_evenement_jalon
+      type: string
+    - name: nom_evenement_jalon
+      type: string
+    - name: statut_evenement_jalon
+      type: string
+      constraints:
+        enum: ["Planifié", "Réalisé", "Annulé"]
+    - name: date_jalon
+      type: date
+    - name: code_evenement_budgetaire
+      type: string
+    - name: nom_evenement_budgetaire
+      type: string
+    - name: statut_evenement_budgetaire
+      type: string
+      constraints:
+        enum: ["Prévu", "Engagé", "Validé", "Clôturé"]
+    - name: montant_euro
+      type: decimal
+      constraints:
+        minimum: 0
+    - name: exercice
+      type: int
+      constraints:
+        minimum: 2000
+        maximum: 2100
+    - name: nombre_jours
+      type: int
+      constraints:
+        minimum: 0
+
+interfaces:
+  - name: "vue_projets_budgetaires"
+    display_name: "Vue Projets Budgétaires"
+    description: "Vue consolidée dans BigQuery, dataset dm_operations."
+    interface_type: sql
+    spec:
+      language: sql
+      version: "standard-sql"
+      content: |
+        CREATE OR REPLACE VIEW `bpce-si-prod.dm_operations.vue_projets_budgetaires` AS
+        WITH lotissement AS (
+          SELECT
+            CODE_LOTISSEMENT_METIER,
+            NOM_LOTISSEMENT_METIER
+          FROM `bpce-si-prod.staging.ITSI_LOTISSEMENT_METIER`
+        ),
+        projet AS (
+          SELECT
+            CODE_PROJET_OPERATIONNEL,
+            NOM_PROJET_OPERATIONNEL,
+            CATEGORIE_PROJET_OPERATIONNEL,
+            STATUT_PROJET_OPERATIONNEL,
+            DATE_DEBUT,
+            DATE_FIN,
+            CODE_LOTISSEMENT_METIER
+          FROM `bpce-si-prod.staging.ITSI_PROJET_OPERATIONNEL`
+        ),
+        jalon AS (
+          SELECT
+            CODE_LOTISSEMENT_METIER,
+            CODE_EVENEMENT_JALON,
+            NOM_EVENEMENT_JALON,
+            STATUT_EVENEMENT_JALON,
+            DATE_JALON
+          FROM `bpce-si-prod.staging.ITSI_EVENEMENT_JALON`
+        ),
+        evenement_budgetaire AS (
+          SELECT
+            CODE_PROJET_OPERATIONNEL,
+            CODE_EVENEMENT_BUDGETAIRE,
+            NOM_EVENEMENT_BUDGETAIRE,
+            STATUT_EVENEMENT_BUDGETAIRE
+          FROM `bpce-si-prod.staging.ITSI_EVENEMENT_BUDGETAIRE`
+        ),
+        budget AS (
+          SELECT
+            CODE_PROJET_OPERATIONNEL,
+            MONTANT_EURO,
+            EXERCICE,
+            NOMBRE_JOURS
+          FROM `bpce-si-prod.staging.ITSI_BUDGET`
+        )
+        SELECT
+          lm.CODE_LOTISSEMENT_METIER     AS code_lotissement_metier,
+          lm.NOM_LOTISSEMENT_METIER      AS nom_lotissement_metier,
+          po.CODE_PROJET_OPERATIONNEL    AS code_projet_operationnel,
+          po.NOM_PROJET_OPERATIONNEL     AS nom_projet_operationnel,
+          po.CATEGORIE_PROJET_OPERATIONNEL AS categorie_projet_operationnel,
+          po.STATUT_PROJET_OPERATIONNEL  AS statut_projet_operationnel,
+          po.DATE_DEBUT                  AS date_debut,
+          po.DATE_FIN                    AS date_fin,
+          ej.CODE_EVENEMENT_JALON        AS code_evenement_jalon,
+          ej.NOM_EVENEMENT_JALON         AS nom_evenement_jalon,
+          ej.STATUT_EVENEMENT_JALON      AS statut_evenement_jalon,
+          ej.DATE_JALON                  AS date_jalon,
+          eb.CODE_EVENEMENT_BUDGETAIRE   AS code_evenement_budgetaire,
+          eb.NOM_EVENEMENT_BUDGETAIRE    AS nom_evenement_budgetaire,
+          eb.STATUT_EVENEMENT_BUDGETAIRE AS statut_evenement_budgetaire,
+          b.MONTANT_EURO                 AS montant_euro,
+          b.EXERCICE                     AS exercice,
+          b.NOMBRE_JOURS                 AS nombre_jours
+        FROM lotissement lm
+        JOIN projet po
+          ON lm.CODE_LOTISSEMENT_METIER = po.CODE_LOTISSEMENT_METIER
+        LEFT JOIN jalon ej
+          ON lm.CODE_LOTISSEMENT_METIER = ej.CODE_LOTISSEMENT_METIER
+        LEFT JOIN evenement_budgetaire eb
+          ON po.CODE_PROJET_OPERATIONNEL = eb.CODE_PROJET_OPERATIONNEL
+        LEFT JOIN budget b
+          ON po.CODE_PROJET_OPERATIONNEL = b.CODE_PROJET_OPERATIONNEL
+
+expectations:
+  data_quality:
+    - policy: "validity_rules"
+      version: "1.0.0"
+      status: active
+      rules:
+        - selector: [date_debut, date_fin]
+          type: comparison
+          verbatim: "date_fin >= date_debut"
+          spec:
+            language: sql
+            version: "standard-sql"
+            content: "date_fin >= date_debut"
+        - selector: [montant_euro]
+          type: range
+          verbatim: "montant_euro >= 0"
+          spec:
+            language: sql
+            version: "standard-sql"
+            content: "montant_euro >= 0"
+        - selector: [nombre_jours]
+          type: range
+          verbatim: "nombre_jours >= 0"
+          spec:
+            language: sql
+            version: "standard-sql"
+            content: "nombre_jours >= 0"
+        - selector: [code_lotissement_metier, code_projet_operationnel]
+          type: not_null
+          verbatim: "Clés métier ne doivent pas être NULL"
+          spec:
+            language: sql
+            version: "standard-sql"
+            content: "code_lotissement_metier IS NOT NULL AND code_projet_operationnel IS NOT NULL"
+
+  on_violation:
+    notify:
+      - channel: "email"
+        target: "data-quality-alerts@bpce-si.fr"
+        threshold: "any"
+        message: "Violation des règles de qualité détectée dans la vue projets_budgetaires"
+      - channel: "slack"
+        target: "#data-quality"
+        threshold: "5%"
+        message: "Plus de 5% des enregistrements de la vue projets_budgetaires violent une règle de qualité"
+    escalate:
+      - condition: "violations > 1000"
+        action: "Créer un ticket JIRA"
+        target: "DQ-BOARD"
+      - condition: "violations > 10000"
+        action: "Notifier le CDO"
+        target: "chief-data-officer@bpce-si.fr"
+    remediation:
+      - condition: "montant_euro < 0"
+        action: "replace"
+        replacement: 0
+        message: "Montant négatif remplacé par 0"
+      - condition: "date_fin < date_debut"
+        action: "exclude_row"
+        message: "Lignes invalides exclues de la vue de consommation"

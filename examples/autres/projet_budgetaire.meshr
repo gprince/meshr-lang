@@ -1,0 +1,63 @@
+// Traduction Meshr-Lang du modèle sémantique DBT `projets_budgetaires`
+// Source dbt model: ref('vue_projets_budgetaires')
+
+module examples.autres.projet_budgetaire
+
+entity ProjetBudgetaire is
+  code_lotissement_metier : String
+  nom_lotissement_metier : String
+  code_projet_operationnel : String
+  nom_projet_operationnel : String
+  categorie_projet_operationnel : String
+  statut_projet_operationnel : String
+  date_debut : Date
+  date_fin : Date
+  code_evenement_jalon : String
+  statut_evenement_jalon : String
+  code_evenement_budgetaire : String
+  statut_evenement_budgetaire : String
+  exercice : Integer
+  montant_euro : Float
+  nombre_jours : Integer
+end
+
+metric MontantTotal is
+  source ProjetBudgetaire
+  calculation sum(montant_euro)
+  unit "EUR"
+  dimensions {
+    projet code_projet_operationnel,
+    lotissement code_lotissement_metier,
+    nom_lotissement nom_lotissement_metier,
+    nom_projet nom_projet_operationnel,
+    categorie categorie_projet_operationnel,
+    statut statut_projet_operationnel,
+    statut_jalon statut_evenement_jalon,
+    statut_budget statut_evenement_budgetaire,
+    exercice exercice
+  }
+end
+
+metric NbProjets is
+  source ProjetBudgetaire
+  calculation count_distinct(code_projet_operationnel)
+  unit "count"
+  dimensions {
+    lotissement code_lotissement_metier,
+    categorie categorie_projet_operationnel,
+    statut statut_projet_operationnel,
+    exercice exercice
+  }
+end
+
+metric NbJours is
+  source ProjetBudgetaire
+  calculation sum(nombre_jours)
+  unit "days"
+  dimensions {
+    projet code_projet_operationnel,
+    lotissement code_lotissement_metier,
+    statut statut_projet_operationnel,
+    exercice exercice
+  }
+end

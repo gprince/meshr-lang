@@ -22,10 +22,10 @@
       "include": "#numbers"
     },
     {
-      "include": "#identifiers"
+      "include": "#constraints"
     },
     {
-      "include": "#constraints"
+      "include": "#identifiers"
     }
   ],
   "repository": {
@@ -59,7 +59,7 @@
       "patterns": [
         {
           "name": "keyword.control.meshr",
-          "match": "\\b(module|import|entity|enum|trait|aspect|relation|sealed|abstract|export|val|of|extends|implements|with|is|end|from|to|aspects|annotation|record|required|optional|default|type|bidirectional|metric|source|calculation|aggregation|unit|outputs|dimensions|filters|temporal|window|refresh_frequency|historical_depth|match|or)\\b"
+          "match": "\\b(module|import|entity|enum|trait|aspect|relation|sealed|abstract|export|val|of|extends|implements|with|is|end|from|to|aspects|annotation|record|required|optional|default|type|bidirectional|metric|source|policy|scope|condition|actions|where|calculation|aggregation|unit|outputs|dimensions|filters|temporal|window|refresh_frequency|historical_depth|match|or)\\b"
         },
         {
           "name": "keyword.other.meshr",
