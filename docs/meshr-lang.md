@@ -2641,7 +2641,7 @@ end
 
 Les **métriques** permettent de définir des KPIs (Key Performance Indicators) et des mesures métier directement dans le modèle sémantique. Elles s'intègrent naturellement avec les entités, relations et aspects existants pour générer automatiquement des tableaux de bord, des requêtes SQL et des pipelines de données.
 
-> ⚠️ **Important** : Les mots-clés des métriques (`metric`, `source`, `calculation`, `aggregation`, `unit`, `outputs`, `dimensions`, `filters`, `temporal`, `window`, `refresh_frequency`, `historical_depth`, `match`, `or`) sont **réservés** et ne peuvent pas être utilisés comme noms de champs. Voir la [section des mots-clés réservés](#️-mots-clés-réservés) pour la liste complète.
+> ⚠️ **Important** : Les mots-clés des métriques (`metric`, `source`, `calculation`, `aggregation`, `unit`, `outputs`, `dimensions`, `filters`, `temporal`, `window`, `refresh_frequency`, `historical_depth`, `match`, `or`, `as`) sont **réservés** et ne peuvent pas être utilisés comme noms de champs. Voir la [section des mots-clés réservés](#️-mots-clés-réservés) pour la liste complète.
 
 ### 🧭 Philosophie
 
